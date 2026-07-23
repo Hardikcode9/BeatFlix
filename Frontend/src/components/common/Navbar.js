@@ -8,16 +8,14 @@ import {
   FaInfoCircle, 
   FaSignOutAlt, 
   FaTheaterMasks, 
-  FaBookmark 
+  FaBookmark,
+  FaUserCog /* <-- NEW ICON IMPORT */
 } from "react-icons/fa";
-
-// Import your new MyListPanel component 
-// (Adjust the path if it is located in a different folder)
 import MyListPanel from "../MyListPanel"; 
 
 function Navbar({ viewer, onSwitchProfile }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMyListOpen, setIsMyListOpen] = useState(false); // State for the slide-out panel
+  const [isMyListOpen, setIsMyListOpen] = useState(false);
   
   const links = [
     { to: "/", label: "Home", icon: <FaHome /> },
@@ -29,8 +27,6 @@ function Navbar({ viewer, onSwitchProfile }) {
   return (
     <>
       <nav className={`side-nav ${isOpen ? "is-open" : ""}`} aria-label="Main navigation">
-        
-        {/* BACKGROUND AMBIENT ORB */}
         <div className="nav-ambient-glow"></div>
 
         <div className="side-brand-row">
@@ -43,7 +39,6 @@ function Navbar({ viewer, onSwitchProfile }) {
           <button 
             className="nav-toggle" 
             onClick={() => setIsOpen((open) => !open)} 
-            aria-label="Expand or collapse navigation"
           >
             <FaBars />
           </button>
@@ -66,12 +61,12 @@ function Navbar({ viewer, onSwitchProfile }) {
             </NavLink>
           ))}
 
-          {/* NEW: MY LIST BUTTON */}
+          {/* MY LIST BUTTON */}
           <div 
             className="side-link my-list-btn" 
             onClick={() => {
               setIsMyListOpen(true);
-              setIsOpen(false); // Closes the mobile sidebar if it was open
+              setIsOpen(false);
             }}
             style={{ cursor: "pointer" }}
             role="button"
@@ -81,6 +76,17 @@ function Navbar({ viewer, onSwitchProfile }) {
             <span className="side-link-label">My List</span>
             <div className="nav-tooltip">My List</div>
           </div>
+
+          {/* NEW: ACCOUNT MANAGEMENT BUTTON */}
+          <NavLink 
+            to="/account" 
+            onClick={() => setIsOpen(false)} 
+            className={({ isActive }) => `side-link ${isActive ? "is-active" : ""}`}
+          >
+            <span className="side-icon"><FaUserCog /></span>
+            <span className="side-link-label">Account</span>
+            <div className="nav-tooltip">Account</div>
+          </NavLink>
         </div>
 
         <div className="side-bottom">
@@ -103,7 +109,6 @@ function Navbar({ viewer, onSwitchProfile }) {
         
       </nav>
 
-      {/* RENDER THE SLIDE-OUT PANEL HERE */}
       <MyListPanel 
         isOpen={isMyListOpen} 
         onClose={() => setIsMyListOpen(false)} 

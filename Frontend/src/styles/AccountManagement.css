@@ -1,0 +1,297 @@
+/* ===============================
+   ACCOUNT MANAGEMENT GLOBALS
+================================= */
+.account-page {
+  position: relative;
+  min-height: 100vh;
+  background-color: #030610;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  padding: 60px 5% 100px;
+}
+
+/* Background Ambient Lights */
+.acc-glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(150px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.3;
+  animation: pulseGlow 8s infinite alternate ease-in-out;
+}
+.purple-orb {
+  top: 0%; right: 10%;
+  width: 40vw; height: 40vw;
+  background: #a855f7;
+}
+.blue-orb {
+  bottom: -10%; left: 0%;
+  width: 45vw; height: 45vw;
+  background: #0ea5e9;
+  animation-delay: -4s;
+}
+
+.acc-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.acc-title {
+  font-size: clamp(2.5rem, 4vw, 3rem);
+  font-weight: 900;
+  margin-bottom: 40px;
+  background: linear-gradient(to right, #ffffff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===============================
+   GRID LAYOUT
+================================= */
+.acc-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 30px;
+}
+
+.acc-details-col {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Base Card Style */
+.acc-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 30px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.acc-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px);
+}
+
+/* ===============================
+   PROFILE (LEFT COLUMN)
+================================= */
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: max-content;
+}
+
+.avatar-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.profile-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #1e293b;
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+}
+
+.provider-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #fff;
+  color: #000;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 50px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.profile-card h2 {
+  font-size: 1.8rem;
+  margin: 0 0 5px 0;
+}
+
+.user-email {
+  color: #94a3b8;
+  margin: 0 0 15px 0;
+}
+
+.member-date {
+  font-size: 0.85rem;
+  color: #64748b;
+  background: rgba(0,0,0,0.3);
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.edit-profile-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.edit-profile-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ===============================
+   DETAILS (RIGHT COLUMN)
+================================= */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.icon-gold { color: #facc15; }
+.icon-blue { color: #38bdf8; }
+
+.plan-badge {
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+}
+
+.plan-card p {
+  color: #94a3b8;
+  margin-bottom: 25px;
+}
+
+.manage-plan-btn {
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.manage-plan-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.5);
+}
+
+/* Security Info */
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0,0,0,0.3);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+.row-icon {
+  font-size: 1.5rem;
+  color: #94a3b8;
+}
+.info-row h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+.info-row p {
+  margin: 0;
+  font-weight: 600;
+}
+.security-note {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Danger Zone */
+.danger-card { border-color: rgba(239, 68, 68, 0.3); }
+.danger-title { color: #f87171; }
+
+.danger-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.clear-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.clear-btn:hover {
+  background: #ef4444;
+  color: white;
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4);
+}
+
+.logout-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.logout-btn:hover {
+  background: #e2e8f0;
+  color: #030610;
+}
+
+/* Animations */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  opacity: 0;
+  animation: slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .acc-grid { grid-template-columns: 1fr; }
+  .danger-actions { flex-direction: column; }
+}

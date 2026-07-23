@@ -12,6 +12,7 @@ import MovieDetails from "./pages/MovieDetails";
 import Footer from "./components/common/Footer";
 import CollectionPage from "./pages/CollectionPage";
 import Subscription from './pages/Subscription';
+import AccountManagement from './pages/AccountManagement';
 
 import "./App.css";
 
@@ -80,6 +81,10 @@ function App() {
           <Route
            path="/subscription"
            element={<Subscription />}
+          />
+          <Route 
+          path="/account"
+          element={<AccountManagement />} 
           />
 
         </Routes>
