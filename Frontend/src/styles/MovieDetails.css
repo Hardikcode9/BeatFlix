@@ -1,0 +1,666 @@
+body, html, #root {
+    background-color: #030610; /* Or #050816 to match your sidebar */
+    margin: 0;
+    padding: 0;
+}
+
+/* ===============================
+   GLOBAL & LAYOUT
+================================= */
+.movie-details-page {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: #030610; 
+    color: #fff;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    margin-left: -1px; 
+}
+.content-container {
+    padding-bottom: 100px;
+}
+
+/* ===============================
+   BREATHING BACKGROUND HERO
+================================= */
+
+/* ===============================
+   LIVE BACKGROUND VIDEO
+================================= */
+.live-bg-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none; /* Prevents users from pausing the video */
+    background: #000;
+}
+
+/* Forces the YouTube iframe to cover the entire container like object-fit: cover */
+.live-bg-iframe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 56.25vw; /* 16:9 Aspect Ratio */
+    min-height: 100vh;
+    min-width: 177.77vh; /* 16:9 Aspect Ratio */
+    transform: translate(-50%, -50%);
+    border: none;
+    opacity: 0; 
+    animation: fadeInVideo 2.5s ease-in-out 0.5s forwards; /* Fades in smoothly after load */
+}
+
+@keyframes fadeInVideo {
+    from { opacity: 0; }
+    to { opacity: 0.45; } /* Keeps it dim enough so text is readable */
+}
+
+/* ===============================
+   ANIMATED GRADIENT OVERLAY
+================================= */
+.backdrop-overlay.animated-gradient-overlay {
+    position: absolute;
+    inset: -4px;
+    z-index: 1;
+    /* Combines the bottom fade with a shifting side fade */
+    background: 
+        linear-gradient(to top, #030610 0%, rgba(3, 6, 16, 0.95) 15%, transparent 100%),
+        linear-gradient(to right, #030610 0%, rgba(3, 6, 16, 0.9) 15%, rgba(139, 92, 246, 0.15) 50%, transparent 100%);
+    background-size: 200% 200%;
+    animation: shiftGradient 12s ease-in-out infinite alternate;
+}
+
+@keyframes shiftGradient {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+.movie-backdrop {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+
+.backdrop-img {
+    position: absolute;
+    inset: 0; /* Snaps perfectly to all 4 edges */
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center 20%;
+    z-index: 0;
+    transform: scale(1.05); 
+    animation: cinematicZoom 30s alternate infinite ease-in-out;
+}
+
+.backdrop-overlay {
+    position: absolute;
+    inset: -4px; /* Stretches past edges to prevent bleed */
+    z-index: 1;
+    background: 
+        linear-gradient(to top, #030610 0%, rgba(3, 6, 16, 0.9) 20%, transparent 100%),
+        linear-gradient(to right, #030610 0%, rgba(3, 6, 16, 0.9) 10%, rgba(3, 6, 16, 0.6) 40%, transparent 100%);
+}
+
+.movie-hero {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 70px;
+    align-items: center;
+    padding: 80px 5% 40px;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+/* ===============================
+   3D INTERACTIVE POSTER
+================================= */
+.poster-section {
+    position: relative;
+    perspective: 1200px; /* Required for 3D depth */
+    flex-shrink: 0;
+}
+
+.poster-glow-orb {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, transparent 70%);
+    filter: blur(50px);
+    z-index: 0;
+    animation: pulseGlow 4s infinite alternate;
+}
+
+.poster-3d-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 340px;
+    border-radius: 24px;
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease-out;
+    transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg));
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(99, 102, 241, 0.2);
+}
+
+.poster-3d-wrapper img {
+    width: 100%;
+    border-radius: 24px;
+    display: block;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.poster-reflection {
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.3) 25%, transparent 30%);
+    background-size: 200% 200%;
+    background-position: 100% 100%;
+    z-index: 2;
+    pointer-events: none;
+    transition: background-position 0.5s ease;
+}
+
+.poster-3d-wrapper:hover .poster-reflection {
+    background-position: 0% 0%;
+}
+
+/* ===============================
+   INFO SECTION & TYPOGRAPHY
+================================= */
+.info-section {
+    max-width: 850px;
+}
+
+.title-gradient {
+    font-size: clamp(3rem, 5vw, 5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 15px;
+    background: linear-gradient(to right, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+}
+
+.tagline {
+    font-size: 1.4rem;
+    color: #38bdf8;
+    font-style: italic;
+    font-weight: 500;
+    margin-bottom: 35px;
+}
+
+/* ===============================
+   PREMIUM GLASS PILLS
+================================= */
+.movie-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 35px;
+}
+
+.premium-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 50px;
+    backdrop-filter: blur(12px);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.gold-pill {
+    background: rgba(234, 179, 8, 0.1);
+    border-color: rgba(234, 179, 8, 0.3);
+    color: #fde047;
+}
+
+.accent-icon { color: #a78bfa; }
+
+/* ===============================
+   NEON GENRE CHIPS
+================================= */
+.genre-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 45px;
+}
+
+.neon-chip {
+    padding: 8px 22px;
+    border-radius: 8px;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    color: #ddd6fe;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.neon-chip:hover {
+    background: rgba(139, 92, 246, 0.9);
+    color: white;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+    transform: translateY(-3px);
+}
+
+/* ===============================
+   BUTTONS (COLOR SHIFT ANIMATION)
+================================= */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.btn-primary, .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+    background-size: 200% auto;
+    color: white;
+    box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
+}
+
+.btn-primary:hover {
+    background-position: right center;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(236, 72, 153, 0.5);
+}
+
+.play-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    background: white;
+    color: #a855f7;
+    border-radius: 50%;
+    font-size: 0.8rem;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: white;
+    transform: translateY(-5px);
+}
+
+/* ===============================
+   MY LIST BUTTON & ANIMATIONS
+================================= */
+.btn-mylist {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+}
+
+/* Bookmark Icon styling */
+.bookmark-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease;
+}
+
+/* Hover effect on default state */
+.btn-mylist:hover .bookmark-icon {
+    transform: scale(1.25) rotate(-5deg);
+}
+
+/* Active State (When Added to List) */
+.btn-secondary.btn-mylist.in-list {
+    background: rgba(168, 85, 247, 0.2) !important;
+    border-color: #a855f7 !important;
+    color: #c084fc !important;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.45) !important;
+}
+
+.btn-secondary.btn-mylist.in-list .bookmark-icon {
+    color: #a855f7 !important;
+    animation: heartPop 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.49) forwards;
+}
+
+/* Hover while active */
+.btn-secondary.btn-mylist.in-list:hover {
+    background: rgba(168, 85, 247, 0.35) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 35px rgba(168, 85, 247, 0.6) !important;
+    transform: translateY(-5px);
+}
+
+/* Icon Pop Keyframe Effect */
+@keyframes heartPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ===============================
+   SECTIONS & TYPOGRAPHY
+================================= */
+.overview-section, .cast-section, .similar-section {
+    width: min(1400px, 90%);
+    margin: 70px auto;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 30px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 5px;
+    bottom: 5px;
+    width: 6px;
+    background: linear-gradient(to bottom, #38bdf8, #8b5cf6);
+    border-radius: 10px;
+}
+
+.overview-text {
+    font-size: 1.25rem;
+    color: #94a3b8;
+    line-height: 1.8;
+    max-width: 1000px;
+}
+
+/* ===============================
+   CAST CARDS (TRADING CARD HOVER)
+================================= */
+.cast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 25px;
+}
+
+.cast-card-3d {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #000;
+    cursor: pointer;
+    aspect-ratio: 2/3;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.cast-card-3d img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cast-color-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(99, 102, 241, 0.8), rgba(236, 72, 153, 0.2));
+    mix-blend-mode: overlay;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+}
+
+.cast-info-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+    transform: translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cast-info-layer h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: white;
+}
+
+.cast-info-layer p {
+    margin: 0;
+    color: #38bdf8;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.cast-card-3d:hover img {
+    transform: scale(1.15) translateY(-10px);
+}
+.cast-card-3d:hover .cast-color-overlay {
+    opacity: 1;
+}
+.cast-card-3d:hover .cast-info-layer {
+    transform: translateY(0);
+}
+.cast-card-3d:hover {
+    border-color: #8b5cf6;
+    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.3);
+}
+
+/* ===============================
+   SIMILAR MOVIES (BENTO HOVER)
+================================= */
+.similar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 30px;
+}
+
+.similar-bento-card {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 2/3;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.similar-bento-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.8) brightness(0.7);
+    transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), filter 0.5s ease;
+}
+
+.similar-hover-sweep {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.5) 0%, transparent 50%, rgba(56, 189, 248, 0.4) 100%);
+    opacity: 0;
+    mix-blend-mode: color-dodge;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+}
+
+.similar-content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px;
+    background: linear-gradient(to top, rgba(3, 6, 16, 0.98) 0%, rgba(3, 6, 16, 0.2) 60%, transparent 100%);
+    transform: translateY(15px);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.similar-content h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eab308;
+    color: black;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    width: max-content;
+}
+
+.similar-bento-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    border-color: #38bdf8;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.2);
+}
+.similar-bento-card:hover img {
+    transform: scale(1.1) rotate(2deg);
+    filter: saturate(1.2) brightness(1);
+}
+.similar-bento-card:hover .similar-hover-sweep {
+    opacity: 1;
+}
+.similar-bento-card:hover .similar-content {
+    transform: translateY(0);
+}
+
+/* ===============================
+   ENTRANCE ANIMATIONS (KEYFRAMES)
+================================= */
+@keyframes cinematicZoom {
+    0% { transform: scale(1.05); }
+    100% { transform: scale(1.2); }
+}
+
+@keyframes pulseGlow {
+    from { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
+    to { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+@keyframes slideRightFade {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-right {
+    opacity: 0;
+    animation: slideRightFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-slide-up {
+    opacity: 0;
+    animation: slideUpFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ===============================
+   TRAILER MODAL
+================================= */
+.glass-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-pop {
+    position: relative;
+    width: 90%;
+    max-width: 1200px;
+    aspect-ratio: 16/9;
+    background: black;
+    border-radius: 20px;
+    box-shadow: 0 0 100px rgba(139, 92, 246, 0.4);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    animation: popIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.modal-pop iframe { width: 100%; height: 100%; border-radius: 20px; border: none; }
+
+.modal-close {
+    position: absolute;
+    top: -25px;
+    right: -25px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #ec4899;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(236, 72, 153, 0.5);
+    transition: transform 0.3s ease;
+}
+.modal-close:hover { transform: scale(1.1) rotate(90deg); }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+/* ===============================
+   MOBILE
+================================= */
+@media (max-width: 1000px) {
+    .movie-hero { flex-direction: column; text-align: center; padding-top: 100px; }
+    .poster-section { perspective: none; }
+    .poster-3d-wrapper { transform: none !important; width: 280px; margin: 0 auto; }
+    .movie-meta, .genre-list, .button-group { justify-content: center; }
+}

@@ -1,0 +1,47 @@
+:root {
+    background: #060a14;
+}
+
+/* 1. Force the absolute root of the site to have zero space */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #060a14;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.app-shell {
+    min-height: 100vh;
+    background: #060a14;
+    color: #f7f9ff;
+    
+    /* 2. This stops margin collapse from the children */
+    display: flex;
+    flex-direction: column;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.app-content {
+    /* flex: 1 allows it to fill the shell properly */
+    flex: 1; 
+    min-height: 100vh;
+    padding-left: 88px;
+    
+    /* 3. Force the top to 0 and contain the space */
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    display: flow-root; 
+}
+
+@media (max-width: 720px) {
+    .app-content {
+        /* 4. I CHANGED THIS FROM 68px TO 0px. */
+        /* If your mobile navbar covers your text later, you can change this back, but this will prove if it was causing the gap! */
+        padding: 0px 0 0 !important; 
+    }
+}
+
