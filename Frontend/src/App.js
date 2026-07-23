@@ -11,6 +11,7 @@ import About from "./pages/About";
 import MovieDetails from "./pages/MovieDetails";
 import Footer from "./components/common/Footer";
 import CollectionPage from "./pages/CollectionPage";
+import Subscription from './pages/Subscription';
 
 import "./App.css";
 
@@ -76,6 +77,11 @@ function App() {
             path="/collection/:slug"
             element={<CollectionPage />}
           />
+          <Route
+           path="/subscription"
+           element={<Subscription />}
+          />
+
         </Routes>
 
         </main>

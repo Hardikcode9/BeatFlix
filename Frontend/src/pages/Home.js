@@ -108,9 +108,6 @@ function Home() {
       {/* ==========================================
           ULTRA-PREMIUM INTRO BOOT SCREEN
       ========================================== */}
-      {/* ==========================================
-          ULTRA-PREMIUM INTRO BOOT SCREEN
-      ========================================== */}
       {isBooting && (
         <div className="boot-sequence">
           <div className="boot-bg-glow"></div>
@@ -350,7 +347,8 @@ function PremiumBanner() {
       </div>
       
       <div className="premium-action">
-        <button className="premium-button" onClick={() => navigate("/movies")}>
+        {/* 👉 ROUTE CHANGED HERE */}
+        <button className="premium-button" onClick={() => navigate("/subscription")}>
           Upgrade Now <FaChevronRight />
         </button>
       </div>
