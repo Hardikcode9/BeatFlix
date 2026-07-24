@@ -102,6 +102,26 @@ const saveMessage = async (req, res) => {
   }
 };
 
+const deleteChat = async (req, res) => {
+  try {
+    const { chatId } = req.params;
+
+    await Chat.findByIdAndDelete(chatId);
+
+    res.json({
+      success: true,
+      message: "Chat deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 // ========================================
 // EXPORTS
 // ========================================
@@ -110,4 +130,5 @@ module.exports = {
   createChat,
   getChats,
   saveMessage,
+  deleteChat,
 };

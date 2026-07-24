@@ -5,31 +5,18 @@
 .entry-screen {
     position: relative;
     isolation: isolate;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     min-height: 100vh;
     padding: 50px 24px;
-
     overflow: hidden;
-
     color: #f8faff;
     background:
-        radial-gradient(
-            circle at 15% 20%,
-            rgba(93, 95, 239, 0.16),
-            transparent 32%
-        ),
-        radial-gradient(
-            circle at 85% 75%,
-            rgba(56, 189, 248, 0.12),
-            transparent 35%
-        ),
+        radial-gradient(circle at 15% 20%, rgba(93, 95, 239, 0.16), transparent 32%),
+        radial-gradient(circle at 85% 75%, rgba(56, 189, 248, 0.12), transparent 35%),
         #030611;
 }
-
 
 /* =========================================================
    CINEMATIC POSTER WALL
@@ -37,76 +24,33 @@
 
 .entry-poster-wall {
     position: absolute;
-
     left: 50%;
     top: 50%;
-
     z-index: -5;
-
     display: grid;
-
-    grid-template-columns:
-        repeat(5, 145px);
-
+    grid-template-columns: repeat(5, 145px);
     gap: 16px;
-
     width: 790px;
-
     opacity: 0.32;
-
-    filter:
-        saturate(0.7)
-        brightness(0.7);
-
-    transform:
-        translate(-50%, -50%)
-        rotate(-7deg)
-        scale(1.2);
-
-    animation:
-        posterDrift
-        22s
-        ease-in-out
-        infinite alternate;
+    filter: saturate(0.7) brightness(0.7);
+    transform: translate(-50%, -50%) rotate(-7deg) scale(1.2);
+    animation: posterDrift 25s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
 }
-
 
 .entry-poster-wall span {
     aspect-ratio: 2 / 3;
-
     border-radius: 14px;
-
     background-position: center;
     background-size: cover;
-
-    box-shadow:
-        0 18px 45px
-        rgba(0, 0, 0, 0.7);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.7);
+    transition: transform 0.5s ease;
 }
-
 
 /* POSTER IMAGES */
-
-.entry-poster-wall span:nth-child(4n + 1) {
-    background-image:
-        url("../assets/images/movies/interstellar.webp");
-}
-
-.entry-poster-wall span:nth-child(4n + 2) {
-    background-image:
-        url("../assets/images/movies/dark-knight.jpg");
-}
-
-.entry-poster-wall span:nth-child(4n + 3) {
-    background-image:
-        url("../assets/images/movies/avatar.jpg");
-}
-
-.entry-poster-wall span:nth-child(4n) {
-    background-image:
-        url("../assets/images/movies/rrr.jpg");
-}
-
+.entry-poster-wall span:nth-child(4n + 1) { background-image: url("../assets/images/movies/interstellar.webp"); }
+.entry-poster-wall span:nth-child(4n + 2) { background-image: url("../assets/images/movies/dark-knight.jpg"); }
+.entry-poster-wall span:nth-child(4n + 3) { background-image: url("../assets/images/movies/avatar.jpg"); }
+.entry-poster-wall span:nth-child(4n) { background-image: url("../assets/images/movies/rrr.jpg"); }
 
 /* =========================================================
    DARK CINEMATIC OVERLAY
@@ -115,20 +59,10 @@
 .entry-dark-overlay {
     position: absolute;
     inset: 0;
-
     z-index: -4;
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(3, 6, 17, 0.3) 0%,
-            rgba(3, 6, 17, 0.72) 55%,
-            #030611 100%
-        );
-
+    background: radial-gradient(circle at center, rgba(3, 6, 17, 0.2) 0%, rgba(3, 6, 17, 0.8) 60%, #030611 100%);
     pointer-events: none;
 }
-
 
 /* =========================================================
    AMBIENT GLOWS
@@ -136,60 +70,19 @@
 
 .entry-glow {
     position: absolute;
-
     width: 420px;
     height: 420px;
-
     border-radius: 50%;
-
-    filter: blur(110px);
-
-    opacity: 0.24;
-
+    filter: blur(120px);
+    opacity: 0.3;
     z-index: -3;
-
     pointer-events: none;
-
-    animation:
-        entryGlowFloat
-        10s
-        ease-in-out
-        infinite alternate;
+    animation: entryGlowFloat 12s ease-in-out infinite alternate;
 }
 
-
-.entry-glow-one {
-    left: -100px;
-    top: 15%;
-
-    background: #5d5fef;
-}
-
-
-.entry-glow-two {
-    right: -120px;
-    bottom: 5%;
-
-    background: #38bdf8;
-
-    animation-delay: -4s;
-}
-
-
-.entry-glow-three {
-    left: 45%;
-    top: -200px;
-
-    width: 350px;
-    height: 350px;
-
-    background: #8b5cf6;
-
-    opacity: 0.15;
-
-    animation-delay: -7s;
-}
-
+.entry-glow-one { left: -100px; top: 15%; background: #5d5fef; }
+.entry-glow-two { right: -120px; bottom: 5%; background: #38bdf8; animation-delay: -4s; }
+.entry-glow-three { left: 45%; top: -200px; width: 350px; height: 350px; background: #8b5cf6; opacity: 0.2; animation-delay: -7s; }
 
 /* =========================================================
    DECORATIVE LIGHT ORBITS
@@ -197,51 +90,24 @@
 
 .entry-light-orbit {
     position: absolute;
-
     border-radius: 50%;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.035);
-
+    border: 1px solid rgba(255, 255, 255, 0.04);
     pointer-events: none;
-
     z-index: -2;
 }
 
-
 .orbit-one {
-    width: 650px;
-    height: 650px;
-
-    left: -300px;
-    bottom: -320px;
-
-    animation:
-        orbitRotate
-        30s
-        linear
-        infinite;
+    width: 650px; height: 650px;
+    left: -300px; bottom: -320px;
+    animation: orbitRotate 40s linear infinite;
 }
-
 
 .orbit-two {
-    width: 850px;
-    height: 850px;
-
-    right: -500px;
-    top: -500px;
-
-    border-color:
-        rgba(99, 102, 241, 0.06);
-
-    animation:
-        orbitRotate
-        40s
-        linear
-        infinite reverse;
+    width: 850px; height: 850px;
+    right: -500px; top: -500px;
+    border-color: rgba(99, 102, 241, 0.08);
+    animation: orbitRotate 50s linear infinite reverse;
 }
-
 
 /* =========================================================
    MAIN CONTENT
@@ -249,1287 +115,658 @@
 
 .entry-content {
     position: relative;
-
     z-index: 5;
-
     width: 100%;
     max-width: 1050px;
-
     text-align: center;
-
-    animation:
-        entryContentReveal
-        0.8s
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
+    animation: entryContentReveal 1s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-
-/* =========================================================
+/* ===========================
    BEATFLIX BRAND
-========================================================= */
+=========================== */
 
-.entry-brand {
-    display: inline-flex;
-    align-items: center;
+.entry-brand{
+    display:flex;
+    align-items:center;
+    justify-content:center;   /* Centers the whole group */
 
-    gap: 11px;
+    gap:22px;
 
-    margin-bottom: 55px;
+    width:280px;
+    height:78px;
+
+    padding:0 24px;
+
+    border-radius:999px;
+
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+
+    backdrop-filter:blur(16px);
 }
 
+.entry-brand-icon{
+    width:48px;
+    height:48px;
 
-.entry-brand-icon {
-    position: relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
+    flex-shrink:0;
+
+    overflow:hidden;
+    animation:logoPulse 2.2s ease-in-out infinite;
+}
+
+.entry-brand-icon img{
+    display:block;
+
+    width:48px;
+    height:48px;
+
+    object-fit:contain;
+
+    margin:0;
+    padding:0;
+}
+
+.entry-brand-name{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin:0;
+
+    font-size:24px;
+    font-weight:900;
+
+    line-height:1;
+}
+
+.brand-white{
+    color:#ffffff;
+}
+
+.brand-blue{
+    background:linear-gradient(
+        135deg,
+        #9333ea 0%,
+        #c026d3 40%,
+        #ec4899 100%
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+/* ===========================================
+   NETFLIX PROFILE SELECTOR (UPGRADED)
+=========================================== */
+
+.netflix-entry {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    width: 39px;
-    height: 39px;
-
-    border-radius: 12px;
-
-    color: white;
-
-    font-size: 17px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #6366f1,
-            #38bdf8
-        );
-
-    box-shadow:
-        0 10px 30px
-        rgba(99, 102, 241, 0.3);
+    min-height: 80vh;
 }
 
-
-.entry-brand-name {
-    color: white;
-
-    font-size: 23px;
+.who-title {
+    margin: 15px 0 60px;
+    font-size: clamp(42px, 6vw, 76px);
     font-weight: 900;
-
-    letter-spacing: -0.8px;
+    color: #fff;
+    letter-spacing: -2.5px;
+    text-shadow: 0 15px 45px rgba(0, 0, 0, 0.55);
 }
 
-
-.entry-brand-name span {
-    color: #8bdcff;
-}
-
-
-/* =========================================================
-   HEADING
-========================================================= */
-
-.entry-heading {
-    max-width: 820px;
-
-    margin: 0 auto;
-}
-
-
-.entry-kicker {
-    margin: 0 0 18px;
-
-    color: #8bdcff;
-
-    font-size: 11px;
-    font-weight: 800;
-
-    letter-spacing: 2.4px;
-
-    text-transform: uppercase;
-}
-
-
-.entry-heading h1 {
-    margin: 0;
-
-    color: #ffffff;
-
-    font-size:
-        clamp(46px, 6vw, 76px);
-
-    font-weight: 900;
-
-    line-height: 0.98;
-
-    letter-spacing: -3.5px;
-
-    text-shadow:
-        0 15px 45px
-        rgba(0, 0, 0, 0.55);
-}
-
-
-.entry-heading h1 span {
-    display: block;
-
-    background:
-        linear-gradient(
-            90deg,
-            #ffffff,
-            #c4e8ff,
-            #a5b4fc,
-            #ffffff
-        );
-
+.who-title span {
+    background: linear-gradient(90deg, #ffffff, #c4e8ff, #a5b4fc, #ffffff);
     background-size: 200% auto;
-
     -webkit-background-clip: text;
     background-clip: text;
-
     -webkit-text-fill-color: transparent;
-
-    animation:
-        entryTitleFlow
-        8s
-        linear
-        infinite;
+    animation: entryTitleFlow 6s linear infinite;
 }
 
-
-.entry-intro {
-    max-width: 570px;
-
-    margin:
-        24px auto
-        46px;
-
-    color: #a8b2ca;
-
-    font-size: 17px;
-
-    line-height: 1.7;
-}
-
-
-/* =========================================================
-   PROFILE CARDS
-========================================================= */
-
-.profile-options {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 20px;
-
-    max-width: 850px;
-
-    margin: 0 auto;
-
-    perspective: 1200px;
-}
-
-
-.profile-option {
-    position: relative;
-
-    isolation: isolate;
-
+.netflix-profiles {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    flex-wrap: wrap;
+    perspective: 1000px; /* For 3D tilt effects */
+}
 
-    min-height: 215px;
-
-    padding: 25px;
-
-    overflow: hidden;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.09);
-
-    border-radius: 24px;
-
-    color: white;
-
-    text-align: left;
-
+.netflix-profile {
+    background: none;
+    border: none;
     cursor: pointer;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(20, 27, 51, 0.76),
-            rgba(8, 13, 29, 0.7)
-        );
-
-    backdrop-filter:
-        blur(22px);
-
-    box-shadow:
-        0 20px 50px
-        rgba(0, 0, 0, 0.25),
-
-        inset 0 1px 0
-        rgba(255, 255, 255, 0.04);
-
-    transform:
-        translateY(0)
-        rotateX(0);
-
-    transition:
-        transform 0.45s
-        cubic-bezier(0.16, 1, 0.3, 1),
-
-        border-color 0.4s ease,
-
-        box-shadow 0.4s ease,
-
-        background 0.4s ease;
-
-    animation:
-        profileCardReveal
-        0.7s
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-
-.profile-option:nth-child(2) {
-    animation-delay: 0.08s;
-}
-
-
-.profile-option:nth-child(3) {
-    animation-delay: 0.16s;
-}
-
-
-/* LIGHT INSIDE CARD */
-
-.profile-option::before {
-    content: "";
-
-    position: absolute;
-
-    left: -60%;
-    top: -100%;
-
-    width: 180%;
-    height: 200%;
-
-    z-index: -1;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(99, 102, 241, 0.12),
-            transparent 55%
-        );
-
-    opacity: 0;
-
-    transition:
-        opacity 0.45s ease,
-        transform 0.6s ease;
-}
-
-
-/* SUBTLE TOP LIGHT */
-
-.profile-option::after {
-    content: "";
-
-    position: absolute;
-
-    left: 20px;
-    right: 20px;
-    top: 0;
-
-    height: 1px;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.35),
-            transparent
-        );
-
-    opacity: 0.5;
-}
-
-
-.profile-option:hover {
-    transform:
-        translateY(-12px)
-        rotateX(3deg)
-        scale(1.025);
-
-    border-color:
-        rgba(139, 196, 255, 0.3);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(26, 35, 66, 0.88),
-            rgba(9, 15, 33, 0.82)
-        );
-
-    box-shadow:
-        0 30px 70px
-        rgba(0, 0, 0, 0.42),
-
-        0 0 35px
-        rgba(99, 102, 241, 0.1);
-}
-
-
-.profile-option:hover::before {
-    opacity: 1;
-
-    transform:
-        translateX(20%);
-}
-
-
-/* =========================================================
-   PROFILE CARD GLOW
-========================================================= */
-
-.profile-card-glow {
-    position: absolute;
-
-    width: 130px;
-    height: 130px;
-
-    right: -50px;
-    top: -50px;
-
-    border-radius: 50%;
-
-    background:
-        rgba(99, 102, 241, 0.25);
-
-    filter: blur(45px);
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    transition:
-        opacity 0.4s ease,
-        transform 0.5s ease;
-}
-
-
-.profile-option:hover
-.profile-card-glow {
-    opacity: 1;
-
-    transform:
-        scale(1.3);
-}
-
-
-/* DIFFERENT CARD ATMOSPHERES */
-
-.guest-option
-.profile-card-glow {
-    background:
-        rgba(56, 189, 248, 0.3);
-}
-
-
-.login-option
-.profile-card-glow {
-    background:
-        rgba(99, 102, 241, 0.3);
-}
-
-
-.signup-option
-.profile-card-glow {
-    background:
-        rgba(139, 92, 246, 0.3);
-}
-
-
-/* =========================================================
-   PROFILE ICON
-========================================================= */
-
-.profile-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 58px;
-    height: 58px;
-
-    margin-bottom: 34px;
-
-    border-radius: 17px;
-
-    color: white;
-
-    font-size: 22px;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(99, 102, 241, 0.9),
-            rgba(56, 189, 248, 0.9)
-        );
-
-    box-shadow:
-        0 12px 30px
-        rgba(99, 102, 241, 0.2);
-
-    transition:
-        transform 0.4s
-        cubic-bezier(0.16, 1, 0.3, 1),
-
-        box-shadow 0.4s ease;
-}
-
-
-.guest-option .profile-icon {
-    background:
-        linear-gradient(
-            135deg,
-            #0891b2,
-            #38bdf8
-        );
-}
-
-
-.signup-option .profile-icon {
-    background:
-        linear-gradient(
-            135deg,
-            #7c3aed,
-            #6366f1
-        );
-}
-
-
-.profile-option:hover
-.profile-icon {
-    transform:
-        translateY(-4px)
-        rotate(-5deg)
-        scale(1.08);
-
-    box-shadow:
-        0 18px 38px
-        rgba(99, 102, 241, 0.3);
-}
-
-
-/* =========================================================
-   PROFILE TEXT
-========================================================= */
-
-.profile-text {
     display: flex;
     flex-direction: column;
-
-    gap: 7px;
-}
-
-
-.profile-text strong {
-    color: #ffffff;
-
-    font-size: 18px;
-
-    font-weight: 800;
-}
-
-
-.profile-text small {
-    color: #8f9bb5;
-
-    font-size: 13px;
-
-    line-height: 1.5;
-}
-
-
-/* =========================================================
-   PROFILE ARROW
-========================================================= */
-
-.profile-arrow {
-    position: absolute;
-
-    right: 22px;
-    bottom: 24px;
-
-    display: flex;
     align-items: center;
+    gap: 22px;
+    /* Entrance Animation */
+    animation: profilePopUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Staggered entrance applied via inline styles in React, handled below */
+
+.netflix-avatar {
+    position: relative;
+    overflow: hidden; /* Contains the hover shine */
+    width: 180px;
+    height: 180px;
+    border-radius: 24px; /* Slightly softer corners */
+    display: flex;
     justify-content: center;
-
-    width: 31px;
-    height: 31px;
-
-    border-radius: 50%;
-
-    color: rgba(255, 255, 255, 0.6);
-
-    font-size: 12px;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.1);
-
-    background:
-        rgba(255, 255, 255, 0.04);
-
-    opacity: 0;
-
-    transform:
-        translateX(-8px);
-
-    transition:
-        opacity 0.35s ease,
-        transform 0.35s ease,
-        background 0.35s ease;
+    align-items: center;
+    font-size: 70px;
+    color: white;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
 }
 
-
-.profile-option:hover
-.profile-arrow {
-    opacity: 1;
-
-    transform:
-        translateX(0);
-
-    background:
-        rgba(255, 255, 255, 0.09);
+/* The sweeping shine effect (Hidden by default!) */
+.netflix-avatar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: skewX(-25deg);
+    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2;
 }
 
+.guest-avatar { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+.login-avatar { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.signup-avatar { background: linear-gradient(135deg, #9333ea, #ec4899); }
+
+.netflix-profile span {
+    color: #9ca3af;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+/* Hover States */
+.netflix-profile:hover .netflix-avatar {
+    transform: translateY(-12px) scale(1.05);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.3);
+}
+
+.netflix-profile:hover .netflix-avatar::after {
+    left: 150%; /* Triggers the shine only on hover */
+}
+
+.netflix-profile:hover span {
+    color: white;
+    transform: translateY(-5px);
+    text-shadow: 0 5px 15px rgba(255,255,255,0.3);
+}
 
 /* =========================================================
-   BOTTOM HINT
-========================================================= */
-
-.entry-hint {
-    margin:
-        35px 0
-        0;
-
-    color:
-        rgba(163, 175, 201, 0.65);
-
-    font-size: 12px;
-
-    letter-spacing: 0.3px;
-}
-
-
-/* =========================================================
-   LOGIN / SIGNUP FORM
+   LOGIN / SIGNUP FORM (UPGRADED)
 ========================================================= */
 
 .entry-form {
     position: relative;
-
-    max-width: 470px;
-
+    max-width: 480px;
     margin: 0 auto;
-
-    padding: 38px;
-
+    padding: 45px 40px;
     overflow: hidden;
-
     text-align: left;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.1);
-
-    border-radius: 28px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(18, 25, 48, 0.86),
-            rgba(7, 12, 27, 0.84)
-        );
-
-    backdrop-filter:
-        blur(30px);
-
-    box-shadow:
-        0 35px 90px
-        rgba(0, 0, 0, 0.5),
-
-        inset 0 1px 0
-        rgba(255, 255, 255, 0.05);
-
-    animation:
-        formReveal
-        0.6s
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 32px;
+    background: linear-gradient(145deg, rgba(18, 25, 48, 0.65), rgba(7, 12, 27, 0.8));
+    backdrop-filter: blur(40px);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    animation: formReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-
 
 .entry-form::before {
     content: "";
-
     position: absolute;
-
-    width: 230px;
-    height: 230px;
-
+    width: 300px;
+    height: 300px;
     right: -100px;
-    top: -120px;
-
+    top: -150px;
     border-radius: 50%;
-
-    background:
-        rgba(99, 102, 241, 0.18);
-
-    filter: blur(60px);
-
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.25), transparent 70%);
     pointer-events: none;
 }
 
-
-/* =========================================================
-   BACK BUTTON
-========================================================= */
-
 .back-choice {
     position: relative;
-
     z-index: 2;
-
-    margin:
-        0 0
-        30px;
-
-    padding: 0;
-
-    border: none;
-
-    background: none;
-
-    color: #8997b7;
-
+    margin: 0 0 35px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #a3b0cc;
     font: inherit;
-
     font-size: 13px;
-
+    font-weight: 600;
     cursor: pointer;
-
-    transition:
-        color 0.25s ease,
-        transform 0.25s ease;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
-
 
 .back-choice:hover {
     color: white;
-
-    transform:
-        translateX(-3px);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-5px);
 }
-
-
-/* =========================================================
-   FORM ICON
-========================================================= */
 
 .form-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    width: 52px;
-    height: 52px;
-
+    width: 60px;
+    height: 60px;
     margin-bottom: 24px;
-
-    border-radius: 15px;
-
+    border-radius: 18px;
     color: white;
-
-    font-size: 19px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #6366f1,
-            #38bdf8
-        );
-
-    box-shadow:
-        0 12px 30px
-        rgba(99, 102, 241, 0.25);
+    font-size: 24px;
+    background: linear-gradient(135deg, #6366f1, #38bdf8);
+    box-shadow: 0 15px 35px rgba(99, 102, 241, 0.3);
 }
-
-
-/* =========================================================
-   FORM TEXT
-========================================================= */
 
 .entry-form h1 {
     margin: 0;
-
     color: white;
-
-    font-size: 39px;
-
+    font-size: 42px;
     font-weight: 900;
-
     line-height: 1.05;
-
-    letter-spacing: -1.8px;
+    letter-spacing: -1.5px;
 }
-
 
 .form-description {
-    margin:
-        17px 0
-        28px;
-
-    color: #96a3bf;
-
-    font-size: 14px;
-
-    line-height: 1.65;
+    margin: 15px 0 32px;
+    color: #a3b0cc;
+    font-size: 15px;
+    line-height: 1.7;
 }
 
-
-/* =========================================================
-   INPUTS
-========================================================= */
-
+/* INPUTS */
 .entry-form label {
     display: grid;
-
-    gap: 9px;
-
-    margin-top: 18px;
-
-    color: #dbe4ff;
-
-    font-size: 12px;
-
+    gap: 10px;
+    margin-top: 20px;
+    color: #e2e8f0;
+    font-size: 13px;
     font-weight: 700;
-
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
-
 
 .entry-form input {
     width: 100%;
-
     box-sizing: border-box;
-
-    padding: 15px 16px;
-
+    padding: 16px 20px;
     outline: none;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.08);
-
-    border-radius: 13px;
-
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
     color: white;
-
     font: inherit;
-
-    background:
-        rgba(255, 255, 255, 0.045);
-
-    transition:
-        border-color 0.3s ease,
-        background 0.3s ease,
-        box-shadow 0.3s ease,
-        transform 0.3s ease;
+    font-size: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-
-.entry-form input::placeholder {
-    color: #65718c;
-}
-
+.entry-form input::placeholder { color: #64748b; }
 
 .entry-form input:focus {
-    border-color:
-        rgba(99, 166, 255, 0.6);
-
-    background:
-        rgba(255, 255, 255, 0.065);
-
-    box-shadow:
-        0 0 0 4px
-        rgba(59, 130, 246, 0.08);
-
-    transform:
-        translateY(-1px);
+    border-color: rgba(99, 102, 241, 0.6);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), 0 10px 20px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
 }
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
 
 .entry-message {
-    margin:
-        14px 0
-        0;
-
+    margin: 20px 0 0;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
     color: #fca5a5;
-
-    font-size: 12px;
+    font-size: 14px;
+    text-align: center;
+    animation: formReveal 0.3s ease;
 }
 
-
-/* =========================================================
-   ENTER BUTTON
-========================================================= */
-
+/* ENTER BUTTON */
 .enter-button {
     position: relative;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
-    gap: 10px;
-
+    gap: 12px;
     width: 100%;
-
-    margin-top: 28px;
-
-    padding: 15px 20px;
-
+    margin-top: 35px;
+    padding: 18px 24px;
     overflow: hidden;
-
     border: none;
-
-    border-radius: 13px;
-
+    border-radius: 16px;
     color: white;
-
     font: inherit;
-
+    font-size: 16px;
     font-weight: 800;
-
+    letter-spacing: 0.5px;
     cursor: pointer;
-
-    background:
-        linear-gradient(
-            110deg,
-            #6366f1,
-            #3b82f6
-        );
-
-    box-shadow:
-        0 14px 35px
-        rgba(59, 100, 246, 0.25);
-
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
+    background: linear-gradient(110deg, #6366f1, #38bdf8, #8b5cf6, #6366f1);
+    background-size: 300% 300%;
+    box-shadow: 0 15px 35px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+    animation: gradientShift 6s ease infinite;
 }
-
 
 .enter-button::before {
     content: "";
-
     position: absolute;
-
     left: -100%;
     top: 0;
-
     width: 50%;
     height: 100%;
-
-    background:
-        linear-gradient(
-            120deg,
-            transparent,
-            rgba(255, 255, 255, 0.25),
-            transparent
-        );
-
-    transform:
-        skewX(-20deg);
-
-    transition:
-        left 0.8s ease;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
 }
-
 
 .enter-button:hover {
-    transform:
-        translateY(-3px);
-
-    box-shadow:
-        0 20px 45px
-        rgba(59, 100, 246, 0.35);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(99, 102, 241, 0.4);
 }
 
+.enter-button:hover::before { left: 200%; }
 
-.enter-button:hover::before {
-    left: 160%;
-}
-
-
-.enter-button svg {
-    transition:
-        transform 0.3s ease;
-}
-
-
-.enter-button:hover svg {
-    transform:
-        translateX(4px);
-}
-
-
-/* =========================================================
-   DEMO NOTE
-========================================================= */
+.enter-button svg { transition: transform 0.3s ease; }
+.enter-button:hover svg { transform: translateX(6px); }
 
 .demo-note {
-    margin:
-        18px 0
-        0;
-
-    color: #68748e;
-
-    font-size: 11px;
-
+    margin: 24px 0 0;
+    color: #64748b;
+    font-size: 12px;
     text-align: center;
+    line-height: 1.5;
 }
-
 
 /* =========================================================
    ANIMATIONS
 ========================================================= */
 
 @keyframes entryContentReveal {
-
-    from {
-        opacity: 0;
-
-        transform:
-            translateY(25px)
-            scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-    }
-
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-
-@keyframes profileCardReveal {
-
-    from {
-        opacity: 0;
-
-        transform:
-            translateY(30px)
-            scale(0.96);
-    }
-
-    to {
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-    }
-
+@keyframes profilePopUp {
+    from { opacity: 0; transform: translateY(50px) scale(0.85); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
-
 
 @keyframes formReveal {
-
-    from {
-        opacity: 0;
-
-        transform:
-            translateY(25px)
-            scale(0.97);
-    }
-
-    to {
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-    }
-
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
-
 
 @keyframes posterDrift {
-
-    0% {
-        transform:
-            translate(-50%, -50%)
-            rotate(-7deg)
-            scale(1.2);
-    }
-
-    100% {
-        transform:
-            translate(-47%, -53%)
-            rotate(-4deg)
-            scale(1.26);
-    }
-
+    0% { transform: translate(-50%, -50%) rotate(-7deg) scale(1.2); }
+    100% { transform: translate(-48%, -52%) rotate(-3deg) scale(1.25); }
 }
-
 
 @keyframes entryGlowFloat {
-
-    from {
-        transform:
-            translate(0, 0)
-            scale(1);
-    }
-
-    to {
-        transform:
-            translate(35px, -30px)
-            scale(1.15);
-    }
-
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(40px, -40px) scale(1.15); }
 }
-
 
 @keyframes orbitRotate {
-
-    from {
-        transform:
-            rotate(0deg);
-    }
-
-    to {
-        transform:
-            rotate(360deg);
-    }
-
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
-
 
 @keyframes entryTitleFlow {
-
-    from {
-        background-position:
-            0% center;
-    }
-
-    to {
-        background-position:
-            200% center;
-    }
-
+    from { background-position: 0% center; }
+    to { background-position: 200% center; }
 }
 
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes pulseGlow {
+    from { box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4); }
+    to { box-shadow: 0 8px 45px rgba(99, 102, 241, 0.8); }
+}
 
 /* =========================================================
    RESPONSIVE
 ========================================================= */
 
 @media (max-width: 900px) {
-
-    .entry-brand {
-        margin-bottom: 42px;
-    }
-
-
-    .profile-options {
-        max-width: 700px;
-
-        gap: 15px;
-    }
-
-
-    .profile-option {
-        min-height: 200px;
-
-        padding: 21px;
-    }
-
-
-    .entry-heading h1 {
-        letter-spacing: -2.5px;
-    }
-
+    .netflix-avatar { width: 145px; height: 145px; font-size: 56px; }
+    .netflix-profiles { gap: 30px; }
+    .who-title { font-size: 52px; }
 }
-
 
 @media (max-width: 700px) {
-
-    .entry-screen {
-        padding:
-            35px 18px;
-    }
-
-
-    .entry-brand {
-        margin-bottom: 35px;
-    }
-
-
-    .entry-heading h1 {
-        font-size:
-            clamp(40px, 12vw, 58px);
-
-        letter-spacing: -2px;
-    }
-
-
-    .entry-intro {
-        margin-bottom: 35px;
-
-        font-size: 15px;
-    }
-
-
-    .profile-options {
-        grid-template-columns: 1fr;
-
-        max-width: 380px;
-    }
-
-
-    .profile-option {
-        min-height: 125px;
-
-        padding: 20px;
-
-        flex-direction: row;
-        align-items: center;
-
-        gap: 17px;
-    }
-
-
-    .profile-icon {
-        flex-shrink: 0;
-
-        width: 50px;
-        height: 50px;
-
-        margin: 0;
-    }
-
-
-    .profile-arrow {
-        position: static;
-
-        margin-left: auto;
-
-        opacity: 0.7;
-
-        transform: none;
-    }
-
-
-    .profile-option:hover
-    .profile-arrow {
-        transform:
-            translateX(3px);
-    }
-
-
-    .entry-hint {
-        margin-top: 25px;
-    }
-
-
-    .entry-poster-wall {
-        grid-template-columns:
-            repeat(4, 105px);
-
-        width: 470px;
-
-        opacity: 0.22;
-    }
-
-
-    .entry-form {
-        padding:
-            30px 24px;
-    }
-
+    .entry-screen { padding: 30px 16px; }
+    .netflix-profiles { flex-direction: column; gap: 20px; }
+    .netflix-profile { flex-direction: row; width: 100%; max-width: 350px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
+    .netflix-avatar { width: 80px; height: 80px; font-size: 30px; border-radius: 16px; }
+    .netflix-profile span { font-size: 20px; margin-left: 10px; }
+    .who-title { margin-bottom: 40px; font-size: 42px; }
+    .entry-poster-wall { grid-template-columns: repeat(4, 105px); width: 470px; opacity: 0.22; }
+    .entry-form { padding: 35px 25px; }
 }
-
 
 @media (max-width: 450px) {
+    .entry-screen { align-items: flex-start; overflow-y: auto; }
+    .entry-content { margin: auto 0; }
+    .entry-form h1 { font-size: 32px; }
+}
 
-    .entry-screen {
-        align-items: flex-start;
+@media (prefers-reduced-motion: reduce) {
+    .entry-screen *, .entry-screen *::before, .entry-screen *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
 
-        overflow-y: auto;
+/* ==========================================
+   SUCCESS POPUP
+========================================== */
+
+.success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(3, 6, 17, 0.75);
+    backdrop-filter: blur(12px);
+
+    animation: fadeOverlay .35s ease;
+}
+
+.success-card {
+    width: 430px;
+    max-width: 92%;
+
+    padding: 45px 35px;
+
+    border-radius: 28px;
+
+    text-align: center;
+
+    background: linear-gradient(
+        145deg,
+        rgba(22,28,52,.92),
+        rgba(8,13,28,.96)
+    );
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 35px 80px rgba(0,0,0,.6),
+        0 0 60px rgba(34,197,94,.18);
+
+    animation: successPopup .45s cubic-bezier(.16,1,.3,1);
+}
+
+.success-check {
+    width: 110px;
+    height: 110px;
+
+    margin: 0 auto 28px;
+
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 58px;
+    font-weight: bold;
+    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #22c55e,
+        #16a34a
+    );
+
+    box-shadow:
+        0 0 40px rgba(34,197,94,.45);
+
+    animation:
+        checkRotate .9s ease,
+        glowPulse 2s infinite;
+}
+
+.success-card h2{
+    margin:0;
+
+    color:white;
+
+    font-size:34px;
+
+    font-weight:800;
+}
+
+.success-card p{
+    margin:16px 0 8px;
+
+    color:#cbd5e1;
+
+    line-height:1.7;
+}
+
+.success-card span{
+    color:#4ade80;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    letter-spacing:.4px;
+}
+
+/* ========================= */
+
+@keyframes successPopup{
+
+    from{
+        opacity:0;
+        transform:scale(.75) translateY(30px);
     }
 
-
-    .entry-content {
-        margin:
-            auto 0;
-    }
-
-
-    .entry-heading h1 {
-        font-size: 42px;
-    }
-
-
-    .entry-kicker {
-        font-size: 9px;
-
-        letter-spacing: 1.8px;
-    }
-
-
-    .entry-form h1 {
-        font-size: 34px;
+    to{
+        opacity:1;
+        transform:scale(1) translateY(0);
     }
 
 }
 
+@keyframes fadeOverlay{
 
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
+    from{
+        opacity:0;
+    }
 
-@media (prefers-reduced-motion: reduce) {
+    to{
+        opacity:1;
+    }
 
-    .entry-screen *,
-    .entry-screen *::before,
-    .entry-screen *::after {
+}
 
-        animation-duration:
-            0.01ms !important;
+@keyframes checkRotate{
 
-        animation-iteration-count:
-            1 !important;
+    0%{
+        transform:scale(.2) rotate(-240deg);
+    }
 
-        transition-duration:
-            0.01ms !important;
+    70%{
+        transform:scale(1.15) rotate(20deg);
+    }
 
+    100%{
+        transform:scale(1) rotate(0);
+    }
+
+}
+
+@keyframes glowPulse{
+
+    0%{
+        box-shadow:
+            0 0 20px rgba(34,197,94,.4);
+    }
+
+    50%{
+        box-shadow:
+            0 0 60px rgba(34,197,94,.8);
+    }
+
+    100%{
+        box-shadow:
+            0 0 20px rgba(34,197,94,.4);
+    }
+
+}
+
+@keyframes logoPulse{
+
+    0%{
+        transform:scale(1);
+        filter:drop-shadow(0 0 0 rgba(168,85,247,0));
+    }
+
+    50%{
+        transform:scale(1.08);
+        filter:drop-shadow(0 0 12px rgba(168,85,247,.8));
+    }
+
+    100%{
+        transform:scale(1);
+        filter:drop-shadow(0 0 0 rgba(168,85,247,0));
     }
 
 }

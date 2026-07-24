@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logo from "../assets/images/logo.png";
 import {
   FaArrowRight,
   FaCompass,
@@ -16,6 +17,7 @@ function EntryScreen({ onEnter }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const submitForm = async (event) => {
     event.preventDefault();
@@ -33,16 +35,13 @@ function EntryScreen({ onEnter }) {
           return;
         } 
       try {
-
         const response = await fetch(
           "http://localhost:4000/api/users/register",
           {
             method: "POST",
-
             headers: {
               "Content-Type": "application/json",
             },
-
             body: JSON.stringify({
               name: name.trim(),
               password,
@@ -58,262 +57,147 @@ function EntryScreen({ onEnter }) {
           return;
         }
 
-        onEnter(data.user.name);
+        setShowSuccess(true);
+
+        setTimeout(() => {
+          setShowSuccess(false);
+
+          setFormType("login");
+
+          setName("");
+
+          setPassword("");
+
+          setConfirmPassword("");
+
+          setMessage("");
+        }, 2200);
       } catch (error) {
         console.error("Signup Error:", error);
-
-        setMessage(
-          "Could not connect to the BeatFlix server."
-        );
+        setMessage("Could not connect to the BeatFlix server.");
       }
-
       return;
     }
 
     // LOGIN
-    // We will connect this to the login API next.
-// LOGIN
-      if (formType === "login") {
-        try {
-          setMessage("");
-
-          const response = await fetch(
-            "http://localhost:4000/api/users/login",
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type": "application/json",
-              },
-
-              body: JSON.stringify({
-                name: name.trim(),
-                password: password,
-              }),
-            }
-          );
-
-          const data = await response.json();
-
-          console.log(data);
-
-          if (!response.ok) {
-              setMessage(data.message || "Could not log in.");
-              return;
+    if (formType === "login") {
+      try {
+        setMessage("");
+        const response = await fetch(
+          "http://localhost:4000/api/users/login",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: name.trim(),
+              password: password,
+            }),
           }
+        );
 
-          localStorage.setItem("token", data.token);
+        const data = await response.json();
 
-          localStorage.setItem(
-            "user",
-            JSON.stringify(data.user)
-          );
-
-          onEnter(data.user.name);
-
-        } catch (error) {
-          console.error("Login Error:", error);
-
-          setMessage(
-            "Could not connect to the BeatFlix server."
-          );
+        if (!response.ok) {
+            setMessage(data.message || "Could not log in.");
+            return;
         }
-      }
-  };
 
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        onEnter(data.user.name);
+
+      } catch (error) {
+        console.error("Login Error:", error);
+        setMessage("Could not connect to the BeatFlix server.");
+      }
+    }
+  };
 
   return (
     <section className="entry-screen">
 
       {/* CINEMATIC POSTER BACKGROUND */}
-
-      <div
-        className="entry-poster-wall"
-        aria-hidden="true"
-      >
+      <div className="entry-poster-wall" aria-hidden="true">
         {Array.from({ length: 20 }).map((_, index) => (
           <span key={index} />
         ))}
       </div>
 
-
       {/* BACKGROUND OVERLAYS */}
-
       <div className="entry-dark-overlay" />
-
       <div className="entry-glow entry-glow-one" />
       <div className="entry-glow entry-glow-two" />
       <div className="entry-glow entry-glow-three" />
 
-
       {/* DECORATIVE LIGHT */}
-
       <div className="entry-light-orbit orbit-one" />
       <div className="entry-light-orbit orbit-two" />
 
-
       <div className="entry-content">
 
-        {/* LOGO */}
-
-        <div className="entry-brand">
-
-          <span className="entry-brand-icon">
-            <FaFilm />
-          </span>
-
-          <span className="entry-brand-name">
-            Beat<span>Flix</span>
-          </span>
-
-        </div>
-
-
         {!formType ? (
-
           <>
+            <div className="netflix-entry">
+              <div className="entry-brand">
+    <div className="entry-brand-icon">
+        <img src={logo} alt="BeatFlix" />
+    </div>
 
-            {/* HERO TEXT */}
+    <div className="entry-brand-name">
+        <span className="brand-white">Beat</span>
+        <span className="brand-blue">Flix</span>
+    </div>
+</div>
 
-            <div className="entry-heading">
-
-              <p className="entry-kicker">
-                ✦ YOUR NEXT FAVORITE MOVIE IS WAITING
-              </p>
-
-              <h1>
-                Discover movies
-                <span> made for your mood.</span>
+              <h1 className="who-title">
+                <span>Who's Watching?</span>
               </h1>
 
-              <p className="entry-intro">
-                Step into BeatFlix and discover movies that match
-                your taste, your mood, and your moment.
-              </p>
+              <div className="netflix-profiles">
+                {/* Guest */}
+                <button
+                  className="netflix-profile"
+                  style={{ animationDelay: "0.1s" }}
+                  onClick={() => onEnter("Guest")}
+                >
+                  <div className="netflix-avatar guest-avatar">
+                    <FaCompass />
+                  </div>
+                  <span>Guest</span>
+                </button>
 
+                {/* Login */}
+                <button
+                  className="netflix-profile"
+                  style={{ animationDelay: "0.2s" }}
+                  onClick={() => setFormType("login")}
+                >
+                  <div className="netflix-avatar login-avatar">
+                    <FaUserShield />
+                  </div>
+                  <span>Login</span>
+                </button>
+
+                {/* Signup */}
+                <button
+                  className="netflix-profile"
+                  style={{ animationDelay: "0.3s" }}
+                  onClick={() => setFormType("signup")}
+                >
+                  <div className="netflix-avatar signup-avatar">
+                    <FaUserPlus />
+                  </div>
+                  <span>Create Profile</span>
+                </button>
+              </div>
             </div>
-
-
-            {/* PROFILE OPTIONS */}
-
-            <div className="profile-options">
-
-
-              {/* GUEST */}
-
-              <button
-                className="profile-option guest-option"
-                onClick={() => onEnter("Guest")}
-              >
-
-                <div className="profile-card-glow" />
-
-                <span className="profile-icon">
-                  <FaCompass />
-                </span>
-
-                <div className="profile-text">
-
-                  <strong>
-                    Explore as Guest
-                  </strong>
-
-                  <small>
-                    Start discovering instantly
-                  </small>
-
-                </div>
-
-                <span className="profile-arrow">
-                  <FaArrowRight />
-                </span>
-
-              </button>
-
-
-              {/* LOGIN */}
-
-              <button
-                className="profile-option login-option"
-                onClick={() => setFormType("login")}
-              >
-
-                <div className="profile-card-glow" />
-
-                <span className="profile-icon">
-                  <FaUserShield />
-                </span>
-
-                <div className="profile-text">
-
-                  <strong>
-                    Welcome Back
-                  </strong>
-
-                  <small>
-                    Continue your discovery
-                  </small>
-
-                </div>
-
-                <span className="profile-arrow">
-                  <FaArrowRight />
-                </span>
-
-              </button>
-
-
-              {/* SIGN UP */}
-
-              <button
-                className="profile-option signup-option"
-                onClick={() => setFormType("signup")}
-              >
-
-                <div className="profile-card-glow" />
-
-                <span className="profile-icon">
-                  <FaUserPlus />
-                </span>
-
-                <div className="profile-text">
-
-                  <strong>
-                    Create Profile
-                  </strong>
-
-                  <small>
-                    Personalize your movie picks
-                  </small>
-
-                </div>
-
-                <span className="profile-arrow">
-                  <FaArrowRight />
-                </span>
-
-              </button>
-
-            </div>
-
-
-            {/* BOTTOM HINT */}
-
-            <p className="entry-hint">
-              No endless scrolling. Just better movie discoveries.
-            </p>
-
           </>
-
         ) : (
-
           /* LOGIN / SIGNUP FORM */
-
-          <form
-            className="entry-form"
-            onSubmit={submitForm}
-          >
-
+          <form className="entry-form" onSubmit={submitForm}>
             <button
               className="back-choice"
               type="button"
@@ -324,129 +208,93 @@ function EntryScreen({ onEnter }) {
                 setConfirmPassword("");
                 setMessage("");
               }}
-              >
+            >
               ← Back
             </button>
 
-
             <div className="form-icon">
-
-              {formType === "login"
-                ? <FaUserShield />
-                : <FaUserPlus />
-              }
-
+              {formType === "login" ? <FaUserShield /> : <FaUserPlus />}
             </div>
 
+            <p className="entry-kicker">BEATFLIX PROFILE</p>
 
-            <p className="entry-kicker">
-              BEATFLIX PROFILE
-            </p>
-
-
-            <h1>
-
-              {formType === "login"
-                ? "Welcome back."
-                : "Create your profile."
-              }
-
-            </h1>
-
+            <h1>{formType === "login" ? "Welcome back." : "Create your profile."}</h1>
 
             <p className="form-description">
-
               {formType === "login"
                 ? "Enter your details and continue discovering movies made for your mood."
                 : "Create your BeatFlix profile and start building a more personal movie experience."
               }
-
             </p>
 
-
             <label>
-
               Display name
-
               <input
                 value={name}
-                onChange={(event) =>
-                  setName(event.target.value)
-                }
+                onChange={(event) => setName(event.target.value)}
                 placeholder="Your name"
                 autoFocus
               />
-
             </label>
 
-
             <label>
-
               Password
-
               <input
                 type="password"
                 value={password}
-                onChange={(event) =>
-                  setPassword(event.target.value)
-                }
+                onChange={(event) => setPassword(event.target.value)}
                 placeholder="Password"
               />
-
             </label>
 
             {formType === "signup" && (
               <label>
-
                 Confirm Password
-
                 <input
                   type="password"
                   value={confirmPassword}
-                  onChange={(event) =>
-                    setConfirmPassword(event.target.value)
-                  }
+                  onChange={(event) => setConfirmPassword(event.target.value)}
                   placeholder="Confirm Password"
                 />
-
               </label>
             )}
 
-
             {message && (
-
-              <p className="entry-message">
-                {message}
-              </p>
-
+              <p className="entry-message">{message}</p>
             )}
 
-
-            <button
-              className="enter-button"
-              type="submit"
-            >
-
-              {formType === "login"
-                ? "Enter BeatFlix"
-                : "Create Profile"
-              }
-
+            <button className="enter-button" type="submit">
+              {formType === "login" ? "Enter BeatFlix" : "Create Profile"}
               <FaArrowRight />
-
             </button>
-
 
             <p className="demo-note">
               Your BeatFlix profile is securely stored for a personalized movie experience.
             </p>
-
           </form>
-
         )}
+      </div>
+      {showSuccess && (
+  <div className="success-overlay">
+    <div className="success-card">
 
+      <div className="success-check">
+        ✓
       </div>
 
+      <h2>Profile Created!</h2>
+
+      <p>
+        Your BeatFlix account is ready.
+      </p>
+
+      <span>
+        Redirecting to Login...
+      </span>
+
+    </div>
+  </div>
+)}
     </section>
   );
 }

@@ -30,7 +30,7 @@ function Moods() {
   const [allMovies, setAllMovies] = useState([]);
   const [recommendedMovies, setRecommendedMovies] = useState([]);
   const [input, setInput] = useState("");
-  const BASE_URL = "http://localhost:4000/api/chat";
+  const BASE_URL = "http://192.168.0.100:4000/api/chat";
 
   const welcomeMessages = [
   {
@@ -47,22 +47,20 @@ const [activeChatId, setActiveChatId] = useState(null);
 const activeChat =
   chats.find((chat) => chat._id === activeChatId) || chats[0];
 
-const createNewChat = async () => {
+  const createNewChat = async () => {
+  if (creatingChatRef.current) return;
+  creatingChatRef.current = true;
+
   try {
-const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-if (!token) {
-  alert("Please login first.");
-  return;
-}
-
-const response = await fetch(BASE_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
-});
+    const response = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     const data = await response.json();
 
@@ -70,20 +68,94 @@ const response = await fetch(BASE_URL, {
       throw new Error(data.message);
     }
 
-    const newChat = {
-      ...data.chat,
-      messages: [...welcomeMessages],
-    };
+    setChats((prev) => {
+      if (prev.find((chat) => chat._id === data.chat._id)) {
+        return prev;
+      }
 
-    setChats((prev) => [newChat, ...prev]);
+      return [
+        {
+          ...data.chat,
+          messages: [...welcomeMessages],
+        },
+        ...prev,
+      ];
+    });
 
-    setActiveChatId(newChat._id);
-
+    setActiveChatId(data.chat._id);
     setRecommendedMovies([]);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    creatingChatRef.current = false;
+  }
+};
 
-  } catch (error) {
-    console.error(error);
-    alert("Unable to create chat.");
+const loadChats = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) return;
+
+    const response = await fetch(BASE_URL, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    console.log("Mongo Chats:", data.chats);
+    console.log("Mongo Count:", data.chats.length);
+
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+
+    if (data.chats.length === 0) {
+        setChats([]);
+        setActiveChatId(null);
+        return;
+    }
+
+    const chatsWithWelcome = data.chats.map((chat) => ({
+      ...chat,
+      messages:
+        chat.messages.length > 0
+          ? chat.messages
+          : [...welcomeMessages],
+    }));
+
+    setChats(chatsWithWelcome);
+    setActiveChatId(chatsWithWelcome[0]._id);
+
+  } catch (err) {
+    console.error("Load Chats:", err);
+  }
+};
+
+const saveMessage = async (chatId, message) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${BASE_URL}/${chatId}/message`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(message),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Save Message:", err);
   }
 };
 
@@ -91,18 +163,24 @@ const selectChat = (id) => {
   setActiveChatId(id);
 };
 
-const deleteChat = (id) => {
-  const updatedChats = chats.filter(chat => chat._id !== id);
+const deleteChat = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
 
-  if (updatedChats.length === 0) {
-    createNewChat();
-    return;
-  }
+    await fetch(`${BASE_URL}/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  setChats(updatedChats);
+    setChats((prev) => prev.filter((chat) => chat._id !== id));
 
-  if (activeChatId === id) {
-    setActiveChatId(updatedChats[0]._id);
+    if (activeChatId === id) {
+      setActiveChatId(null);
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
@@ -179,32 +257,37 @@ const updateMessages = (newMessages) => {
   const emotionHistoryRef = useRef([]);
   const abortControllerRef = useRef(null);
   const scanLockedRef = useRef(false);
+  const creatingChatRef = useRef(false);
+  const isDetectingRef = useRef(false);
 
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+ const hasLoadedChats = useRef(false);
+
+useEffect(() => {
+  fetchMovies();
+  loadModels();
+
+  if (!hasLoadedChats.current) {
+    hasLoadedChats.current = true;
+    loadChats();
+  }
+
+  return () => {
+    stopScanner();
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
-  }, [messages, isThinking]);
-
-  useEffect(() => {
-    fetchMovies();
-    loadModels();
-    return () => {
-      stopScanner();
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
+  };
+}, []);
 
   const fetchMovies = async () => {
     try {
       const endpoints = [
-        "http://localhost:4000/api/movies/trending",
-        "http://localhost:4000/api/movies/top-rated",
-        "http://localhost:4000/api/movies/top-india",
-        "http://localhost:4000/api/movies/top-global",
-        "http://localhost:4000/api/movies/new-releases"
+        "http://192.168.0.100:4000/api/movies/trending",
+        "http://192.168.0.100:4000/api/movies/top-rated",
+        "http://192.168.0.100:4000/api/movies/top-india",
+        "http://192.168.0.100:4000/api/movies/top-global",
+        "http://192.168.0.100:4000/api/movies/new-releases"
       ];
 
       const responses = await Promise.all(
@@ -291,7 +374,7 @@ const updateMessages = (newMessages) => {
   }, []);
 
   const askGemini = async (userMessage) => {
-    const response = await fetch("http://localhost:4000/api/gemini/chat", {
+    const response = await fetch("http://192.168.0.100:4000/api/gemini/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -312,24 +395,25 @@ const updateMessages = (newMessages) => {
   };
 
 const streamReply = async (reply) => {
-
   setStreamingText("");
 
   for (let i = 0; i < reply.length; i++) {
-
-    await new Promise(resolve => setTimeout(resolve, 12));
-
+    await new Promise((resolve) => setTimeout(resolve, 12));
     setStreamingText(reply.slice(0, i + 1));
-
   }
 
+  return reply;
 };
 
-  const askBeatFlix = async (message) => {
+  const askBeatFlix = async (message, currentMessages) => {
     setIsThinking(true);
     try {const result = await askGemini(message);
 
-await streamReply(result.reply);
+      console.log(result);
+
+const finalReply = await streamReply(
+  result.reply || "No recommendation available."
+);
 
 const matchedMovies = allMovies
   .filter((movie) =>
@@ -337,47 +421,55 @@ const matchedMovies = allMovies
   )
   .sort((a, b) => Number(b.rating) - Number(a.rating))
   .slice(0, 6)
-.map(movie => ({
+  .map((movie) => ({
     ...movie,
-    reason: `Recommended because it matches your ${movie.genre[0]} preference.`
-}));
+    reason: `Recommended because it matches your ${movie.genre[0]} preference.`,
+  }));
   console.log("Matched Movies:", matchedMovies);
 
+const aiMessage = {
+  sender: "ai",
+  text: finalReply,
+  movies: matchedMovies,
+};
+
 updateMessages([
-  ...messages,
-  {
-    sender: "ai",
-    text: result.reply,
-    movies: matchedMovies,
-  },
+  ...currentMessages,
+  aiMessage,
 ]);
+
+await saveMessage(activeChatId, aiMessage);
 
 setStreamingText("");
 
 setRecommendedMovies(matchedMovies);} 
     catch (err) {
-        updateMessages([
-          ...messages,
-          {
-            sender: "ai",
-            text: "Connection to BeatFlix servers lost. Try again.",
-          },
-        ]);
+      updateMessages([
+        ...currentMessages,
+        {
+          sender: "ai",
+          text: "Connection to BeatFlix servers lost. Try again.",
+        },
+      ]);
     }
     setIsThinking(false);
   };
 
-  const handleChatSubmit = (e) => {
+  const handleChatSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
     const userMessage = { sender: "user", text: input };
-    updateMessages([
-      ...messages,
-      userMessage,
-    ]);
+const updatedMessages = [
+  ...messages,
+  userMessage,
+];
+
+updateMessages(updatedMessages);
+
+await saveMessage(activeChatId, userMessage);
     setInput("");
     setIsThinking(true); 
-    askBeatFlix(userMessage.text);
+    askBeatFlix(userMessage.text, updatedMessages);
   };
 
   const startScanner = async () => {
@@ -396,50 +488,87 @@ setRecommendedMovies(matchedMovies);}
   };
 
   const handleVideoPlay = () => {
-    setScanPhase("Analyzing micro-expressions...");
-    emotionHistoryRef.current = [];
-    if (scanIntervalRef.current) clearInterval(scanIntervalRef.current);
+  setScanPhase("Analyzing micro-expressions...");
+  emotionHistoryRef.current = [];
 
-    scanIntervalRef.current = setInterval(async () => {
-      if (!videoRef.current) return;
-      try {
-        const detection = await faceapi.detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
-        if (!detection) {
-          setScanPhase("Searching for face...");
-          emotionHistoryRef.current = [];
-          return;
-        }
+  if (scanIntervalRef.current) {
+    clearInterval(scanIntervalRef.current);
+  }
 
-        const expressions = detection.expressions;
-        const strongestEmotion = Object.keys(expressions).reduce((a, b) => expressions[a] > expressions[b] ? a : b);
-        if (expressions[strongestEmotion] < 0.55) return;
+  scanIntervalRef.current = setInterval(async () => {
+    if (!videoRef.current) return;
+    if (isDetectingRef.current) return;
 
-        emotionHistoryRef.current.push(strongestEmotion);
-        if (emotionHistoryRef.current.length > 10) emotionHistoryRef.current.shift();
+    isDetectingRef.current = true;
 
-        const counts = {};
-        emotionHistoryRef.current.forEach((e) => { counts[e] = (counts[e] || 0) + 1; });
-        const stableEmotion = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+    try {
+      const detection = await faceapi
+        .detectSingleFace(
+          videoRef.current,
+          new faceapi.TinyFaceDetectorOptions({
+            inputSize: 160,
+            scoreThreshold: 0.5,
+          })
+        )
+        .withFaceExpressions();
 
-        if (counts[stableEmotion] >= 7 && !scanLockedRef.current) {
-          scanLockedRef.current = true;
-          clearInterval(scanIntervalRef.current);
-          setScanPhase(`Got it! Mood detected: ${stableEmotion.toUpperCase()}`);
-          setTimeout(() => {
-            stopScanner();
-            updateMessages([
-              ...messages,
-              {
-                sender: "user",
-                text: `[Biometric Scan: ${stableEmotion.toUpperCase()}]`,
-              },
-            ]);
-            askBeatFlix(`My camera scan showed I'm feeling ${stableEmotion}. Pick great movies for me!`);
-          }, 1500);
-        }
-      } catch (err) { console.error(err); }
-    }, 200);
-  };
+      if (!detection) {
+        setScanPhase("Searching for face...");
+        emotionHistoryRef.current = [];
+        return;
+      }
+
+      const expressions = detection.expressions;
+
+      const strongestEmotion = Object.keys(expressions).reduce((a, b) =>
+        expressions[a] > expressions[b] ? a : b
+      );
+
+      if (expressions[strongestEmotion] < 0.45) return;
+
+      emotionHistoryRef.current.push(strongestEmotion);
+
+      if (emotionHistoryRef.current.length > 5) {
+        emotionHistoryRef.current.shift();
+      }
+
+      const counts = {};
+
+      emotionHistoryRef.current.forEach((e) => {
+        counts[e] = (counts[e] || 0) + 1;
+      });
+
+      const stableEmotion = Object.keys(counts).reduce((a, b) =>
+        counts[a] > counts[b] ? a : b
+      );
+
+      if (counts[stableEmotion] >= 4 && !scanLockedRef.current) {
+scanLockedRef.current = true;
+
+clearInterval(scanIntervalRef.current);
+stopScanner();
+
+const detectedEmotion = stableEmotion;
+
+updateMessages([
+  ...messages,
+  {
+    sender: "user",
+    text: `[Biometric Scan: ${detectedEmotion.toUpperCase()}]`,
+  },
+]);
+
+askBeatFlix(
+  `I am feeling ${detectedEmotion}. Recommend movies for me.`
+);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      isDetectingRef.current = false;
+    }
+  }, 300);
+};
 
   const stopScanner = () => {
     if (scanIntervalRef.current) clearInterval(scanIntervalRef.current);
@@ -549,7 +678,7 @@ setRecommendedMovies(matchedMovies);}
                                           </div>
 
                                           <div className="chat-movie-genres">
-                                            {movie.genre.join(" • ")}
+                                            {movie.genre?.join(" • ") || "Unknown"}
                                           </div>
                                           <p className="chat-movie-reason">
                                             {movie.reason ||
@@ -682,7 +811,9 @@ setRecommendedMovies(matchedMovies);}
                     </div>
                     <div className="movie-details">
                       <h4>{movie.title}</h4>
-                      <span>{movie.genre.length > 0 ? movie.genre.join(" • ") : "N/A"}</span>
+                      <span>{movie.genre?.length > 0
+  ? movie.genre.join(" • ")
+  : "Unknown"}</span>
                       <div className="movie-meta">
                         <p>{movie.year}</p>
                         <p><FaStar />{movie.rating}</p>

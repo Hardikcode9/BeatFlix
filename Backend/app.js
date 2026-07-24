@@ -13,6 +13,8 @@ const userRoutes = require("./routes/userRoutes");
 const movieRoutes = require("./routes/movieRoutes");
 const geminiRoutes = require("./routes/geminiRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 
@@ -31,6 +33,10 @@ app.use("/api/movies", movieRoutes);
 app.use("/api/gemini", geminiRoutes);
 
 app.use("/api/chat", chatRoutes);
+
+app.use("/api/subscription", subscriptionRoutes);
+
+app.use("/api/payment", paymentRoutes);
 
 // Test route
 app.get("/", (req, res) => {

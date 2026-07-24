@@ -10,6 +10,7 @@
     "@tsparticles/react": "^4.3.2",
     "@tsparticles/slim": "^4.3.2",
     "mongoose": "^9.7.4",
+    "razorpay": "^2.9.8",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-icons": "^5.7.0",

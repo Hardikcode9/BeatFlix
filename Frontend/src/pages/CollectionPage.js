@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/CollectionPage.css";
 
-const API = "http://localhost:4000/api";
+const API = "http://192.168.0.100:4000/api";
 const IMAGE = "https://image.tmdb.org/t/p/w500";
 
 function CollectionPage() {

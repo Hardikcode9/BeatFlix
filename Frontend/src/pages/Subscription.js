@@ -1,18 +1,76 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaCheck, FaCrown, FaBolt, FaStar, FaArrowLeft } from "react-icons/fa";
 import "../styles/Subscription.css"; // Adjust path as needed
 
 export default function Subscription() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const [currentPlan, setCurrentPlan] = useState("starter");
+  const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  window.scrollTo(0, 0);
+  fetchSubscription();
+}, []);
+
+const fetchSubscription = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      "http://192.168.0.100:4000/api/subscription/current",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      setCurrentPlan(data.subscription);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  setLoading(false);
+};
+
+const changePlan = async (plan) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      "http://192.168.0.100:4000/api/subscription/update",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ plan }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      await fetchSubscription();
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong.");
+  }
+};
 
   const plans = [
     {
-      id: "basic",
+     id: "starter",
       name: "Starter",
       icon: <FaStar className="plan-icon basic-icon" />,
       price: "Free",
@@ -20,7 +78,9 @@ export default function Subscription() {
       description: "Perfect for casual watchers.",
       features: ["1080p HD Resolution", "Ad-supported streaming", "1 Device at a time", "Standard audio"],
       isPro: false,
-      buttonText: "Current Plan",
+      buttonText: currentPlan === "starter"
+  ? "Current Plan"
+  : "Choose Starter",
     },
     {
       id: "pro",
@@ -31,7 +91,9 @@ export default function Subscription() {
       description: "Endless cinematic brilliance.",
       features: ["4K Ultra HD Streaming", "Zero interruptions (No Ads)", "Up to 4 devices simultaneously", "Exclusive Director's Cuts"],
       isPro: true,
-      buttonText: "Upgrade to Pro",
+      buttonText: currentPlan === "pro"
+  ? "Current Plan"
+  : "Upgrade to Pro",
     },
     {
       id: "ultimate",
@@ -42,9 +104,47 @@ export default function Subscription() {
       description: "The absolute home theater experience.",
       features: ["8K HDR + Dolby Vision", "Dolby Atmos Spatial Audio", "Unlimited devices", "Offline downloads"],
       isPro: false,
-      buttonText: "Get Ultimate",
+      buttonText: currentPlan === "ultimate"
+  ? "Current Plan"
+  : "Get Ultimate",
     }
   ];
+
+  const openRazorpay = async (plan, amount) => {
+  const response = await fetch(
+    "http://192.168.0.100:4000/api/payment/create-order",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount }),
+    }
+  );
+
+  const data = await response.json();
+
+  const options = {
+    key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+    amount: data.order.amount,
+    currency: data.order.currency,
+    name: "BeatFlix",
+    description: `${plan} Subscription`,
+    order_id: data.order.id,
+
+    handler: async function () {
+      await changePlan(plan);
+      alert("Payment Successful!");
+    },
+
+    theme: {
+      color: "#e50914",
+    },
+  };
+
+  const razor = new window.Razorpay(options);
+  razor.open();
+};
 
   return (
     <div className="subscription-page">
@@ -93,8 +193,22 @@ export default function Subscription() {
                 ))}
               </ul>
 
-              <button className={`plan-btn ${plan.isPro ? "btn-pro" : "btn-standard"}`}>
-                {plan.buttonText}
+              <button
+                type="button"
+                className={`plan-btn ${plan.isPro ? "btn-pro" : "btn-standard"}`}
+                disabled={currentPlan === plan.id || loading}
+                onClick={() => {
+                  if (plan.id === "starter") {
+                    changePlan("starter");
+                  } else {
+                    openRazorpay(
+                      plan.id,
+                      plan.id === "pro" ? 199 : 499
+                    );
+                  }
+                }}
+              >
+                {currentPlan === plan.id ? "Current Plan" : plan.buttonText}
               </button>
             </div>
           ))}

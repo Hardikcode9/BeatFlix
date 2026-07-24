@@ -9,17 +9,83 @@ export default function AccountManagement() {
   // Simulated User Data (Replace with real context/Google Auth data)
   const [userData, setUserData] = useState({
     name: "Alex",
-    email: "alex@example.com",
+    email: "",
     // 👇 Swapped to a much more reliable, great-looking avatar generator
     avatar: "https://ui-avatars.com/api/?name=Alex&background=6366f1&color=fff&size=150&bold=true",
-    plan: "BeatFlix Pro",
-    memberSince: "July 2026",
+    plan: "Starter",
+    memberSince: "",  
     authProvider: "Google"
   });
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+useEffect(() => {
+  window.scrollTo(0, 0);
+
+  fetchUser();
+  fetchSubscription();
+}, []);
+
+const fetchUser = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("http://192.168.0.100:4000/api/users/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    console.log(data);
+
+setUserData((prev) => ({
+  ...prev,
+  name: data.user.name,
+  email: data.user.email || "",
+
+  memberSince: new Date(data.user.createdAt).toLocaleDateString(
+    "en-US",
+    {
+      month: "long",
+      year: "numeric",
+    }
+  ),
+
+  avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    data.user.name
+  )}&background=6366f1&color=fff&size=150&bold=true`,
+}));
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const fetchSubscription = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+      "http://192.168.0.100:4000/api/subscription/current",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await res.json();
+
+    setUserData((prev) => ({
+      ...prev,
+plan:
+"BeatFlix " +
+data.subscription.charAt(0).toUpperCase() +
+data.subscription.slice(1),
+    }));
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   const handleSignOut = () => {
     // Add real sign out logic here

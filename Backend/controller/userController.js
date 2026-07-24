@@ -131,6 +131,21 @@ const loginUser = async (req, res) => {
 };
 
 
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
 // ========================================
 // EXPORTS
 // ========================================
@@ -138,4 +153,5 @@ const loginUser = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
+  getProfile,
 };

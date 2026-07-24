@@ -309,7 +309,7 @@ const getMovieDetails = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [movieRes, creditsRes, similarRes, videosRes] = await Promise.all([
+    const [movieRes, creditsRes, similarRes, videosRes, watchProvidersRes] = await Promise.all([
       axios.get(`https://api.themoviedb.org/3/movie/${id}`, {
         params: {
           api_key: process.env.TMDB_API_KEY,
@@ -336,6 +336,13 @@ const getMovieDetails = async (req, res) => {
           language: "en-US",
         },
       }),
+
+      axios.get(`https://api.themoviedb.org/3/movie/${id}/watch/providers`, {
+        params: {
+          api_key: process.env.TMDB_API_KEY,
+        },
+      }),
+
     ]);
 
     // Find the official YouTube trailer
@@ -353,13 +360,14 @@ const getMovieDetails = async (req, res) => {
       ) ||
       null;
 
-    res.status(200).json({
-      success: true,
-      movie: movieRes.data,
-      cast: creditsRes.data.cast.slice(0, 10),
-      similar: similarRes.data.results,
-      trailer,
-    });
+      res.status(200).json({
+        success: true,
+        movie: movieRes.data,
+        cast: creditsRes.data.cast.slice(0, 10),
+        similar: similarRes.data.results,
+        trailer,
+        watchProviders: watchProvidersRes.data.results.IN || null,
+      });
   } catch (error) {
     console.error(error.response?.data || error.message);
 

@@ -12,6 +12,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    subscription: {
+      type: String,
+      enum: ["starter", "pro", "ultimate"],
+      default: "starter",
+    },
+
+    subscriptionStatus: {
+      type: String,
+      enum: ["inactive", "active"],
+      default: "inactive",
+    },
+
+    subscriptionExpiry: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

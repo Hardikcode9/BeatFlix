@@ -664,3 +664,48 @@ body, html, #root {
     .poster-3d-wrapper { transform: none !important; width: 280px; margin: 0 auto; }
     .movie-meta, .genre-list, .button-group { justify-content: center; }
 }
+
+.watch-section {
+    width: min(1400px, 90%);
+    margin: 70px auto;
+}
+
+.watch-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 30px;
+}
+
+.watch-card {
+    width: 140px;
+    text-decoration: none;
+    color: white;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
+    border-radius: 20px;
+    padding: 18px;
+    text-align: center;
+    transition: all .3s ease;
+}
+
+.watch-card:hover {
+    transform: translateY(-8px);
+    border-color: #8b5cf6;
+    box-shadow: 0 15px 35px rgba(139,92,246,.35);
+}
+
+.watch-card img {
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
+    object-fit: cover;
+    margin-bottom: 12px;
+}
+
+.watch-card span {
+    display: block;
+    font-weight: 700;
+    font-size: .95rem;
+}

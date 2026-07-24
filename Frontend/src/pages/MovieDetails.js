@@ -43,6 +43,7 @@ function MovieDetails() {
   const [trailer, setTrailer] = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [watchProviders, setWatchProviders] = useState(null);
 
   // 1. Sync button state with LocalStorage on load and when the custom event fires
   useEffect(() => {
@@ -60,13 +61,14 @@ function MovieDetails() {
     const fetchMovie = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:4000/api/movies/${id}`);
+        const res = await fetch(`http://192.168.0.100:4000/api/movies/${id}`);
         const data = await res.json();
         if (data.success) {
           setMovie(data.movie);
           setCast(data.cast || []);
           setSimilarMovies(data.similar || []);
           setTrailer(data.trailer || null);
+          setWatchProviders(data.watchProviders || null);
         }
       } catch (err) {
         console.error(err);
@@ -227,6 +229,36 @@ function MovieDetails() {
           <h2 className="section-title">Overview</h2>
           <p className="overview-text">{movie.overview}</p>
         </section>
+
+        {watchProviders && (
+  <section className="watch-section animate-slide-up">
+    <h2 className="section-title">Where to Watch</h2>
+
+    <div className="watch-grid">
+                {(
+            watchProviders.flatrate ||
+            watchProviders.rent ||
+            watchProviders.buy ||
+            []
+          ).map((provider) => (
+                  <a
+          key={provider.provider_id}
+          href={watchProviders.link}
+          target="_blank"
+          rel="noreferrer"
+          className="watch-card"
+        >
+          <img
+            src={`https://image.tmdb.org/t/p/w185${provider.logo_path}`}
+            alt={provider.provider_name}
+          />
+
+          <span>{provider.provider_name}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
 
         {/* DYNAMIC CAST GRID */}
         {cast.length > 0 && (
