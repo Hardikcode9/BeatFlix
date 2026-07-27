@@ -28,7 +28,7 @@ const fetchUser = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://192.168.0.100:4000/api/users/profile", {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -64,9 +64,7 @@ const fetchSubscription = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      "http://192.168.0.100:4000/api/subscription/current",
-      {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -75,13 +73,15 @@ const fetchSubscription = async () => {
 
     const data = await res.json();
 
-    setUserData((prev) => ({
-      ...prev,
-plan:
-"BeatFlix " +
-data.subscription.charAt(0).toUpperCase() +
-data.subscription.slice(1),
-    }));
+setUserData((prev) => ({
+  ...prev,
+  plan: data.subscription
+    ? `BeatFlix ${
+        data.user.subscription.charAt(0).toUpperCase() +
+        data.user.subscription.slice(1)
+      }`
+    : "BeatFlix Starter",
+}));
   } catch (err) {
     console.log(err);
   }

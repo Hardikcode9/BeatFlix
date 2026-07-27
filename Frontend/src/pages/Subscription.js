@@ -19,7 +19,7 @@ const fetchSubscription = async () => {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      "http://192.168.0.100:4000/api/subscription/current",
+      `${process.env.REACT_APP_API_URL}/api/subscription/current`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -30,7 +30,7 @@ const fetchSubscription = async () => {
     const data = await response.json();
 
     if (data.success) {
-      setCurrentPlan(data.subscription);
+      setCurrentPlan(data.subscription || "starter");
     }
   } catch (err) {
     console.log(err);
@@ -44,16 +44,16 @@ const changePlan = async (plan) => {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      "http://192.168.0.100:4000/api/subscription/update",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ plan }),
-      }
-    );
+  `${process.env.REACT_APP_API_URL}/api/subscription/update`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ plan }),
+  }
+);
 
     const data = await response.json();
 
@@ -112,15 +112,15 @@ const changePlan = async (plan) => {
 
   const openRazorpay = async (plan, amount) => {
   const response = await fetch(
-    "http://192.168.0.100:4000/api/payment/create-order",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ amount }),
-    }
-  );
+  `${process.env.REACT_APP_API_URL}/api/payment/create-order`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ amount }),
+  }
+);
 
   const data = await response.json();
 

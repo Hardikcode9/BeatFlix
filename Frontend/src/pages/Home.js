@@ -57,11 +57,11 @@
       const fetchAll = async () => {
         try {
           const [r1, r2, r3, r4, r5] = await Promise.all([
-            fetch("http://192.168.0.100:4000/api/movies/top-india").then(res => res.json()),
-            fetch("http://192.168.0.100:4000/api/movies/top-global").then(res => res.json()),
-            fetch("http://192.168.0.100:4000/api/movies/trending").then(res => res.json()),
-            fetch("http://192.168.0.100:4000/api/movies/top-rated").then(res => res.json()),
-            fetch("http://192.168.0.100:4000/api/movies/new-releases").then(res => res.json())
+            fetch(`${process.env.REACT_APP_API_URL}/api/movies/top-india`).then((res) => res.json()),
+            fetch(`${process.env.REACT_APP_API_URL}/api/movies/top-global`).then((res) => res.json()),
+            fetch(`${process.env.REACT_APP_API_URL}/api/movies/trending`).then((res) => res.json()),
+            fetch(`${process.env.REACT_APP_API_URL}/api/movies/top-rated`).then((res) => res.json()),
+            fetch(`${process.env.REACT_APP_API_URL}/api/movies/new-releases`).then((res) => res.json()),
           ]);
           setTopIndia(formatData(r1));
           setTopGlobal(formatData(r2));

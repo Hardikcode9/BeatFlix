@@ -61,7 +61,7 @@ function MovieDetails() {
     const fetchMovie = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://192.168.0.100:4000/api/movies/${id}`);
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/movies/${id}`);
         const data = await res.json();
         if (data.success) {
           setMovie(data.movie);

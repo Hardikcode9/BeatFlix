@@ -30,7 +30,7 @@ function Moods() {
   const [allMovies, setAllMovies] = useState([]);
   const [recommendedMovies, setRecommendedMovies] = useState([]);
   const [input, setInput] = useState("");
-  const BASE_URL = "http://192.168.0.100:4000/api/chat";
+  const BASE_URL = `${process.env.REACT_APP_API_URL}/api/chat`;
 
   const welcomeMessages = [
   {
@@ -283,11 +283,11 @@ useEffect(() => {
   const fetchMovies = async () => {
     try {
       const endpoints = [
-        "http://192.168.0.100:4000/api/movies/trending",
-        "http://192.168.0.100:4000/api/movies/top-rated",
-        "http://192.168.0.100:4000/api/movies/top-india",
-        "http://192.168.0.100:4000/api/movies/top-global",
-        "http://192.168.0.100:4000/api/movies/new-releases"
+        `${process.env.REACT_APP_API_URL}/api/movies/trending`,
+        `${process.env.REACT_APP_API_URL}/api/movies/top-rated`,
+        `${process.env.REACT_APP_API_URL}/api/movies/top-india`,
+        `${process.env.REACT_APP_API_URL}/api/movies/top-global`,
+        `${process.env.REACT_APP_API_URL}/api/movies/new-releases`
       ];
 
       const responses = await Promise.all(
@@ -374,7 +374,7 @@ useEffect(() => {
   }, []);
 
   const askGemini = async (userMessage) => {
-    const response = await fetch("http://192.168.0.100:4000/api/gemini/chat", {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/profile`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

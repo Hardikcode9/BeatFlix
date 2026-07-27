@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/CollectionPage.css";
 
-const API = "http://192.168.0.100:4000/api";
+const API = `${process.env.REACT_APP_API_URL}/api`;
 const IMAGE = "https://image.tmdb.org/t/p/w500";
 
 function CollectionPage() {
@@ -49,13 +49,9 @@ function CollectionPage() {
 
   return (
     <div className="collection-page">
-
-      <h1 className="collection-title">
-        {title}
-      </h1>
+      <h1 className="collection-title">{title}</h1>
 
       <div className="collection-grid">
-
         {movies.map((movie) => (
           <div
             key={movie.id}
@@ -74,9 +70,7 @@ function CollectionPage() {
             <h3>{movie.title}</h3>
           </div>
         ))}
-
       </div>
-
     </div>
   );
 }
