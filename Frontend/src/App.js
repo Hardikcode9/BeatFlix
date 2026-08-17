@@ -6,95 +6,86 @@ import EntryScreen from "./components/EntryScreen";
 
 import Home from "./pages/Home";
 import Movies from "./pages/Movies";
+import Music from "./pages/Music";
+import MusicDetails from "./pages/MusicDetails";
+import Playlist from "./pages/Playlist";
 import Moods from "./pages/Moods";
 import About from "./pages/About";
 import MovieDetails from "./pages/MovieDetails";
 import Footer from "./components/common/Footer";
 import CollectionPage from "./pages/CollectionPage";
-import Subscription from './pages/Subscription';
-import AccountManagement from './pages/AccountManagement';
+import Subscription from "./pages/Subscription";
+import AccountManagement from "./pages/AccountManagement";
+import MyListPage from "./pages/MyListPage";
+import AdminDashboard from "./pages/AdminDashboard";
+import FreeMovies from "./pages/FreeMovies";
+
+import { MusicProvider } from "./context/MusicContext";
+import GlobalMusicPlayer from "./components/GlobalMusicPlayer";
 
 import "./App.css";
 
 function App() {
   const [viewer, setViewer] = useState(() => {
-    return localStorage.getItem("beatflixViewer") || null;
+    return sessionStorage.getItem("beatflixViewer") || null;
   });
 
-  // Save logged-in user
   const handleEnter = (name) => {
-    localStorage.setItem("beatflixViewer", name);
+    sessionStorage.setItem("beatflixViewer", name);
+    // Rewrite the URL to / so that when BrowserRouter mounts, it defaults to the home page.
+    window.history.replaceState(null, "", "/");
     setViewer(name);
   };
 
-  // Logout / switch profile
   const handleLogout = () => {
-    localStorage.removeItem("beatflixViewer");
+    sessionStorage.removeItem("beatflixViewer");
+    // Clear the intro played state so it plays again upon next login
+    sessionStorage.removeItem("beatflix_intro_played");
+    localStorage.removeItem("token");
+    localStorage.removeItem("userEmail");
     setViewer(null);
   };
 
-  // Show Entry Screen when nobody is logged in
   if (!viewer) {
     return <EntryScreen onEnter={handleEnter} />;
   }
 
   return (
-    <BrowserRouter>
-      <div className="app-shell">
-
-        <Navbar
-          viewer={viewer}
+    <MusicProvider>
+      <BrowserRouter>
+        <div className="app-shell">
+          <Navbar
+            viewer={viewer}
           onSwitchProfile={handleLogout}
         />
 
         <main className="app-content">
-        <Routes>
-          <Route
-            path="/"
-            element={<Home viewer={viewer} />}
-          />
-
-          <Route
-            path="/movies"
-            element={<Movies />}
-          />
-
-          <Route
-            path="/moods"
-            element={<Moods />}
-          />
-
-          <Route
-            path="/about"
-            element={<About />}
-          />
-
-          <Route
-            path="/movie/:id"
-            element={<MovieDetails />}
-          />
-
-          <Route
-            path="/collection/:slug"
-            element={<CollectionPage />}
-          />
-          <Route
-           path="/subscription"
-           element={<Subscription />}
-          />
-          <Route 
-          path="/account"
-          element={<AccountManagement />} 
-          />
-
-        </Routes>
-
+          <Routes>
+            <Route path="/" element={<Home viewer={viewer} />} />
+            <Route path="/movies" element={<Movies />} />
+            <Route path="/music" element={<Music />} />
+            <Route path="/music/:id" element={<MusicDetails />} />
+            <Route path="/playlist" element={<Playlist />} />
+            <Route path="/moods" element={<Moods />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/movie/:id" element={<MovieDetails />} />
+            <Route path="/collection/:slug" element={<CollectionPage />} />
+            <Route path="/mylist" element={<MyListPage />} />
+            <Route path="/subscription" element={<Subscription />} />
+            <Route path="/free" element={<FreeMovies />} />
+            <Route path="/account" element={<AccountManagement />} />
+            <Route 
+              path="/admin" 
+              element={localStorage.getItem("userEmail") === "jeehardik2@gmail.com" ? <AdminDashboard /> : <Home viewer={viewer} />} 
+            />
+          </Routes>
         </main>
 
+        <GlobalMusicPlayer />
         <Footer />
-
       </div>
     </BrowserRouter>
+    </MusicProvider>
   );
 }
 

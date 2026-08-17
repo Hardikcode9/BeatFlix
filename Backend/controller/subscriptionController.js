@@ -44,6 +44,7 @@ const updateSubscription = async (req, res) => {
       user.subscription = "starter";
       user.subscriptionStatus = "inactive";
       user.subscriptionExpiry = null;
+      user.aiTokens = 5;
     } else {
       const expiry = new Date();
       expiry.setMonth(expiry.getMonth() + 1);
@@ -51,6 +52,7 @@ const updateSubscription = async (req, res) => {
       user.subscription = plan;
       user.subscriptionStatus = "active";
       user.subscriptionExpiry = expiry;
+      user.aiTokens = plan === "pro" ? 50 : 99999;
     }
 
     await user.save();

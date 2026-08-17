@@ -4,7 +4,6 @@ import {
   FaGithub,
   FaLinkedin,
   FaEnvelope,
-  FaFilm,
   FaHeart,
 } from "react-icons/fa";
 
@@ -21,48 +20,46 @@ function Footer() {
         <div className="footer-brand">
 
           <Link to="/" className="footer-logo">
-            <span className="footer-logo-icon">
-              <FaFilm />
-            </span>
-
+            <div className="footer-brand-mark-wrapper">
+              <img src="/beatflix_logo (1).png" alt="BeatFlix Logo" className="footer-brand-icon" />
+            </div>
             <span>BeatFlix</span>
           </Link>
 
           <p>
-            Discover movies that match your mood.
+            Discover movies and music that match your mood.
             Stop scrolling endlessly and find your
-            next unforgettable story.
+            next unforgettable experience.
           </p>
 
           <span className="footer-tagline">
-            Your mood. Your movie. Your moment.
+            Your mood. Your media. Your moment.
           </span>
 
         </div>
 
 
-        {/* QUICK LINKS */}
+        {/* EXPLORE LINKS */}
         <div className="footer-column">
 
           <h3>Explore</h3>
 
           <Link to="/">Home</Link>
-          <Link to="/movies">Movies</Link>
-          <Link to="/moods">Moods</Link>
-          <Link to="/about">About</Link>
+          <Link to="/movies">Browse Movies</Link>
+          <Link to="/music">Music Hub</Link>
+          <Link to="/moods">Mood Match</Link>
 
         </div>
 
 
-        {/* MOVIE LINKS */}
+        {/* PREMIUM LINKS */}
         <div className="footer-column">
 
-          <h3>Discover</h3>
+          <h3>Exclusive</h3>
 
-          <Link to="/movies">Action</Link>
-          <Link to="/movies">Sci-Fi</Link>
-          <Link to="/movies">Drama</Link>
-          <Link to="/movies">Adventure</Link>
+          <Link to="/free">Free Movies</Link>
+          <Link to="/subscription">Subscription</Link>
+          <Link to="/playlist">My Playlist</Link>
 
         </div>
 
@@ -72,12 +69,12 @@ function Footer() {
 
           <h3>Connect</h3>
 
-          <a href="#" aria-label="GitHub">
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
             <FaGithub />
             GitHub
           </a>
 
-          <a href="#" aria-label="LinkedIn">
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <FaLinkedin />
             LinkedIn
           </a>
@@ -100,7 +97,7 @@ function Footer() {
         </p>
 
         <p className="footer-made">
-          Made with <FaHeart /> for movie lovers
+          Made with <FaHeart /> for entertainment lovers
         </p>
 
       </div>

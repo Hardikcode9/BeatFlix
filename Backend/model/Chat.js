@@ -13,19 +13,14 @@ const messageSchema = new mongoose.Schema(
       required: true,
     },
 
-    movies: [
-      {
-        id: {
-          type: Number,
-          required: true,
-        },
-
-        reason: {
-          type: String,
-          default: "",
-        },
-      },
-    ],
+    movies: {
+      type: mongoose.Schema.Types.Mixed,
+      default: [],
+    },
+    music: {
+      type: mongoose.Schema.Types.Mixed,
+      default: [],
+    },
   },
   {
     _id: false,

@@ -4,14 +4,17 @@ import { NavLink, Link } from "react-router-dom";
 import { 
   FaBars, 
   FaFilm, 
+  FaMusic,
   FaHome, 
   FaInfoCircle, 
   FaSignOutAlt, 
   FaTheaterMasks, 
   FaBookmark,
-  FaUserCog /* <-- NEW ICON IMPORT */
+  FaUserCircle,
+  FaCrown,
+  FaGift,
+  FaStar
 } from "react-icons/fa";
-import MyListPanel from "../MyListPanel"; 
 
 function Navbar({ viewer, onSwitchProfile }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,8 +23,10 @@ function Navbar({ viewer, onSwitchProfile }) {
   const links = [
     { to: "/", label: "Home", icon: <FaHome /> },
     { to: "/movies", label: "Browse movies", icon: <FaFilm /> },
+    { to: "/music", label: "Music", icon: <FaMusic /> },
     { to: "/moods", label: "Mood match", icon: <FaTheaterMasks /> },
-    { to: "/about", label: "About BeatFlix", icon: <FaInfoCircle /> },
+    { to: "/free", label: "Free Movies", icon: <FaGift /> },
+    { to: "/subscription", label: "Subscription", icon: <FaStar /> },
   ];
 
   return (
@@ -62,20 +67,15 @@ function Navbar({ viewer, onSwitchProfile }) {
           ))}
 
           {/* MY LIST BUTTON */}
-          <div 
-            className="side-link my-list-btn" 
-            onClick={() => {
-              setIsMyListOpen(true);
-              setIsOpen(false);
-            }}
-            style={{ cursor: "pointer" }}
-            role="button"
-            tabIndex={0}
+          <NavLink 
+            to="/mylist" 
+            onClick={() => setIsOpen(false)} 
+            className={({ isActive }) => `side-link ${isActive ? "is-active" : ""}`}
           >
             <span className="side-icon"><FaBookmark /></span>
             <span className="side-link-label">My List</span>
             <div className="nav-tooltip">My List</div>
-          </div>
+          </NavLink>
 
           {/* NEW: ACCOUNT MANAGEMENT BUTTON */}
           <NavLink 
@@ -83,9 +83,32 @@ function Navbar({ viewer, onSwitchProfile }) {
             onClick={() => setIsOpen(false)} 
             className={({ isActive }) => `side-link ${isActive ? "is-active" : ""}`}
           >
-            <span className="side-icon"><FaUserCog /></span>
+            <span className="side-icon"><FaUserCircle /></span>
             <span className="side-link-label">Account</span>
             <div className="nav-tooltip">Account</div>
+          </NavLink>
+
+          {/* NEW: ADMIN PANEL BUTTON */}
+          {localStorage.getItem("userEmail") === "jeehardik2@gmail.com" && (
+            <NavLink 
+              to="/admin" 
+              onClick={() => setIsOpen(false)} 
+              className={({ isActive }) => `side-link ${isActive ? "is-active" : ""}`}
+            >
+              <span className="side-icon"><FaCrown /></span>
+              <span className="side-link-label">Admin</span>
+              <div className="nav-tooltip">Admin Panel</div>
+            </NavLink>
+          )}
+
+          <NavLink 
+            to="/about" 
+            onClick={() => setIsOpen(false)} 
+            className={({ isActive }) => `side-link ${isActive ? "is-active" : ""}`}
+          >
+            <span className="side-icon"><FaInfoCircle /></span>
+            <span className="side-link-label">About BeatFlix</span>
+            <div className="nav-tooltip">About BeatFlix</div>
           </NavLink>
         </div>
 
@@ -108,11 +131,6 @@ function Navbar({ viewer, onSwitchProfile }) {
         </div>
         
       </nav>
-
-      <MyListPanel 
-        isOpen={isMyListOpen} 
-        onClose={() => setIsMyListOpen(false)} 
-      />
     </>
   );
 }

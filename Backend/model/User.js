@@ -6,11 +6,35 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+      unique: true,
     },
 
     password: {
       type: String,
       required: true,
+    },
+
+    avatar: {
+      type: String,
+      default: "",
+    },
+
+    googleId: {
+      type: String,
+      default: "",
+    },
+
+    emailVerified: {
+      type: Boolean,
+      default: false,
     },
 
     subscription: {
@@ -29,12 +53,15 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
+    aiTokens: {
+      type: Number,
+      default: 5,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const User = mongoose.model("User", userSchema);
-
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);

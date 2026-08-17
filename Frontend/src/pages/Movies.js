@@ -41,25 +41,24 @@ function Movies() {
           </div>
 
           <h1 className="movies-title">
-            <span className="title-line">Your Next Obsession</span>
-            <span className="text-gradient">Starts Here</span>
+            <span className="title-line">Find your next</span>
+            <span className="text-gradient">favorite movie</span>
           </h1>
 
           <p className="movies-subtitle">
-            Discover thousands of cinematic masterpieces. Search your favorites or let the grid guide you.
+            Explore thousands of movies and TV shows. Search for your favorites or filter by genre.
           </p>
         </div>
       </section>
 
       <div className="movies-content-wrapper">
         
-        {/* CYBERNETIC SEARCH BAR */}
         <div className="movies-search-container">
           <div className="search-glass-wrapper">
             <FaSearch className="movies-search-icon" />
             <input
               type="text"
-              placeholder="Initialize search sequence..."
+              placeholder="Search for movies..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

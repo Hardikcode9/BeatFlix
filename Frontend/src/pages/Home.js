@@ -1,4 +1,4 @@
-  import { useEffect, useMemo, useState, useRef } from "react";
+  import { useEffect, useMemo, useState, useRef, useLayoutEffect } from "react";
   import {
     FaPlay,
     FaPlus,
@@ -8,8 +8,13 @@
     FaStar,
   } from "react-icons/fa";
   import { useNavigate } from "react-router-dom";
+  import gsap from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
   import "../styles/Home.css";
   import dhurandharPoster from "../assets/images/movies/dhurandhar.jpg";
+
+  // Register GSAP Plugin
+  gsap.registerPlugin(ScrollTrigger);
 
   // Decoder Ring
   const genreMap = {
@@ -21,18 +26,27 @@
 
   function Home() {
     const navigate = useNavigate();
+    const homeRef = useRef(null);
     
     // ==========================================
     // BOOT SEQUENCE STATE & TIMER
     // ==========================================
-    const [isBooting, setIsBooting] = useState(true);
+    const [isBooting, setIsBooting] = useState(() => {
+      // Only show the boot sequence if it hasn't been shown in this session
+      return !sessionStorage.getItem("beatflix_intro_played");
+    });
 
     useEffect(() => {
+      // If we're not booting, do nothing
+      if (!isBooting) return;
+      
       const timer = setTimeout(() => {
         setIsBooting(false);
+        sessionStorage.setItem("beatflix_intro_played", "true");
       }, 2600); // Intro lasts 2.6s
+      
       return () => clearTimeout(timer);
-    }, []);
+    }, [isBooting]);
 
     // ==========================================
     // MOVIE DATA STATES
@@ -87,6 +101,236 @@
       return () => clearInterval(timer);
     }, [heroMovies.length]);
 
+    // ==========================================
+    // GSAP SCROLL ANIMATIONS
+    // ==========================================
+    useLayoutEffect(() => {
+      if (isBooting) return;
+
+      const ctx = gsap.context(() => {
+        // --- HERO PARALLAX DEPTH ---
+        const heroLeft = homeRef.current?.querySelector(".hero-left");
+        const heroRight = homeRef.current?.querySelector(".hero-right");
+
+        if (heroLeft && heroRight) {
+          // Hero left text parallax (moves slower)
+          gsap.to(heroLeft, {
+            scrollTrigger: {
+              trigger: ".hero",
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.5,
+            },
+            y: -80,
+            opacity: 0.2,
+            scale: 0.95,
+            ease: "none",
+          });
+
+          // Hero right poster parallax (moves faster, pushes back in Z)
+          gsap.to(heroRight, {
+            scrollTrigger: {
+              trigger: ".hero",
+              start: "top top",
+              end: "bottom top",
+              scrub: 1,
+            },
+            y: -150,
+            opacity: 0,
+            scale: 0.85,
+            rotateX: 8,
+            ease: "none",
+          });
+        }
+
+        // --- MOVIE RAILS: ALTERNATING SCROLL REVEALS ---
+        const rails = homeRef.current?.querySelectorAll(".movie-rail");
+        if (rails) {
+          rails.forEach((rail, index) => {
+            const isEven = index % 2 === 0;
+
+            // Rail header reveal
+            const railHeader = rail.querySelector(".rail-header");
+            if (railHeader) {
+              gsap.fromTo(railHeader,
+                {
+                  opacity: 0,
+                  x: isEven ? -60 : 60,
+                  rotateY: isEven ? 6 : -6,
+                },
+                {
+                  scrollTrigger: {
+                    trigger: rail,
+                    start: "top 88%",
+                    end: "top 55%",
+                    scrub: 1,
+                  },
+                  opacity: 1,
+                  x: 0,
+                  rotateY: 0,
+                  duration: 1,
+                  ease: "power2.out",
+                }
+              );
+            }
+
+            // Rail container slide-in
+            const railContainer = rail.querySelector(".rail-container");
+            if (railContainer) {
+              gsap.fromTo(railContainer,
+                {
+                  opacity: 0,
+                  x: isEven ? -120 : 120,
+                  rotateY: isEven ? 4 : -4,
+                  scale: 0.92,
+                },
+                {
+                  scrollTrigger: {
+                    trigger: rail,
+                    start: "top 85%",
+                    end: "top 40%",
+                    scrub: 1.2,
+                  },
+                  opacity: 1,
+                  x: 0,
+                  rotateY: 0,
+                  scale: 1,
+                  duration: 1.2,
+                  ease: "power3.out",
+                }
+              );
+            }
+
+            // Individual card stagger within each rail
+            const cards = rail.querySelectorAll(".movie-card");
+            if (cards.length > 0) {
+              gsap.fromTo(cards,
+                {
+                  opacity: 0,
+                  y: 50,
+                  scale: 0.88,
+                  rotateX: 12,
+                },
+                {
+                  scrollTrigger: {
+                    trigger: rail,
+                    start: "top 80%",
+                    end: "top 35%",
+                    toggleActions: "play none none reverse",
+                  },
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  rotateX: 0,
+                  duration: 0.8,
+                  stagger: 0.06,
+                  ease: "power2.out",
+                }
+              );
+            }
+          });
+        }
+
+        // --- COLLECTION SECTION 3D FLIP-IN ---
+        const collectionSection = homeRef.current?.querySelector(".collection-section");
+        if (collectionSection) {
+          const collectionHeader = collectionSection.querySelector(".rail-header");
+          if (collectionHeader) {
+            gsap.fromTo(collectionHeader,
+              { opacity: 0, y: 40, rotateX: -8 },
+              {
+                scrollTrigger: {
+                  trigger: collectionSection,
+                  start: "top 85%",
+                  end: "top 55%",
+                  scrub: 1,
+                },
+                opacity: 1,
+                y: 0,
+                rotateX: 0,
+                duration: 1,
+                ease: "power2.out",
+              }
+            );
+          }
+
+          const collectionCards = collectionSection.querySelectorAll(".collection-card");
+          if (collectionCards.length > 0) {
+            gsap.fromTo(collectionCards,
+              {
+                opacity: 0,
+                y: 80,
+                rotateX: 25,
+                scale: 0.85,
+                transformOrigin: "center bottom",
+              },
+              {
+                scrollTrigger: {
+                  trigger: collectionSection,
+                  start: "top 80%",
+                  end: "top 35%",
+                  toggleActions: "play none none reverse",
+                },
+                opacity: 1,
+                y: 0,
+                rotateX: 0,
+                scale: 1,
+                duration: 1,
+                stagger: 0.1,
+                ease: "back.out(1.4)",
+              }
+            );
+          }
+        }
+
+        // --- PREMIUM BANNER SCALE-UP WITH PARALLAX GLOW ---
+        const premiumBanner = homeRef.current?.querySelector(".premium-banner");
+        if (premiumBanner) {
+          gsap.fromTo(premiumBanner,
+            {
+              opacity: 0,
+              scale: 0.82,
+              y: 60,
+              rotateX: 6,
+            },
+            {
+              scrollTrigger: {
+                trigger: premiumBanner,
+                start: "top 90%",
+                end: "top 50%",
+                scrub: 1.5,
+              },
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              rotateX: 0,
+              duration: 1.5,
+              ease: "power3.out",
+            }
+          );
+
+          // Parallax glow inside premium banner (moves slower)
+          const premiumGlow = premiumBanner.querySelector(".premium-glow");
+          if (premiumGlow) {
+            gsap.to(premiumGlow, {
+              scrollTrigger: {
+                trigger: premiumBanner,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 2,
+              },
+              y: -100,
+              scale: 1.3,
+              ease: "none",
+            });
+          }
+        }
+
+      }, homeRef);
+
+      return () => ctx.revert();
+    }, [isBooting, topIndia, topGlobal, trendingMovies, topRatedMovies, newReleases]);
+
     const handlePosterMove = (e) => {
       const card = e.currentTarget;
       const rect = card.getBoundingClientRect();
@@ -106,28 +350,14 @@
     return (
       <>
         {/* ==========================================
-            ULTRA-PREMIUM INTRO BOOT SCREEN
+            CINEMATIC INTRO SEQUENCE
         ========================================== */}
         {isBooting && (
-          <div className="boot-sequence">
-            <div className="boot-bg-glow"></div>
-            
-            <div className="boot-card">
-              {/* 🚀 THE NEW GLOWING INTRO LOGO */}
-              <img src="/beatflix_logo (1).png" alt="BeatFlix Logo" className="boot-logo" />
-
-              <div className="boot-badge">
-                <span className="boot-badge-dot"></span>
-                <span>✦ NEXT-GEN CINEMA</span>
-              </div>
-
-              <h1 className="boot-title">
-                <span className="boot-welcome">WELCOME TO</span>
-                <span className="boot-brand">BEATFLIX</span>
-              </h1>
-
-              <div className="boot-progress-wrapper">
-                <div className="boot-progress-bar"></div>
+          <div className="cinematic-intro">
+            <div className="intro-content">
+              <img src="/beatflix_logo (1).png" alt="BeatFlix Logo" className="intro-logo" />
+              <div className="intro-text">
+                <span className="intro-presents">Vision</span>
               </div>
             </div>
           </div>
@@ -136,7 +366,7 @@
         {/* ==========================================
             THE MAIN HOMEPAGE
         ========================================== */}
-        <div className={`beatflix-home ${!isBooting ? "page-revealed" : ""}`}>
+        <div ref={homeRef} className={`beatflix-home scroll-3d-container ${!isBooting ? "page-revealed" : ""}`}>
           <section className="hero">
             <div className="hero-left" key={currentMovie.id}>
               <span className="hero-label">🔥 FEATURED TONIGHT</span>
@@ -342,12 +572,12 @@
           <div className="premium-badge">
             <span className="badge-dot"></span> BEATFLIX PRO
           </div>
-          <h2>Endless Cinematic<br/>Brilliance.</h2>
-          <p>Unlock 4K streaming, exclusive director cuts, and zero ads. Your home theater awaits.</p>
+          <h2>Your personal<br/>home theater.</h2>
+          <p>Get unlimited access to movies and shows. Ad-free streaming, 4K resolution, and exclusive content.</p>
         </div>
         
         <div className="premium-action">
-          {/* 👉 ROUTE CHANGED HERE */}
+          {/* ðŸ‘‰ ROUTE CHANGED HERE */}
           <button className="premium-button" onClick={() => navigate("/subscription")}>
             Upgrade Now <FaChevronRight />
           </button>
@@ -355,5 +585,4 @@
       </section>
     );
   }
-
   export default Home;

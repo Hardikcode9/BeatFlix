@@ -36,7 +36,7 @@ function Moods() {
   {
     sender: "ai",
     text:
-      "Welcome to BeatFlix AI. ✦\n\nHow are you feeling today? Tell me what's on your mind, or let's scan your face with the camera to find perfect movies for your vibe.",
+      "Welcome to BeatFlix! 👋\n\nHow are you feeling today? Tell me what's on your mind, or let's use the camera to find the perfect movies for you.",
   },
 ];
 
@@ -260,11 +260,29 @@ const updateMessages = (newMessages) => {
   const creatingChatRef = useRef(false);
   const isDetectingRef = useRef(false);
 
- const hasLoadedChats = useRef(false);
+  const hasLoadedChats = useRef(false);
+
+  const [tokensLeft, setTokensLeft] = useState(null);
+
+  const fetchTokens = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/users/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        const t = data.user.aiTokens !== undefined ? data.user.aiTokens : 5;
+        setTokensLeft(data.user.subscription === "ultimate" ? "Unlimited" : t);
+      }
+    } catch (err) {}
+  };
 
 useEffect(() => {
   fetchMovies();
   loadModels();
+  fetchTokens();
 
   if (!hasLoadedChats.current) {
     hasLoadedChats.current = true;
@@ -279,6 +297,12 @@ useEffect(() => {
     }
   };
 }, []);
+
+useEffect(() => {
+  if (chatEndRef.current) {
+    chatEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+  }
+}, [messages, streamingText, isThinking]);
 
   const fetchMovies = async () => {
     try {
@@ -373,14 +397,17 @@ useEffect(() => {
     e.currentTarget.style.setProperty("--rotateY", "0deg");
   }, []);
 
-  const askGemini = async (userMessage) => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/profile`, {
+  const askGemini = async (userMessage, history) => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/gemini/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         message: userMessage,
+        history: history,
       }),
     });
 
@@ -388,6 +415,9 @@ useEffect(() => {
 
     if (!response.ok) {
       console.log(data);
+      if (response.status === 403) {
+        throw new Error(data.message || "You've reached your BeatFlix AI limit. Upgrade to Pro or Ultimate for more tokens!");
+      }
       throw new Error(data.message || "Server Error");
     }
 
@@ -407,7 +437,12 @@ const streamReply = async (reply) => {
 
   const askBeatFlix = async (message, currentMessages) => {
     setIsThinking(true);
-    try {const result = await askGemini(message);
+    try {
+      const result = await askGemini(message, currentMessages);
+
+      if (result.tokensLeft !== undefined) {
+        setTokensLeft(result.tokensLeft);
+      }
 
       console.log(result);
 
@@ -415,22 +450,90 @@ const finalReply = await streamReply(
   result.reply || "No recommendation available."
 );
 
-const matchedMovies = allMovies
-  .filter((movie) =>
-    movie.genre.some((genre) => result.genres.includes(genre))
-  )
-  .sort((a, b) => Number(b.rating) - Number(a.rating))
-  .slice(0, 6)
-  .map((movie) => ({
-    ...movie,
-    reason: `Recommended because it matches your ${movie.genre[0]} preference.`,
-  }));
-  console.log("Matched Movies:", matchedMovies);
+let matchedItems = [];
+let matchedMusic = [];
+
+if (result.domain === "music") {
+  if (result.songs && Array.isArray(result.songs) && result.songs.length > 0) {
+    const fetchPromises = result.songs.map(async (songName) => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music/search?q=${encodeURIComponent(songName)}`);
+        const data = await res.json();
+        if (data && data.success && data.songs && data.songs.length > 0) {
+            return data.songs[0];
+        }
+      } catch (e) {
+        console.error("Music search error", e);
+      }
+      return null;
+    });
+
+    const fetchedSongs = (await Promise.all(fetchPromises)).filter(m => m !== null);
+    if (fetchedSongs.length > 0) {
+      matchedMusic = fetchedSongs;
+    }
+  } else {
+    try {
+      const q = (result.artists && result.artists.length > 0) ? result.artists[0] : (result.genres && result.genres.length > 0 ? result.genres[0] : "pop");
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      if (data.success && data.songs) {
+        matchedMusic = data.songs.slice(0, 6);
+      }
+    } catch(e) {
+      console.error("Music fetch error", e);
+    }
+  }
+} else if (result.domain === "movie" || result.domain === "mixed" || result.domain === "unknown") {
+  if (result.movies && Array.isArray(result.movies) && result.movies.length > 0) {
+    const fetchPromises = result.movies.map(async (movieName) => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/movies?search=${encodeURIComponent(movieName)}`);
+        const data = await res.json();
+        if (data && data.success && data.results && data.results.length > 0) {
+            const movie = data.results[0]; // Take the top search result
+            return {
+                id: movie.id,
+                title: movie.title,
+                poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "https://placehold.co/500x750/1a1a1a/ffffff?text=No+Poster",
+                genre: (movie.genre_ids || []).map((id) => genreMap[id]).filter(Boolean).slice(0, 2),
+                rating: Number(movie.vote_average || 0).toFixed(1),
+                year: movie.release_date?.split("-")[0] || "N/A",
+                reason: `BeatFlix AI recommended this.`
+            };
+        }
+      } catch (e) {
+        console.error("Movie search error", e);
+      }
+      return null;
+    });
+
+    const fetchedMovies = (await Promise.all(fetchPromises)).filter(m => m !== null);
+    if (fetchedMovies.length > 0) {
+      matchedItems = fetchedMovies;
+    }
+  }
+
+  // Fallback if specific search failed or AI didn't return movies array
+  if (matchedItems.length === 0) {
+    matchedItems = allMovies
+      .filter((movie) =>
+        movie.genre.some((genre) => result.genres?.includes(genre))
+      )
+      .sort((a, b) => Number(b.rating) - Number(a.rating))
+      .slice(0, 6)
+      .map((movie) => ({
+        ...movie,
+        reason: `Recommended because it matches your ${movie.genre[0]} preference.`,
+      }));
+  }
+}
 
 const aiMessage = {
   sender: "ai",
   text: finalReply,
-  movies: matchedMovies,
+  movies: matchedItems,
+  music: matchedMusic
 };
 
 updateMessages([
@@ -442,13 +545,12 @@ await saveMessage(activeChatId, aiMessage);
 
 setStreamingText("");
 
-setRecommendedMovies(matchedMovies);} 
-    catch (err) {
+setRecommendedMovies(matchedItems);    } catch (err) {
       updateMessages([
         ...currentMessages,
         {
           sender: "ai",
-          text: "Connection to BeatFlix servers lost. Try again.",
+          text: err.message || "Connection to BeatFlix servers lost. Try again.",
         },
       ]);
     }
@@ -559,7 +661,7 @@ updateMessages([
 ]);
 
 askBeatFlix(
-  `I am feeling ${detectedEmotion}. Recommend movies for me.`
+  `I am feeling ${detectedEmotion}. Ask me if I want to watch a movie or listen to music.`
 );
       }
     } catch (err) {
@@ -579,24 +681,48 @@ askBeatFlix(
 
   const formatMessage = (text) => {
   return text.split("\n").map((line, index) => {
-    const trimmed = line.trim();
+    let trimmed = line.trim();
 
     if (!trimmed) {
       return <br key={index} />;
     }
+    
+    // Parse bold text
+    const renderBold = (str) => {
+      const parts = str.split(/(\*\*.*?\*\*)/g);
+      return parts.map((part, i) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return <strong key={i} style={{color: '#38bdf8'}}>{part.slice(2, -2)}</strong>;
+        }
+        return part;
+      });
+    };
 
     if (/^\d+\./.test(trimmed)) {
       return (
         <div key={index} className="message-list-item">
-          {trimmed}
+          {renderBold(trimmed)}
         </div>
       );
     }
 
-    if (trimmed.startsWith("•") || trimmed.startsWith("-")) {
+    if (trimmed.startsWith("•") || trimmed.startsWith("-") || trimmed.startsWith("*")) {
+      // Remove bullet char
+      trimmed = trimmed.replace(/^[-•*]\s*/, "");
+      
+      // Auto-bold the title if there's a colon but no existing bold
+      if (!trimmed.includes("**") && trimmed.includes(":")) {
+          const parts = trimmed.split(":");
+          trimmed = `**${parts[0]}**:${parts.slice(1).join(":")}`;
+      }
+      // Or if they used single quotes like 'Movie Name'
+      else if (!trimmed.includes("**") && /^'[^']+'/.test(trimmed)) {
+          trimmed = trimmed.replace(/^'([^']+)'/, "**$1**");
+      }
+
       return (
         <div key={index} className="message-list-item">
-          {trimmed}
+          {renderBold(trimmed)}
         </div>
       );
     }
@@ -604,12 +730,12 @@ askBeatFlix(
     if (trimmed.endsWith(":")) {
       return (
         <div key={index} className="message-heading">
-          {trimmed}
+          {renderBold(trimmed)}
         </div>
       );
     }
 
-    return <div key={index}>{trimmed}</div>;
+    return <div key={index}>{renderBold(trimmed)}</div>;
   });
 };
 
@@ -621,10 +747,10 @@ askBeatFlix(
         <section className="moods-hero">
           {/* 🚀 RESTORED PULSING BADGE */}
           <span className="hero-label">
-            <span className="badge-dot"></span> BEATFLIX AI ONLINE
+            <span className="badge-dot"></span> BEATFLIX ASSISTANT
           </span>
-          <h1 className="hero-movie-title"><span>Curate Your Vibe</span></h1>
-          <p className="mood-subtitle">Speak to our cinematic AI or let the biometric lens read your micro-expressions to craft the perfect watchlist.</p>
+          <h1 className="hero-movie-title"><span>What are you in the mood for?</span></h1>
+          <p className="mood-subtitle">Tell us how you're feeling, or let the camera find the perfect movies and music for your mood.</p>
         </section>
 
         <div className="chat-layout">
@@ -691,6 +817,29 @@ askBeatFlix(
                                     ))}
                                   </div>
                                 )}
+                                {msg.music?.length > 0 && (
+                                  <div className="chat-movie-carousel">
+                                    {msg.music.map((song) => (
+                                      <div
+                                        key={song.videoId}
+                                        className="chat-movie-card"
+                                        onClick={() => navigate(`/music/${song.videoId}`, { state: { song } })}
+                                      >
+                                        <img
+                                          src={song.thumbnail || `https://i.ytimg.com/vi/${song.videoId}/hqdefault.jpg`}
+                                          alt={song.title}
+                                          className="chat-movie-poster"
+                                        />
+                                        <div className="chat-movie-info">
+                                          <h4>{song.title}</h4>
+                                          <div className="chat-movie-genres">
+                                            {song.channelTitle || "Artist"}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
 
                                   <div className="message-footer">
 
@@ -749,6 +898,12 @@ askBeatFlix(
             <form className="search-box mood-search-box" onSubmit={handleChatSubmit}>
               <FaMagic className="search-icon" />
               <input placeholder="Tell BeatFlix AI how you're feeling right now..." value={input} onChange={(e) => setInput(e.target.value)} />
+              {tokensLeft !== null && (
+                <div className="input-token-counter" title={`${tokensLeft} Tokens Left`}>
+                  <span className="token-icon">⚡</span> 
+                  <span className="token-text">{tokensLeft}</span>
+                </div>
+              )}
               <button className="watch-btn mood-send-btn" type="submit">Send</button>
             </form>
 
