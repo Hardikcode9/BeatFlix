@@ -603,6 +603,15 @@ html { scrollbar-width: none; }
    MOBILE RESPONSIVENESS
 ========================================================= */
 @media (max-width: 768px) {
+  .scroll-progress-container { display: none; }
+  
+  .cinematic-card {
+    width: min(280px, 85vw);
+    height: min(400px, 60vh);
+    margin-left: calc(-1 * min(140px, 42.5vw));
+    margin-top: calc(-1 * min(200px, 30vh));
+  }
+
   .who-title-container { top: 12vh; width: 90%; }
   
   .netflix-profiles { 

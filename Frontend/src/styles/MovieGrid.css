@@ -110,12 +110,13 @@
 }
 
 /* --- RESPONSIVE --- */
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-    .movie-container { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
-    .skeleton-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+    .movie-container { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .skeleton-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
 }
 
 @media (max-width: 480px) {
-    .movie-container { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .skeleton-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .movie-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .skeleton-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }

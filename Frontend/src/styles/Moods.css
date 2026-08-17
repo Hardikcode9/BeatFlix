@@ -742,3 +742,13 @@
     color: #facc15;
     font-size: 1rem;
 }
+
+/* ===========================================================
+   MOBILE RESPONSIVENESS
+=========================================================== */
+@media (max-width: 768px) {
+    .mood-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}
