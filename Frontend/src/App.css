@@ -37,11 +37,9 @@ html, body {
     display: flow-root; 
 }
 
-@media (max-width: 720px) {
+@media (max-width: 768px) {
     .app-content {
-        /* 4. I CHANGED THIS FROM 68px TO 0px. */
-        /* If your mobile navbar covers your text later, you can change this back, but this will prove if it was causing the gap! */
-        padding: 0px 0 0 !important; 
+        padding: 0 0 120px 0 !important; /* Bottom padding so content scrolls above the floating navbar */
     }
 }
 

@@ -37,7 +37,7 @@ async function startServer() {
   try {
     await connectDB();
 
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`🚀 BeatFlix Server Running on Port ${PORT}`);
     });
   } catch (err) {

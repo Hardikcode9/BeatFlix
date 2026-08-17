@@ -125,3 +125,34 @@
 .expand-btn:hover {
   color: #fff;
 }
+
+@media (max-width: 768px) {
+  .global-music-player {
+    width: calc(100% - 32px);
+    max-width: none;
+    bottom: 110px; /* Sits above the 76px bottom navbar + some margin */
+    border-radius: 16px;
+    height: 70px;
+  }
+  
+  .gmp-content {
+    padding: 0 12px;
+  }
+  
+  .gmp-art {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .gmp-text h4, .gmp-text p {
+    max-width: 150px;
+  }
+  
+  .gmp-controls {
+    gap: 12px;
+  }
+  
+  .gmp-controls button:not(.fa-play, .fa-pause) {
+    /* Hide some secondary controls on very small screens if needed, but for now we'll just shrink gap */
+  }
+}

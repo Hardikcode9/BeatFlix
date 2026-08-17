@@ -606,6 +606,7 @@ html { scrollbar-width: none; }
   .who-title-container { top: 12vh; width: 90%; }
   .netflix-profiles { width: 300px; height: 400px; }
   .card-icon-capsule { width: 90px; height: 90px; font-size: 32px; }
-  .entry-form { padding: 35px 25px; width: 92vw; border-radius: 28px; }
+  .entry-form { padding: 30px 20px; width: 95vw; max-width: 400px; border-radius: 28px; }
+  .auth-hero-title { font-size: 28px; }
   .particle-0 { display: none; } /* Performance optimization */
 }

@@ -342,64 +342,40 @@
 ========================================= */
 
 @media (max-width: 900px) {
-
     .footer-container {
-        grid-template-columns:
-            2fr
-            1fr
-            1fr;
-
+        grid-template-columns: 2fr 1fr 1fr;
         gap: 45px;
     }
-
 }
 
-
-@media (max-width: 700px) {
-
+@media (max-width: 768px) {
     .footer {
         margin-top: 60px;
+        padding-bottom: 90px; /* Clearance for the bottom mobile navbar */
     }
 
     .footer-container {
-        grid-template-columns:
-            1fr
-            1fr;
-
-        padding:
-            55px 25px
-            45px;
-
+        grid-template-columns: 1fr 1fr;
+        padding: 55px 25px 45px;
         gap: 45px 30px;
     }
 
     .footer-brand {
-        grid-column:
-            1 / -1;
+        grid-column: 1 / -1;
     }
 
     .footer-bottom {
-        padding:
-            20px 25px
-            25px;
-
+        padding: 20px 25px 25px;
         flex-direction: column;
-
         text-align: center;
     }
-
 }
 
-
-@media (max-width: 450px) {
-
+@media (max-width: 480px) {
     .footer-container {
-        grid-template-columns:
-            1fr;
+        grid-template-columns: 1fr;
     }
-
     .footer-brand {
         grid-column: auto;
     }
-
 }
