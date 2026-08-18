@@ -385,7 +385,7 @@ function AdminDashboard() {
     
     <div className="admin-layout-simple">
       {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
-      <aside className={`sidebar-simple ${isSidebarOpen ? 'open' : '}`}>
+      <aside className={`sidebar-simple ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand-wrapper">
           <div className="sidebar-brand">BeatFlix</div>
           <button className="sidebar-close-btn" onClick={() => setIsSidebarOpen(false)}><FaTimes /></button>
