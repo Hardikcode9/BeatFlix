@@ -379,8 +379,8 @@ function EntryScreen({ onEnter }) {
   return (
     <main className="beatflix-entry-wrapper">
       
-      {/* BACKGROUND CANVAS SYSTEM */}
-      <ScrollBackground totalFrames={200} />
+      {/* BACKGROUND CANVAS SYSTEM - Disabled on mobile for max performance */}
+      {!isMobileDevice && <ScrollBackground totalFrames={200} />}
 
       {/* INVISIBLE SCROLL TIMELINE TRACK (400vh) */}
       <section className="scroll-background-section" />
@@ -547,7 +547,9 @@ function EntryScreen({ onEnter }) {
                 
                 <div className="entry-divider"><span></span><p>OR</p><span></span></div>
                 
-                <button type="button" className="google-button" onClick={handleGoogleLogin}><FaGoogle /> Continue with Google</button>
+                <button type="button" className="google-button" onClick={handleGoogleLogin} disabled={loading}>
+                  <FaGoogle /> {loading ? "Connecting..." : "Continue with Google"}
+                </button>
                 
                 {formType === "login" && (
                   <button type="button" className="forgot-password" onClick={() => { setForgotEmail(""); setMessage(""); setShowForgotModal(true); }}>

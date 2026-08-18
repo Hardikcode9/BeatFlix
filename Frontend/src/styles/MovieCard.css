@@ -183,3 +183,41 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
+
+    /* =========================================
+       MOBILE RESPONSIVENESS
+    ========================================= */
+    @media (max-width: 768px) {
+        .card-details {
+            padding: 12px;
+            transform: translateZ(10px);
+        }
+        .premium-movie-card:hover .card-details {
+            transform: translateZ(15px);
+        }
+        .movie-title {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        .movie-genres {
+            font-size: 10px;
+        }
+        .badge-system {
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            transform: translateZ(10px);
+        }
+        .premium-movie-card:hover .badge-system {
+            transform: translateZ(15px);
+        }
+        .rating-badge, .year-badge {
+            padding: 4px 8px;
+            font-size: 9px;
+            border-radius: 6px;
+        }
+        .premium-movie-card:hover {
+            transform: translateY(-8px) scale(1.02) !important;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+        }
+    }

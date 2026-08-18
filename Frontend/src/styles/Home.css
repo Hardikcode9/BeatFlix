@@ -3256,9 +3256,14 @@ scale(1);
         letter-spacing: -1px !important;
     }
 
-    /* 2. Hide the 3D card carousel on phones — it cannot fit */
+    /* 2. Bring back the main poster on phones but scaled down */
     .hero-right {
-        display: none !important;
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        transform: scale(0.85);
+        transform-origin: center;
     }
 
     /* 3. Ensure hero stacks properly */
