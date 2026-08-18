@@ -413,78 +413,109 @@ function EntryScreen({ onEnter }) {
 
         <section className="entry-content">
           
-          {/* ALWAYS RENDER PROFILES SO GSAP NEVER LOSES ITS TARGETS */}
-          <motion.div 
-            className="netflix-entry"
-            initial={false}
-            animate={{ 
-              opacity: formType ? 0 : 1, 
-              filter: formType ? "blur(15px)" : "blur(0px)",
-              z: formType ? -300 : 0,
-              pointerEvents: formType ? "none" : "auto"
-            }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* STAGE 0: BRAND & HEADING */}
-            <div className="who-title-container">
-              <ParticleEffect isMobileDevice={isMobileDevice} />
-              <div className="entry-brand">
-                <div className="entry-brand-icon"><img src={logo} alt="BeatFlix" /></div>
-                <div className="entry-brand-name"><span className="brand-white">Beat</span><span className="brand-blue">Flix</span></div>
+          {isMobileDevice ? (
+            <div className="mobile-premium-view">
+              <div className="mobile-premium-header">
+                <img src={logo} alt="BeatFlix" />
+                <h1>Who's Watching?</h1>
               </div>
-              <h1 className="who-title">Who's Watching?</h1>
+
+              {!formType && (
+                <div className="mobile-premium-slider">
+                  <button className="mobile-premium-card mc-guest" onClick={() => onEnter("Guest")}>
+                    <div className="mc-glow" />
+                    <div className="mc-icon"><FaCompass /></div>
+                    <h3>Guest</h3>
+                    <p>Continue instantly</p>
+                  </button>
+                  <button className="mobile-premium-card mc-login" onClick={() => setFormType("login")}>
+                    <div className="mc-glow" />
+                    <div className="mc-icon"><FaUserShield /></div>
+                    <h3>Login</h3>
+                    <p>Welcome back</p>
+                  </button>
+                  <button className="mobile-premium-card mc-signup" onClick={() => setFormType("signup")}>
+                    <div className="mc-glow" />
+                    <div className="mc-icon"><FaUserPlus /></div>
+                    <h3>Create Profile</h3>
+                    <p>Make BeatFlix yours</p>
+                  </button>
+                </div>
+              )}
             </div>
-
-            {/* STAGES 1-3: PREMIUM 3D PROFILE CARDS */}
-            <div className="netflix-profiles">
-              
-              {/* GUEST CARD */}
-              <button className="cinematic-card guest-card" onClick={() => onEnter("Guest")}>
+          ) : (
+            <motion.div 
+              className="netflix-entry"
+              initial={false}
+              animate={{ 
+                opacity: formType ? 0 : 1, 
+                filter: formType ? "blur(15px)" : "blur(0px)",
+                z: formType ? -300 : 0,
+                pointerEvents: formType ? "none" : "auto"
+              }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* STAGE 0: BRAND & HEADING */}
+              <div className="who-title-container">
                 <ParticleEffect isMobileDevice={isMobileDevice} />
-                <div className="card-ambient-glow guest-glow" />
-                <div className="card-glass-surface">
-                  <div className="card-icon-capsule guest-capsule">
-                    <FaCompass />
-                  </div>
-                  <div className="card-text-content">
-                    <span>Guest</span>
-                    <small>Continue instantly</small>
-                  </div>
+                <div className="entry-brand">
+                  <div className="entry-brand-icon"><img src={logo} alt="BeatFlix" /></div>
+                  <div className="entry-brand-name"><span className="brand-white">Beat</span><span className="brand-blue">Flix</span></div>
                 </div>
-              </button>
+                <h1 className="who-title">Who's Watching?</h1>
+              </div>
 
-              {/* LOGIN CARD */}
-              <button className="cinematic-card login-card" onClick={() => setFormType("login")}>
-                <ParticleEffect isMobileDevice={isMobileDevice} />
-                <div className="card-ambient-glow login-glow" />
-                <div className="card-glass-surface">
-                  <div className="card-icon-capsule login-capsule">
-                    <FaUserShield />
+              {/* STAGES 1-3: PREMIUM 3D PROFILE CARDS */}
+              <div className="netflix-profiles">
+                
+                {/* GUEST CARD */}
+                <button className="cinematic-card guest-card" onClick={() => onEnter("Guest")}>
+                  <ParticleEffect isMobileDevice={isMobileDevice} />
+                  <div className="card-ambient-glow guest-glow" />
+                  <div className="card-glass-surface">
+                    <div className="card-icon-capsule guest-capsule">
+                      <FaCompass />
+                    </div>
+                    <div className="card-text-content">
+                      <span>Guest</span>
+                      <small>Continue instantly</small>
+                    </div>
                   </div>
-                  <div className="card-text-content">
-                    <span>Login</span>
-                    <small>Welcome back</small>
-                  </div>
-                </div>
-              </button>
+                </button>
 
-              {/* SIGNUP CARD */}
-              <button className="cinematic-card signup-card" onClick={() => setFormType("signup")}>
-                <ParticleEffect isMobileDevice={isMobileDevice} />
-                <div className="card-ambient-glow signup-glow" />
-                <div className="card-glass-surface">
-                  <div className="card-icon-capsule signup-capsule">
-                    <FaUserPlus />
+                {/* LOGIN CARD */}
+                <button className="cinematic-card login-card" onClick={() => setFormType("login")}>
+                  <ParticleEffect isMobileDevice={isMobileDevice} />
+                  <div className="card-ambient-glow login-glow" />
+                  <div className="card-glass-surface">
+                    <div className="card-icon-capsule login-capsule">
+                      <FaUserShield />
+                    </div>
+                    <div className="card-text-content">
+                      <span>Login</span>
+                      <small>Welcome back</small>
+                    </div>
                   </div>
-                  <div className="card-text-content">
-                    <span>Create Profile</span>
-                    <small>Make BeatFlix yours</small>
+                </button>
+
+                {/* SIGNUP CARD */}
+                <button className="cinematic-card signup-card" onClick={() => setFormType("signup")}>
+                  <ParticleEffect isMobileDevice={isMobileDevice} />
+                  <div className="card-ambient-glow signup-glow" />
+                  <div className="card-glass-surface">
+                    <div className="card-icon-capsule signup-capsule">
+                      <FaUserPlus />
+                    </div>
+                    <div className="card-text-content">
+                      <span>Create Profile</span>
+                      <small>Make BeatFlix yours</small>
+                    </div>
                   </div>
-                </div>
-              </button>
-              
-            </div>
-          </motion.div>
+                </button>
+                
+              </div>
+            </motion.div>
+          )}
 
           <AnimatePresence>
             {formType && (
