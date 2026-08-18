@@ -559,6 +559,13 @@
     .mood-grid-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .movie-poster { height: 160px; }
 
+    .chat-movie-card {
+        flex: 0 0 100px;
+    }
+    .chat-movie-info h4 {
+        font-size: 0.75rem;
+    }
+
     .domain-card {
         height: 180px;
         max-width: 100%;
