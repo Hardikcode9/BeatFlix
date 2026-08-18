@@ -1250,3 +1250,38 @@ html { scrollbar-width: none; }
 .mc-login::after { background: radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%); }
 .mc-signup::after { background: radial-gradient(circle, rgba(16,185,129,0.4) 0%, transparent 70%); }
 
+
+/* FIXES FOR PREMIUM AESTHETICS */
+@keyframes logoBoxPulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); transform: scale(1); }
+  50% { box-shadow: 0 0 60px rgba(216, 180, 254, 1); transform: scale(1.1); }
+}
+
+.mobile-premium-view .entry-brand-icon {
+  animation: logoBoxPulseGlow 3s ease-in-out infinite !important;
+}
+
+/* Stunning Mesh Gradient Background */
+@keyframes premiumMeshPan {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 100%; }
+}
+
+.mobile-premium-view {
+  background: 
+    radial-gradient(circle at top left, rgba(168, 85, 247, 0.25), transparent 60%),
+    radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.2), transparent 60%),
+    radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.15), transparent 60%),
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent 60%),
+    #0b0a14 !important;
+  background-size: 200% 200% !important;
+  animation: premiumMeshPan 20s ease-in-out infinite alternate !important;
+}
+
+/* Thinner, elegant glass border for cards */
+.mobile-premium-card::before {
+  padding: 1px !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.02), rgba(168, 85, 247, 0.15)) !important;
+}
+
