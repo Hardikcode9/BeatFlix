@@ -1,0 +1,143 @@
+
+/* ADMIN DASHBOARD MOBILE RESPONSIVE FIXES */
+
+/* Default Desktop Hiding */
+.sidebar-close-btn, .mobile-menu-btn, .sidebar-overlay {
+  display: none;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.sidebar-brand-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .admin-layout-simple {
+    flex-direction: column;
+  }
+  
+  /* Sidebar Mobile Drawer */
+  .sidebar-simple {
+    position: fixed;
+    top: 0;
+    left: -300px; /* Hidden off-screen initially */
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+    width: 280px;
+  }
+  
+  .sidebar-simple.open {
+    left: 0; /* Slide in */
+  }
+
+  .sidebar-brand-wrapper {
+    padding-right: 20px;
+  }
+
+  .sidebar-close-btn {
+    display: block;
+    background: none;
+    border: none;
+    color: #a855f7;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 999;
+  }
+
+  /* Header adjustments */
+  .header-left {
+    gap: 15px;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+  }
+
+  /* Grid adjustments */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .trending-simple-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Tables adjustments */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -20px; /* Allow scrolling to edge on mobile */
+    padding: 0 20px;
+  }
+  
+  .data-table th, .data-table td {
+    white-space: nowrap;
+    padding: 12px 15px;
+  }
+  
+  .section-header.flex-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+  .search-input input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .trending-simple-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+
+  .tabs-simple {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .tab-simple {
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-size: 1.2rem;
+  }
+  
+  .main-simple {
+    padding: 15px;
+  }
+}
+

@@ -3,7 +3,8 @@ import '../styles/AdminDashboard.css';
 import { 
   FaUsers, FaFilm, FaCog, FaEdit, FaTrashAlt,
   FaSearch, FaStar, FaChevronLeft, FaChevronRight,
-  FaGoogle, FaEnvelope, FaCheckCircle, FaChartPie
+  FaGoogle, FaEnvelope, FaCheckCircle, FaChartPie,
+  FaBars, FaTimes
 } from 'react-icons/fa';
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
@@ -18,6 +19,7 @@ const genreMap = {
 
 function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [newReleases, setNewReleases] = useState([]);
@@ -380,36 +382,49 @@ function AdminDashboard() {
   );
 
   return (
+    
     <div className="admin-layout-simple">
-      <aside className="sidebar-simple">
-        <div className="sidebar-brand">
-          BeatFlix
+      {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
+      <aside className={`sidebar-simple ${isSidebarOpen ? 'open' : '}`}>
+        <div className="sidebar-brand-wrapper">
+          <div className="sidebar-brand">BeatFlix</div>
+          <button className="sidebar-close-btn" onClick={() => setIsSidebarOpen(false)}><FaTimes /></button>
         </div>
+
         <nav className="sidebar-menu">
-          <button className={`menu-item ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>
+          <button className={`menu-item ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => { setActiveTab('overview'); setIsSidebarOpen(false); }}>
             <FaChartPie /> Overview
           </button>
-          <button className={`menu-item ${activeTab === 'movies' ? 'active' : ''}`} onClick={() => setActiveTab('movies')}>
+          <button className={`menu-item ${activeTab === 'movies' ? 'active' : ''}`} onClick={() => { setActiveTab('movies'); setIsSidebarOpen(false); }}>
             <FaFilm /> Content
           </button>
-          <button className={`menu-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>
+          <button className={`menu-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => { setActiveTab('users'); setIsSidebarOpen(false); }}>
             <FaUsers /> Users
           </button>
-          <button className={`menu-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
+          <button className={`menu-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => { setActiveTab('settings'); setIsSidebarOpen(false); }}>
             <FaCog /> Settings
           </button>
         </nav>
       </aside>
 
       <main className="main-simple">
+        
         <header className="header-simple">
-          <div className="header-title">
+          <div className="header-left">
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+              <FaBars />
+            </button>
+            <div className="header-title">
+
             {activeTab === 'overview' && 'Dashboard Overview'}
             {activeTab === 'movies' && 'Content Management'}
             {activeTab === 'users' && 'User Management'}
+            
             {activeTab === 'settings' && 'Platform Settings'}
+            </div>
           </div>
           <div className="header-profile">
+
             <div className="avatar-small">A</div>
           </div>
         </header>
