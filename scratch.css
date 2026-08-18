@@ -1,10 +1,82 @@
 
-/* MAKE DOM PARTICLES MASSIVE AND BRIGHTLY GLOWING */
-.mobile-premium-view .particle, 
-.mobile-premium-view .local-particle {
-  width: 10px !important;
-  height: 10px !important;
-  box-shadow: 0 0 30px 10px rgba(216, 180, 254, 0.9), 0 0 50px 15px rgba(56, 189, 248, 0.6) !important;
-  background: rgba(255, 255, 255, 1) !important;
+/* =========================================================
+   PERFECT DESKTOP-MATCHING MOBILE FIXES
+========================================================= */
+
+/* 1. Transparent background to inherit desktop gradient */
+.mobile-premium-view {
+  background: transparent !important;
+}
+
+/* 2. Floating Cards */
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.mobile-premium-card {
+  animation: floatCard 4s ease-in-out infinite !important;
+  /* Re-add elegant 1px glass border */
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-top: 1px solid rgba(255,255,255,0.25) !important;
+  background: rgba(15, 10, 25, 0.4) !important;
+}
+
+.mobile-premium-card:nth-child(1) { animation-delay: 0s !important; }
+.mobile-premium-card:nth-child(2) { animation-delay: 1s !important; }
+.mobile-premium-card:nth-child(3) { animation-delay: 2s !important; }
+
+/* 3. Floating Tiny Desktop Particles */
+@keyframes floatParticleMobile {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.3; }
+  33% { transform: translate(40px, -60px) rotate(120deg) scale(1.3); opacity: 0.9; }
+  66% { transform: translate(-30px, 30px) rotate(240deg) scale(0.7); opacity: 0.5; }
+  100% { transform: translate(0, 0) rotate(360deg) scale(1); opacity: 0.3; }
+}
+
+/* Ensure particles stay desktop-sized but float */
+.mobile-premium-view .local-particle,
+.mobile-premium-view .particle {
+  animation: floatParticleMobile 12s ease-in-out infinite alternate !important;
+  width: 6px !important;
+  height: 6px !important;
+  background: rgba(168, 85, 247, 0.6) !important;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.8) !important;
+}
+
+.mobile-premium-view .local-particle:nth-child(even),
+.mobile-premium-view .particle:nth-child(even) {
+  animation-duration: 18s !important;
+  animation-direction: alternate-reverse !important;
+}
+
+.mobile-premium-view .local-particle:nth-child(3n),
+.mobile-premium-view .particle:nth-child(3n) {
+  animation-duration: 22s !important;
+}
+
+/* 4. Desktop Text Gradient and Logo Pulse fallback for mobile */
+@keyframes textGlowShift {
+  0% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
+  50% { background-position: 100% 50%; filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.6)); }
+  100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
+}
+
+@keyframes logoBoxPulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); transform: scale(1); }
+  50% { box-shadow: 0 0 50px rgba(216, 180, 254, 0.9); transform: scale(1.1); }
+}
+
+.mobile-premium-view .who-title {
+  background: linear-gradient(to right, #ffffff, #a855f7, #38bdf8, #ffffff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textGlowShift 4s ease-in-out infinite;
+}
+
+.mobile-premium-view .entry-brand-icon {
+  animation: logoBoxPulseGlow 3s ease-in-out infinite !important;
 }
 

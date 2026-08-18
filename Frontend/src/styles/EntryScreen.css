@@ -856,7 +856,8 @@ html { scrollbar-width: none; }
   .local-particle {
     animation: none !important;
   }
-} 
+}
+ 
  
 /* =========================================================
    DEDICATED MOBILE ENTRY SCREEN (ISOLATED FROM GSAP)
@@ -1251,103 +1252,17 @@ html { scrollbar-width: none; }
 .mc-signup::after { background: radial-gradient(circle, rgba(16,185,129,0.4) 0%, transparent 70%); }
 
 
-/* FIXES FOR PREMIUM AESTHETICS */
-@keyframes logoBoxPulseGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); transform: scale(1); }
-  50% { box-shadow: 0 0 60px rgba(216, 180, 254, 1); transform: scale(1.1); }
-}
 
-.mobile-premium-view .entry-brand-icon {
-  animation: logoBoxPulseGlow 3s ease-in-out infinite !important;
-}
+/* =========================================================
+   PERFECT DESKTOP-MATCHING MOBILE FIXES
+========================================================= */
 
-/* Stunning Mesh Gradient Background */
-@keyframes premiumMeshPan {
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 100%; }
-  100% { background-position: 0% 100%; }
-}
-
+/* 1. Transparent background to inherit desktop gradient */
 .mobile-premium-view {
-  background: 
-    radial-gradient(circle at top left, rgba(168, 85, 247, 0.25), transparent 60%),
-    radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.2), transparent 60%),
-    radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.15), transparent 60%),
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent 60%),
-    #0b0a14 !important;
-  background-size: 200% 200% !important;
-  animation: premiumMeshPan 20s ease-in-out infinite alternate !important;
-}
-
-/* Thinner, elegant glass border for cards */
-.mobile-premium-card::before {
-  padding: 1px !important;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.02), rgba(168, 85, 247, 0.15)) !important;
-}
-
-
-/* APPLE-GRADE STARDUST PARTICLES */
-.mobile-premium-view::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: 
-    radial-gradient(1.5px 1.5px at 20px 30px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.6), rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 50px 160px, rgba(255,255,255,0.9), rgba(0,0,0,0)),
-    radial-gradient(2.5px 2.5px at 90px 40px, rgba(255,255,255,0.5), rgba(0,0,0,0)),
-    radial-gradient(1.5px 1.5px at 130px 80px, rgba(255,255,255,0.7), rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.8), rgba(0,0,0,0));
-  background-repeat: repeat;
-  background-size: 200px 200px;
-  animation: stardustDrift 80s linear infinite;
-  opacity: 0.6;
-  z-index: 1;
-  pointer-events: none;
-}
-
-@keyframes stardustDrift {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-200px); }
-}
-
-/* BLINDING LOGO GLOW */
-@keyframes logoBoxPulseGlow {
-  0%, 100% { 
-    box-shadow: 0 0 40px rgba(168, 85, 247, 0.9), 0 0 80px rgba(56, 189, 248, 0.5); 
-    transform: scale(1); 
-  }
-  50% { 
-    box-shadow: 0 0 80px rgba(216, 180, 254, 1), 0 0 120px rgba(168, 85, 247, 0.9), 0 0 180px rgba(56, 189, 248, 0.6); 
-    transform: scale(1.15); 
-  }
-}
-
-
-/* LOGO WITHOUT BACKGROUND & MAXIMUM DROP SHADOW GLOW */
-.mobile-premium-view .entry-brand-icon {
   background: transparent !important;
-  box-shadow: none !important;
-  animation: none !important; /* Stop the box from pulsing */
 }
 
-@keyframes intenseLogoDropShadow {
-  0%, 100% { 
-    filter: drop-shadow(0 0 20px rgba(168, 85, 247, 1)) drop-shadow(0 0 40px rgba(56, 189, 248, 0.8)); 
-    transform: scale(1); 
-  }
-  50% { 
-    filter: drop-shadow(0 0 50px rgba(216, 180, 254, 1)) drop-shadow(0 0 100px rgba(168, 85, 247, 1)) drop-shadow(0 0 150px rgba(56, 189, 248, 1)); 
-    transform: scale(1.15); 
-  }
-}
-
-.mobile-premium-view .entry-brand-icon img {
-  animation: intenseLogoDropShadow 2s ease-in-out infinite !important;
-  border-radius: 0 !important; /* Remove border radius if logo has transparent edges */
-}
-
-/* FLOATING CARDS */
+/* 2. Floating Cards */
 @keyframes floatCard {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-15px); }
@@ -1355,14 +1270,17 @@ html { scrollbar-width: none; }
 
 .mobile-premium-card {
   animation: floatCard 4s ease-in-out infinite !important;
+  /* Re-add elegant 1px glass border */
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-top: 1px solid rgba(255,255,255,0.25) !important;
+  background: rgba(15, 10, 25, 0.4) !important;
 }
 
-/* Stagger card floating */
 .mobile-premium-card:nth-child(1) { animation-delay: 0s !important; }
 .mobile-premium-card:nth-child(2) { animation-delay: 1s !important; }
 .mobile-premium-card:nth-child(3) { animation-delay: 2s !important; }
 
-/* FIX STILL PARTICLES (Apply CSS motion since GSAP is disabled on mobile) */
+/* 3. Floating Tiny Desktop Particles */
 @keyframes floatParticleMobile {
   0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.3; }
   33% { transform: translate(40px, -60px) rotate(120deg) scale(1.3); opacity: 0.9; }
@@ -1370,9 +1288,14 @@ html { scrollbar-width: none; }
   100% { transform: translate(0, 0) rotate(360deg) scale(1); opacity: 0.3; }
 }
 
+/* Ensure particles stay desktop-sized but float */
 .mobile-premium-view .local-particle,
 .mobile-premium-view .particle {
   animation: floatParticleMobile 12s ease-in-out infinite alternate !important;
+  width: 6px !important;
+  height: 6px !important;
+  background: rgba(168, 85, 247, 0.6) !important;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.8) !important;
 }
 
 .mobile-premium-view .local-particle:nth-child(even),
@@ -1386,18 +1309,28 @@ html { scrollbar-width: none; }
   animation-duration: 22s !important;
 }
 
-/* MAKE BACKGROUND MESH GRADIENT MOVE FASTER SO IT LOOKS ALIVE */
-.mobile-premium-view {
-  animation: premiumMeshPan 8s ease-in-out infinite alternate !important;
+/* 4. Desktop Text Gradient and Logo Pulse fallback for mobile */
+@keyframes textGlowShift {
+  0% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
+  50% { background-position: 100% 50%; filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.6)); }
+  100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
 }
 
+@keyframes logoBoxPulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); transform: scale(1); }
+  50% { box-shadow: 0 0 50px rgba(216, 180, 254, 0.9); transform: scale(1.1); }
+}
 
-/* MAKE DOM PARTICLES MASSIVE AND BRIGHTLY GLOWING */
-.mobile-premium-view .particle, 
-.mobile-premium-view .local-particle {
-  width: 10px !important;
-  height: 10px !important;
-  box-shadow: 0 0 30px 10px rgba(216, 180, 254, 0.9), 0 0 50px 15px rgba(56, 189, 248, 0.6) !important;
-  background: rgba(255, 255, 255, 1) !important;
+.mobile-premium-view .who-title {
+  background: linear-gradient(to right, #ffffff, #a855f7, #38bdf8, #ffffff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textGlowShift 4s ease-in-out infinite;
+}
+
+.mobile-premium-view .entry-brand-icon {
+  animation: logoBoxPulseGlow 3s ease-in-out infinite !important;
 }
 
