@@ -105,6 +105,113 @@
     animation: spin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
 }
 
+/* =========================================
+   MOVIE GRID - ALIGNMENT & SKELETON
+========================================= */
+.movie-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100%;
+}
+
+.movie-container {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 0;
+    color: #556585;
+    font-size: 18px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 24px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+/* ===========================================
+   CYBERNETIC LASER-SCAN SKELETON LOADER
+=========================================== */
+
+.skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.skeleton-card {
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(10, 15, 30, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+}
+
+/* The vertical scanning laser line */
+.skeleton-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent, rgba(56, 189, 248, 0.1) 50%, rgba(56, 189, 248, 0.4) 50%, transparent 51%);
+    background-size: 100% 200%;
+    animation: scanLaser 2s linear infinite;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.skeleton-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.skeleton-content {
+    padding: 16px;
+}
+
+.skeleton-line {
+    height: 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-line.title { width: 80%; height: 16px; }
+.skeleton-line.genre { width: 50%; }
+
+@keyframes scanLaser {
+    0% { background-position: 0 -100%; }
+    100% { background-position: 0 200%; }
+}
+
+/* ===============================
+        Bottom Loader
+================================ */
+
+.loading-more {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 60px 0;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.05);
+    border-top: 3px solid #38bdf8;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    animation: spin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+}
+
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
@@ -114,31 +221,33 @@
 @media (max-width: 768px) {
     .movie-container { 
         display: grid !important; 
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        grid-template-columns: repeat(5, 1fr) !important;
         overflow-x: visible;
         justify-content: center; 
         padding-bottom: 20px;
-        gap: 12px;
+        gap: 10px;
     }
     .movie-container::-webkit-scrollbar {
         display: none;
     }
     .movie-container > * {
-        flex: 0 0 95px !important;
-        width: 95px !important;
+        flex: unset !important;
+        width: 100% !important;
+        /* Keep minimum width as before so it doesn't look small */
         min-width: 95px !important;
-        max-width: 95px !important;
+        max-width: none !important;
         scroll-snap-align: start;
     }
     .skeleton-grid { 
         display: grid !important; 
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        grid-template-columns: repeat(5, 1fr) !important;
         overflow-x: visible; 
-        gap: 12px; 
+        gap: 10px; 
     }
     .skeleton-card {
-        flex: 0 0 110px;
-        width: 110px;
-        min-width: 110px;
+        flex: unset !important;
+        width: 100% !important;
+        min-width: 95px !important;
+        max-width: none !important;
     }
 }
