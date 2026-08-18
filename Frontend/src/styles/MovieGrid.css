@@ -113,11 +113,10 @@
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
     .movie-container { 
-        display: flex !important; 
-        flex-direction: row !important;
-        overflow-x: auto; 
-        -webkit-overflow-scrolling: touch; 
-        scroll-snap-type: x mandatory; 
+        display: grid !important; 
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        overflow-x: visible;
+        justify-content: center; 
         padding-bottom: 20px;
         gap: 12px;
     }
@@ -132,8 +131,9 @@
         scroll-snap-align: start;
     }
     .skeleton-grid { 
-        display: flex; 
-        overflow-x: auto; 
+        display: grid !important; 
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        overflow-x: visible; 
         gap: 12px; 
     }
     .skeleton-card {

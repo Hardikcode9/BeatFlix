@@ -180,6 +180,7 @@
 }
 
 .control-btn {
+  flex-shrink: 0;
   background: none;
   border: none;
   color: #fff;
@@ -200,6 +201,7 @@
 }
 
 .play-pause-btn {
+  flex-shrink: 0;
   width: 70px;
   height: 70px;
   border-radius: 50%;

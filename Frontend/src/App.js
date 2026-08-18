@@ -22,6 +22,7 @@ import FreeMovies from "./pages/FreeMovies";
 
 import { MusicProvider } from "./context/MusicContext";
 import GlobalMusicPlayer from "./components/GlobalMusicPlayer";
+import ScrollToTop from "./components/ScrollToTop";
 
 import "./App.css";
 
@@ -53,6 +54,7 @@ function App() {
   return (
     <MusicProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <div className="app-shell">
           <Navbar
             viewer={viewer}
