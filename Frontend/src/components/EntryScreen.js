@@ -281,8 +281,8 @@ function EntryScreen({ onEnter }) {
     // Lock scrolling if a form or modal is open
     document.body.style.overflow = formType || showOtpModal || showForgotModal || showSuccess ? "hidden" : "auto";
 
-    // Skip building the timeline if form is active to prevent conflicts
-    if (formType) {
+    // Skip building the timeline if form is active to prevent conflicts, OR if it's mobile (for ultra smooth performance)
+    if (formType || isMobileDevice) {
       return () => {
         document.body.style.overflow = "auto";
       };

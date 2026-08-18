@@ -3337,31 +3337,31 @@ scale(1);
         font-size: 16px !important;
     }
 
-    /* 8. Scale down slider cards */
+    /* 3. Scale down slider cards so multiple peek in from the edge */
     .movie-card {
-        flex: 0 0 155px !important;
+        flex: 0 0 115px !important; /* Extremely small for phones so 3+ are visible */
     }
     .movie-poster {
-        height: 230px !important;
+        height: 175px !important; /* Proportional height */
     }
     .movie-details h4 {
-        font-size: 14px !important;
+        font-size: 13px !important;
     }
     .movie-details span {
-        font-size: 11px !important;
-        margin-bottom: 8px !important;
+        font-size: 10px !important;
+        margin-bottom: 6px !important;
     }
     .movie-meta p {
-        font-size: 12px !important;
+        font-size: 11px !important;
     }
 
     /* 9. Collection cards */
     .collection-card {
-        flex: 0 0 200px !important;
-        height: 150px !important;
+        flex: 0 0 160px !important;
+        height: 110px !important;
     }
     .collection-overlay h3 {
-        font-size: 18px !important;
+        font-size: 15px !important;
     }
 
     /* 10. Fix page padding */
