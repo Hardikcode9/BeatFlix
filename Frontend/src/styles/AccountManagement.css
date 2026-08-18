@@ -458,3 +458,98 @@
   .acc-grid { grid-template-columns: 1fr; }
   .danger-actions { flex-direction: column; }
 }
+
+@media (max-width: 768px) {
+  .account-page {
+    padding: 40px 15px 100px;
+  }
+
+  /* Reduce orb blur on mobile */
+  .acc-glow-orb {
+    filter: blur(80px);
+    animation: none;
+  }
+
+  .acc-title {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+  }
+
+  .acc-card {
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .acc-card:hover {
+    transform: none;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .profile-card h2 {
+    font-size: 1.4rem;
+  }
+
+  .user-email {
+    font-size: 0.9rem;
+  }
+
+  .card-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .info-row {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .info-row h4 {
+    font-size: 0.8rem;
+  }
+  .info-row p {
+    font-size: 0.9rem;
+  }
+
+  .action-btn {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .avatar-input-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .upload-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .account-page {
+    padding: 30px 12px 100px;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .acc-card {
+    padding: 16px;
+  }
+}

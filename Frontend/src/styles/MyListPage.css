@@ -256,3 +256,86 @@
   color: #fff;
   margin-bottom: 10px;
 }
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 768px) {
+  .mylist-page-container {
+    padding: 70px 15px 100px;
+  }
+
+  .mylist-page-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .mylist-page-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .mylist-tabs {
+    width: 100%;
+    overflow-x: auto;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mylist-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mylist-tab {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+
+  .mylist-page-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .mylist-page-info h3 {
+    font-size: 0.9rem;
+  }
+
+  .mylist-controls {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .action-btn {
+    padding: 6px;
+    font-size: 0.75rem;
+  }
+
+  .rating-label {
+    font-size: 0.75rem;
+  }
+
+  .mylist-review textarea {
+    min-height: 40px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mylist-page-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .mylist-page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .mylist-controls {
+    padding: 8px;
+  }
+
+  .mylist-review textarea {
+    display: none; /* Too cramped for text areas */
+  }
+}

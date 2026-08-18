@@ -8,17 +8,20 @@ const ScrollBackground = ({ totalFrames = 180 }) => {
   const canvasRef = useRef(null);
   const [images, setImages] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const isMobile = useRef(window.innerWidth < 768);
 
   // ==========================================
-  // LOAD ALL FRAMES
+  // LOAD FRAMES (FEWER ON MOBILE FOR PERFORMANCE)
   // ==========================================
   useEffect(() => {
     let cancelled = false;
+    // On mobile, load every 3rd frame to reduce memory by ~66%
+    const step = isMobile.current ? 3 : 1;
 
     const loadImages = async () => {
       const promises = [];
 
-      for (let i = 1; i <= totalFrames; i++) {
+      for (let i = 1; i <= totalFrames; i += step) {
         promises.push(
           new Promise((resolve) => {
             const img = new Image();
@@ -83,7 +86,8 @@ const ScrollBackground = ({ totalFrames = 180 }) => {
     };
 
     const resizeCanvas = () => {
-      const dpr = window.devicePixelRatio || 1;
+      // Cap DPR to 1 on mobile to reduce GPU work (~75% fewer pixels)
+      const dpr = isMobile.current ? 1 : (window.devicePixelRatio || 1);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;

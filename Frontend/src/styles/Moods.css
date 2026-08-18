@@ -394,12 +394,180 @@
     .chat-sidebar{ width: 100%; min-width: unset;}
 }
 
-@media (max-width: 500px) {
-    .hero-movie-title { font-size: 46px; }
-    .mood-subtitle { font-size: 16px; }
-    .chat-bubble { max-width: 90%; font-size: 1rem; padding: 16px 20px; }
+@media (max-width: 768px) {
+    /* --- PERFORMANCE --- */
+
+    /* Disable expensive 3D grid overlay */
+    .beatflix-moods-grid-overlay {
+        display: none;
+    }
+
+    /* Reduce orb blur from 100/120px to 40px */
+    .beatflix-moods::before {
+        filter: blur(40px);
+        width: 40vw;
+        height: 40vw;
+    }
+    .beatflix-moods::after {
+        filter: blur(50px);
+        width: 45vw;
+        height: 45vw;
+    }
+
+    /* Disable 3D hover transforms on chat window */
+    .chat-window {
+        transform: none !important;
+    }
+    .chat-window:hover {
+        transform: none !important;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Disable 3D on chat elements */
+    .chat-message,
+    .chat-avatar,
+    .chat-bubble {
+        transform: none !important;
+        transform-style: flat;
+    }
+    .chat-bubble:hover {
+        transform: none !important;
+    }
+
+    /* Disable scan glow animation */
+    .premium-scan-wrapper::after {
+        display: none;
+    }
+
+    /* Simplify movie card hover */
+    .movie-card:hover {
+        transform: translateY(-6px) scale(1.02) !important;
+    }
+    .movie-card:hover .movie-details {
+        transform: none !important;
+    }
+
+    /* --- LAYOUT --- */
+    .beatflix-moods {
+        padding: 80px 15px 100px;
+    }
+
+    .mood-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .movie-poster {
+        height: 220px;
+    }
+
+    .movie-details h4 {
+        font-size: 14px;
+        min-height: auto;
+    }
+
+    .movie-details span {
+        font-size: 11px;
+    }
+
+    /* Domain cards stack vertically */
+    .domain-cards {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .domain-card {
+        width: 100%;
+        max-width: 340px;
+        height: 280px;
+    }
+
+    .domain-selector-title {
+        font-size: 1.6rem;
+        margin-bottom: 25px;
+    }
+
+    /* Chat movie carousel */
+    .chat-movie-card {
+        flex: 0 0 140px;
+    }
+
+    .chat-movie-info h4 {
+        font-size: 0.85rem;
+    }
+
+    /* Chat window */
+    .chat-window {
+        height: 380px;
+        padding: 20px;
+        border-radius: 24px;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+    }
+
+    /* Chat avatar */
+    .chat-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    /* Chat bubble */
+    .chat-bubble {
+        max-width: 85%;
+        padding: 14px 18px;
+        font-size: 0.95rem;
+        border-radius: 20px;
+    }
+
+    /* Scan button */
+    .cam-icon-box {
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+    }
+    .btn-text-group strong {
+        font-size: 1.1rem;
+    }
+    .btn-text-group span {
+        font-size: 0.9rem;
+    }
+
+    /* Scanner modal */
     .face-id-frame { width: 280px; height: 280px; }
-    .mood-grid-container { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+
+    /* Token counter */
+    .input-token-counter {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+}
+
+@media (max-width: 500px) {
+    .hero-movie-title { font-size: 36px; letter-spacing: -2px; }
+    .mood-subtitle { font-size: 15px; }
+    .chat-bubble { max-width: 92%; font-size: 0.9rem; padding: 12px 16px; }
+    .face-id-frame { width: 240px; height: 240px; }
+    .mood-grid-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .movie-poster { height: 180px; }
+
+    .domain-card {
+        height: 220px;
+    }
+    .domain-icon {
+        font-size: 44px;
+    }
+    .domain-card h3 {
+        font-size: 1.2rem;
+    }
+    .domain-card p {
+        font-size: 0.85rem;
+    }
+
+    .moods-hero {
+        margin-bottom: 30px;
+    }
 }
 
 .message-text{

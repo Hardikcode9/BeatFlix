@@ -1,20 +1,50 @@
-  /* ADD THIS TO THE VERY TOP OF src/index.css */
+/* ===========================================================
+   GLOBAL BASE STYLES
+=========================================================== */
 body, #root {
     margin: 0 !important;
     padding: 0 !important;
     display: block !important;
 }
-  
-  body {
+
+body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
+    /* Mobile touch optimization */
+    -webkit-tap-highlight-color: transparent;
+}
 
-  code {
+code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
       monospace;
-  }
+}
+
+/* ===========================================================
+   MOBILE PERFORMANCE GLOBAL RULES
+=========================================================== */
+@media (max-width: 768px) {
+    /* Disable smooth scroll on mobile — let native momentum handle it */
+    html {
+        scroll-behavior: auto !important;
+    }
+
+    /* Force GPU compositing for smoother transforms */
+    * {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ===========================================================
+   REDUCED MOTION — Accessibility & Battery Saver
+=========================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

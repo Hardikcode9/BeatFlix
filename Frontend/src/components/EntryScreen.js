@@ -18,9 +18,11 @@ import ScrollBackground from "./ScrollBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const isMobileDevice = window.innerWidth < 768;
+
 const Particles = () => (
   <div className="particle-container">
-    {[...Array(60)].map((_, i) => (
+    {[...Array(isMobileDevice ? 12 : 60)].map((_, i) => (
       <div key={i} className={`particle particle-${i % 3}`} style={{ left: `${Math.random() * 100}%`, animationDelay: `${-(Math.random() * 30)}s` }} />
     ))}
   </div>
@@ -31,7 +33,7 @@ const Particles = () => (
 // ==========================================
 const ParticleEffect = () => (
   <div className="local-particles">
-    {[...Array(15)].map((_, i) => (
+    {[...Array(isMobileDevice ? 4 : 15)].map((_, i) => (
       <div key={i} className="local-particle" style={{
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
@@ -247,6 +249,10 @@ function EntryScreen({ onEnter }) {
   // LENIS SMOOTH SCROLL
   // ==========================================
   useEffect(() => {
+    // Skip Lenis on mobile — native momentum scrolling is smoother
+    // and Lenis's rAF loop causes jank on low-end phones
+    if (isMobileDevice) return;
+
     const lenis = new Lenis({
       duration: 1.2,
       smoothWheel: true,

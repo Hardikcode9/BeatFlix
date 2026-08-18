@@ -711,29 +711,157 @@ body, html, #root {
 }
 
 @media (max-width: 768px) {
-    .top-section {
+    .movie-details-page {
+        padding-bottom: 80px; /* Clear mobile navbar */
+    }
+
+    /* Disable expensive backdrop zoom animation */
+    .backdrop-img {
+        animation: none;
+        transform: scale(1);
+    }
+
+    /* Reduce poster glow blur */
+    .poster-glow-orb {
+        filter: blur(25px);
+        animation: none;
+    }
+
+    .movie-hero {
         flex-direction: column;
-        align-items: center;
+        text-align: center;
+        padding: 60px 15px 30px;
         gap: 30px;
     }
-    
-    .poster-container {
-        width: 100%;
-        max-width: 300px;
+
+    .poster-section { perspective: none; }
+    .poster-3d-wrapper {
+        transform: none !important;
+        width: 220px;
         margin: 0 auto;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
     }
-    
-    .meta-row {
-        flex-wrap: wrap;
+
+    .movie-meta, .genre-list, .button-group {
         justify-content: center;
     }
-    
-    .action-buttons {
+
+    .title-gradient {
+        font-size: clamp(1.8rem, 6vw, 3rem);
+    }
+
+    .tagline {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 1.6rem;
+        padding-left: 15px;
+    }
+
+    .overview-text {
+        font-size: 1rem;
+    }
+
+    .overview-section, .cast-section, .similar-section, .watch-section {
+        width: calc(100% - 30px);
+        margin: 40px auto;
+    }
+
+    /* Cast grid — smaller cards */
+    .cast-grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 12px;
+    }
+
+    .cast-info-layer h4 {
+        font-size: 0.85rem;
+    }
+    .cast-info-layer p {
+        font-size: 0.75rem;
+    }
+
+    /* Similar movies grid — smaller cards */
+    .similar-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    .similar-content h4 {
+        font-size: 1rem;
+    }
+
+    /* Buttons stack vertically */
+    .button-group {
         flex-direction: column;
         width: 100%;
     }
-    
-    .action-buttons button, .action-buttons .btn {
+    .btn-primary, .btn-secondary {
         width: 100%;
+        justify-content: center;
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+
+    /* Genre chips */
+    .neon-chip {
+        padding: 6px 14px;
+        font-size: 0.7rem;
+    }
+
+    /* Premium pills */
+    .premium-pill {
+        padding: 7px 14px;
+        font-size: 0.8rem;
+    }
+
+    /* Watch providers */
+    .watch-grid {
+        gap: 12px;
+    }
+    .watch-card {
+        width: 100px;
+        padding: 12px;
+    }
+    .watch-card img {
+        width: 50px;
+        height: 50px;
+    }
+    .watch-card span {
+        font-size: 0.8rem;
+    }
+
+    /* Trailer modal */
+    .modal-pop {
+        width: 95%;
+        border-radius: 14px;
+    }
+    .modal-close {
+        top: -15px;
+        right: -5px;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .poster-3d-wrapper {
+        width: 180px;
+    }
+
+    .title-gradient {
+        font-size: 1.6rem;
+    }
+
+    .similar-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .cast-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
     }
 }

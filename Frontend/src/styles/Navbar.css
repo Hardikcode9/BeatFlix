@@ -480,7 +480,19 @@
         background: rgba(8, 12, 24, 0.95);
         border-top: 1px solid rgba(255,255,255,0.1);
         z-index: 1000;
-        backdrop-filter: blur(20px);
+        /* Reduce blur for performance on mobile */
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+    }
+
+    /* Hide ambient glow on mobile — saves GPU compositing */
+    .nav-ambient-glow {
+        display: none;
+    }
+
+    /* Disable logo pulse animation on mobile */
+    .logo-icon-box {
+        animation: none;
     }
 
     .side-nav.is-open {

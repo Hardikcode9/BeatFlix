@@ -600,11 +600,70 @@ html { scrollbar-width: none; }
 .loading-text { margin-top: 15px; color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
 
 /* =========================================================
-   MOBILE RESPONSIVENESS
+   MOBILE RESPONSIVENESS & PERFORMANCE
 ========================================================= */
+
+/* --- PERFORMANCE: Reduce expensive effects on mobile --- */
 @media (max-width: 768px) {
   .scroll-progress-container { display: none; }
-  
+
+  /* Reduce backdrop-filter blur (biggest GPU killer) */
+  .entry-brand,
+  .card-glass-surface {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* Disable 3D compositing mode */
+  .entry-content,
+  .netflix-entry,
+  .netflix-profiles,
+  .cinematic-card,
+  .card-glass-surface,
+  .card-icon-capsule,
+  .card-text-content {
+    transform-style: flat;
+    -webkit-transform-style: flat;
+  }
+
+  /* Disable expensive continuous animations */
+  .card-ambient-glow,
+  .card-glass-surface {
+    animation: none;
+  }
+
+  .who-title {
+    animation: textShine 6s linear infinite;
+    /* Disable the float animation */
+  }
+
+  .entry-brand {
+    animation: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Disable sweeping light ray */
+  .entry-brand::before,
+  .card-glass-surface::before {
+    display: none;
+  }
+
+  /* Hide background particles on mobile for performance */
+  .particle-container {
+    display: none;
+  }
+
+  /* Simplify card shadows */
+  .card-glass-surface {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Disable ambient glow filter blur */
+  .card-ambient-glow {
+    filter: blur(30px);
+  }
+
+  /* --- LAYOUT: Responsive sizing --- */
   .cinematic-card {
     width: min(280px, 85vw);
     height: min(400px, 60vh);
@@ -613,25 +672,77 @@ html { scrollbar-width: none; }
   }
 
   .who-title-container { top: 12vh; width: 90%; }
-  
-  .netflix-profiles { 
-    width: 100%; 
-    height: auto; 
+  .who-title { font-size: clamp(36px, 9vw, 60px); }
+
+  .netflix-profiles {
+    width: 100%;
+    height: auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
   }
-  
+
   .netflix-profile {
     width: 130px;
     height: 160px;
   }
-  
+
   .card-icon-capsule { width: 70px; height: 70px; font-size: 28px; }
+  .card-text-content span { font-size: 22px; }
+  .card-text-content small { font-size: 12px; }
   .profile-name { font-size: 14px; bottom: 15px; }
-  
-  .entry-form { padding: 30px 20px; width: 95vw; max-width: 400px; border-radius: 28px; }
+
+  .entry-form {
+    padding: 30px 20px;
+    width: 95vw;
+    max-width: 400px;
+    border-radius: 28px;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
+
+  .entry-form h1 { font-size: 28px; }
+  .form-description { font-size: 14px; }
   .auth-hero-title { font-size: 28px; }
-  .particle-0 { display: none; } /* Performance optimization */
+
+  /* Loading and modal fixes */
+  .otp-card, .success-card {
+    width: 90vw;
+    max-width: 380px;
+    padding: 30px 20px;
+  }
+
+  .otp-input {
+    font-size: 22px;
+    letter-spacing: 8px;
+    padding: 14px;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 380px) {
+  .cinematic-card {
+    width: 240px;
+    height: 340px;
+    margin-left: -120px;
+    margin-top: -170px;
+  }
+
+  .card-icon-capsule { width: 56px; height: 56px; font-size: 22px; }
+  .card-text-content span { font-size: 18px; }
+  .entry-form h1 { font-size: 24px; }
+  .who-title { font-size: 32px; }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .entry-brand,
+  .who-title,
+  .card-glass-surface,
+  .card-ambient-glow,
+  .particle,
+  .local-particle {
+    animation: none !important;
+  }
 }

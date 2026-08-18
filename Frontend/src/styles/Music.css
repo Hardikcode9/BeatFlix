@@ -54,6 +54,18 @@
     );
 }
 
+/* Hide grid overlay on mobile for performance */
+@media (max-width: 768px) {
+  .music-grid-overlay {
+    display: none;
+  }
+  .ambient-blob {
+    filter: blur(50px);
+    width: 300px;
+    height: 300px;
+  }
+}
+
 .ambient-blob {
   position: absolute;
   width: 520px;
@@ -1233,6 +1245,11 @@ span:nth-child(5) {
 
   .premium-volume-range {
     display: none;
+  }
+
+  /* Clear the mobile bottom navbar (70px) */
+  .premium-player-shell {
+    bottom: 80px;
   }
 }
 
