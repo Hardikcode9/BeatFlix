@@ -112,11 +112,33 @@
 /* --- RESPONSIVE --- */
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-    .movie-container { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-    .skeleton-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-}
-
-@media (max-width: 480px) {
-    .movie-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .skeleton-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .movie-container { 
+        display: flex !important; 
+        flex-direction: row !important;
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; 
+        scroll-snap-type: x mandatory; 
+        padding-bottom: 20px;
+        gap: 12px;
+    }
+    .movie-container::-webkit-scrollbar {
+        display: none;
+    }
+    .movie-container > * {
+        flex: 0 0 110px !important;
+        width: 110px !important;
+        min-width: 110px !important;
+        max-width: 110px !important;
+        scroll-snap-align: start;
+    }
+    .skeleton-grid { 
+        display: flex; 
+        overflow-x: auto; 
+        gap: 12px; 
+    }
+    .skeleton-card {
+        flex: 0 0 110px;
+        width: 110px;
+        min-width: 110px;
+    }
 }
