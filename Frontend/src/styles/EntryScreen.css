@@ -1094,3 +1094,74 @@ html { scrollbar-width: none; }
   animation: mobileAmbientPan 15s ease infinite;
 }
 
+
+/* =========================================================
+   ULTRA-PREMIUM MOBILE FORM FIX (APPLE/SONY STYLE)
+========================================================= */
+.mobile-entry-form {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 92vw !important;
+  max-width: 420px !important;
+  max-height: 85vh !important;
+  overflow-y: auto !important;
+  margin: 0 !important;
+  z-index: 1000 !important;
+
+  /* Apple/Sony Premium 3D Glassmorphism */
+  background: rgba(15, 15, 25, 0.7) !important;
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 36px !important;
+  box-shadow: 
+    0 40px 80px rgba(0,0,0,0.8), 
+    inset 0 1px 1px rgba(255,255,255,0.4) !important;
+}
+
+/* Custom scrollbar for mobile form */
+.mobile-entry-form::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* Apple-style Mesh Gradient Orbs */
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-30px, 40px) scale(1.2); }
+  66% { transform: translate(20px, -20px) scale(0.8); }
+}
+
+.mobile-premium-view::before {
+  content: "";
+  position: absolute;
+  top: -10%; left: -10%;
+  width: 60vw; height: 60vw;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%);
+  filter: blur(60px);
+  z-index: -1;
+  animation: orbFloat1 12s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.mobile-premium-view::after {
+  content: "";
+  position: absolute;
+  bottom: 10%; right: -10%;
+  width: 70vw; height: 70vw;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.3), transparent 70%);
+  filter: blur(70px);
+  z-index: -1;
+  animation: orbFloat2 15s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+

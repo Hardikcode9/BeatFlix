@@ -519,19 +519,18 @@ function EntryScreen({ onEnter }) {
 
           <AnimatePresence>
             {formType && (
-              // FORM (Using deep vertical 3D entrance)
               <motion.form 
                 key="form"
                 variants={formVariants}
                 initial="initial"
                 animate="in"
                 exit="out"
-                className="entry-form" 
+                className={`entry-form ${isMobileDevice ? "mobile-entry-form" : ""}`}
                 onSubmit={submitForm}
                 data-lenis-prevent
               >
                 <button className="back-choice" type="button" onClick={() => { setFormType(""); setMessage(""); }}>
-                  ← Back to Cinema
+                  ← Back
                 </button>
                 <div className="form-icon">{formType === "login" ? <FaUserShield /> : <FaUserPlus />}</div>
                 <p className="entry-kicker">BEATFLIX PROFILE</p>
