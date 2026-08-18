@@ -27,9 +27,7 @@
     color: #b7c0d7;
     z-index: 100;
     transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
+    overflow: hidden; /* Stop whole sidebar from scrolling */
 }
 
 .side-nav::-webkit-scrollbar {
@@ -196,7 +194,16 @@
     flex-direction: column;
     gap: 4px;
     width: 100%;
-    flex-shrink: 0;
+    flex: 1; /* Take up available space */
+    overflow-y: auto; /* Allow links to scroll */
+    overflow-x: hidden;
+    padding-bottom: 20px; /* Spacing before bottom section */
+}
+
+/* Hide scrollbar for side-links */
+.side-links::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* Optional: just make scrollbar invisible */
 }
 
 .side-link {
@@ -333,10 +340,13 @@
 =========================================================== */
 
 .side-bottom {
-    margin-top: auto;
+    margin-top: 0;
     width: 100%;
     flex-shrink: 0;
-    padding-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: inherit;
+    z-index: 10;
 }
 
 .viewer-chip {
