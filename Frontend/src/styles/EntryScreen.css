@@ -1188,3 +1188,65 @@ html { scrollbar-width: none; }
   pointer-events: none;
 }
 
+
+/* ULTRA PREMIUM MOBILE TEXT & LOGO ANIMATIONS */
+@keyframes textGlowShift {
+  0% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
+  50% { background-position: 100% 50%; filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.6)); }
+  100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
+}
+
+@keyframes logoPulseGlow {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.5)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 35px rgba(216, 180, 254, 0.8)); }
+}
+
+.mobile-premium-view .who-title {
+  background: linear-gradient(to right, #ffffff, #a855f7, #38bdf8, #ffffff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textGlowShift 4s ease-in-out infinite;
+}
+
+.mobile-premium-view .entry-brand-icon img {
+  animation: logoPulseGlow 3s ease-in-out infinite;
+  border-radius: 20px;
+}
+
+/* CARDS GLASSMORPHISM & EFFECTS BEHIND THEM */
+.mobile-premium-card {
+  background: rgba(15, 10, 25, 0.55) !important;
+  backdrop-filter: blur(20px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 
+    0 25px 50px rgba(0,0,0,0.8), 
+    inset 0 2px 10px rgba(255,255,255,0.15) !important;
+  position: relative;
+  overflow: visible !important;
+}
+
+/* The glowing effects BEHIND the cards */
+.mobile-premium-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: -1;
+  pointer-events: none;
+  animation: logoPulseGlow 4s ease-in-out infinite alternate;
+}
+
+.mc-guest::after { background: radial-gradient(circle, rgba(56,189,248,0.4) 0%, transparent 70%); }
+.mc-login::after { background: radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%); }
+.mc-signup::after { background: radial-gradient(circle, rgba(16,185,129,0.4) 0%, transparent 70%); }
+
