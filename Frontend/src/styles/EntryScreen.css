@@ -887,60 +887,6 @@ html { scrollbar-width: none; }
   color: white;
   margin: 0;
   background: linear-gradient(to right, #ffffff, #e9d5ff, #c084fc);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Horizontal Touch Slider */
-.mobile-premium-slider {
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  gap: 20px;
-  padding: 10px 30px 40px 30px;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.mobile-premium-slider::-webkit-scrollbar {
-  display: none;
-}
-
-/* Mobile Glass Card */
-.mobile-premium-card {
-  flex: 0 0 260px;
-  height: 340px;
-  background: rgba(20, 20, 30, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 28px;
-  scroll-snap-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-  transition: transform 0.3s ease, border-color 0.3s ease;
-}
-
-.mobile-premium-card:active {
-  transform: scale(0.97);
-}
-
-.mobile-premium-card.mc-guest { border-color: rgba(56, 189, 248, 0.3); }
-.mobile-premium-card.mc-login { border-color: rgba(168, 85, 247, 0.3); }
-.mobile-premium-card.mc-signup { border-color: rgba(16, 185, 129, 0.3); }
-
-.mobile-premium-card .mc-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
   width: 150px;
   height: 150px;
   transform: translate(-50%, -50%);
@@ -990,5 +936,161 @@ html { scrollbar-width: none; }
   width: 100%;
   display: flex;
   justify-content: center;
+}
+
+
+/* =========================================================
+   DEDICATED MOBILE ENTRY SCREEN (ISOLATED FROM GSAP)
+========================================================= */
+.mobile-premium-view {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  padding-top: 60px;
+  position: relative;
+  z-index: 999;
+  pointer-events: auto !important;
+  background: radial-gradient(circle at top, rgba(168, 85, 247, 0.15), transparent 60%);
+}
+
+.mobile-premium-header {
+  text-align: center;
+  margin-bottom: 20px;
+  pointer-events: none;
+}
+
+.mobile-premium-header img {
+  height: 36px;
+  margin-bottom: 15px;
+}
+
+.mobile-premium-header h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  background: linear-gradient(to right, #ffffff, #e9d5ff, #c084fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 10px rgba(168,85,247,0.3));
+}
+
+/* Horizontal Touch Slider */
+.mobile-premium-slider {
+  display: flex;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  gap: 20px;
+  padding: 10px 40px 40px 40px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  pointer-events: auto !important;
+  touch-action: pan-x !important;
+  width: 100vw;
+  max-width: 100%;
+}
+
+.mobile-premium-slider::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile Glass Card */
+.mobile-premium-card {
+  flex: 0 0 280px;
+  height: 380px;
+  background: rgba(20, 20, 30, 0.7);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 32px;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  pointer-events: auto !important;
+  cursor: pointer;
+  z-index: 50;
+  touch-action: manipulation;
+}
+
+.mobile-premium-card:active {
+  transform: scale(0.95);
+  border-color: rgba(255,255,255,0.4);
+}
+
+.mobile-premium-card.mc-guest { border-color: rgba(56, 189, 248, 0.3); }
+.mobile-premium-card.mc-login { border-color: rgba(168, 85, 247, 0.3); }
+.mobile-premium-card.mc-signup { border-color: rgba(16, 185, 129, 0.3); }
+
+.mobile-premium-card .mc-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  transform: translate(-50%, -50%);
+  filter: blur(60px);
+  opacity: 0.2;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.mc-guest .mc-glow { background: #38bdf8; }
+.mc-login .mc-glow { background: #a855f7; }
+.mc-signup .mc-glow { background: #10b981; }
+
+.mc-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 25px;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.2);
+  pointer-events: none;
+}
+
+.mobile-premium-card h3 {
+  font-size: 26px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 10px 0;
+  pointer-events: none;
+}
+
+.mobile-premium-card p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+
+@keyframes mobileAmbientPan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.mobile-premium-view {
+  background: linear-gradient(-45deg, #09090e, #1a153a, #0f0c29, #1c1438);
+  background-size: 400% 400%;
+  animation: mobileAmbientPan 15s ease infinite;
 }
 
