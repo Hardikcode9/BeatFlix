@@ -11,7 +11,7 @@ import {
 
 import "../styles/EntryScreen.css";
 import { auth, googleProvider } from "../firebase/firebase";
-import { signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from "firebase/auth";
+import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from "firebase/auth";
 import { toast } from "react-toastify";
 
 import ScrollBackground from "./ScrollBackground";
@@ -64,39 +64,7 @@ function EntryScreen({ onEnter }) {
 
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const handleRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result && result.user) {
-          setLoading(true);
-          const response = await fetch(`${API_URL}/api/users/google-login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: result.user.displayName,
-              email: result.user.email,
-              avatar: result.user.photoURL,
-              googleId: result.user.uid,
-            })
-          });
-
-          const data = await response.json();
-          if (!response.ok) throw new Error(data.message);
-
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("userEmail", data.user.email);
-          toast.success(`Welcome back, ${data.user.name}!`);
-          onEnter(data.user.name || "User");
-        }
-      } catch (error) {
-        toast.error(error.message || "Google login failed.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    handleRedirectResult();
-  }, [onEnter]);
+  
   
   const [message, setMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
@@ -109,13 +77,10 @@ function EntryScreen({ onEnter }) {
   const [newPassword, setNewPassword] = useState("");
 
   
+  
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
-      if (isMobileDevice) {
-        await signInWithRedirect(auth, googleProvider);
-        return;
-      }
       const result = await signInWithPopup(auth, googleProvider);
       
       const response = await fetch(`${API_URL}/api/users/google-login`, {
@@ -137,11 +102,14 @@ function EntryScreen({ onEnter }) {
       toast.success(`Welcome back, ${data.user.name}!`);
       onEnter(data.user.name || "User");
     } catch (error) {
-      toast.error(error.message || "Google login failed.");
+      if (error.code !== "auth/popup-closed-by-user" && error.code !== "auth/cancelled-popup-request") {
+        toast.error(error.message || "Google login failed.");
+      }
+    } finally {
       setLoading(false);
     }
   };
-    const submitForm = async (event) => {
+const submitForm = async (event) => {
     event.preventDefault();
     setMessage("");
     setLoading(true);
