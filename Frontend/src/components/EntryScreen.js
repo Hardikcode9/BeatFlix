@@ -18,9 +18,7 @@ import ScrollBackground from "./ScrollBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const isMobileDevice = window.innerWidth < 768;
-
-const Particles = () => (
+const Particles = ({ isMobileDevice }) => (
   <div className="particle-container">
     {[...Array(isMobileDevice ? 12 : 60)].map((_, i) => (
       <div key={i} className={`particle particle-${i % 3}`} style={{ left: `${Math.random() * 100}%`, animationDelay: `${-(Math.random() * 30)}s` }} />
@@ -31,7 +29,7 @@ const Particles = () => (
 // ==========================================
 // COMPONENT: Particle Effect
 // ==========================================
-const ParticleEffect = () => (
+const ParticleEffect = ({ isMobileDevice }) => (
   <div className="local-particles">
     {[...Array(isMobileDevice ? 4 : 15)].map((_, i) => (
       <div key={i} className="local-particle" style={{
@@ -56,6 +54,14 @@ function EntryScreen({ onEnter }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth <= 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileDevice(window.innerWidth <= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
@@ -388,7 +394,7 @@ function EntryScreen({ onEnter }) {
       {/* 3D UI OVERLAY */}
       <div className="scroll-container">
         
-        <Particles />
+        <Particles isMobileDevice={isMobileDevice} />
 
         {/* VISUAL SCROLL PROGRESS INDICATOR */}
         {!formType && (
@@ -421,7 +427,7 @@ function EntryScreen({ onEnter }) {
           >
             {/* STAGE 0: BRAND & HEADING */}
             <div className="who-title-container">
-              <ParticleEffect />
+              <ParticleEffect isMobileDevice={isMobileDevice} />
               <div className="entry-brand">
                 <div className="entry-brand-icon"><img src={logo} alt="BeatFlix" /></div>
                 <div className="entry-brand-name"><span className="brand-white">Beat</span><span className="brand-blue">Flix</span></div>
@@ -434,7 +440,7 @@ function EntryScreen({ onEnter }) {
               
               {/* GUEST CARD */}
               <button className="cinematic-card guest-card" onClick={() => onEnter("Guest")}>
-                <ParticleEffect />
+                <ParticleEffect isMobileDevice={isMobileDevice} />
                 <div className="card-ambient-glow guest-glow" />
                 <div className="card-glass-surface">
                   <div className="card-icon-capsule guest-capsule">
@@ -449,7 +455,7 @@ function EntryScreen({ onEnter }) {
 
               {/* LOGIN CARD */}
               <button className="cinematic-card login-card" onClick={() => setFormType("login")}>
-                <ParticleEffect />
+                <ParticleEffect isMobileDevice={isMobileDevice} />
                 <div className="card-ambient-glow login-glow" />
                 <div className="card-glass-surface">
                   <div className="card-icon-capsule login-capsule">
@@ -464,7 +470,7 @@ function EntryScreen({ onEnter }) {
 
               {/* SIGNUP CARD */}
               <button className="cinematic-card signup-card" onClick={() => setFormType("signup")}>
-                <ParticleEffect />
+                <ParticleEffect isMobileDevice={isMobileDevice} />
                 <div className="card-ambient-glow signup-glow" />
                 <div className="card-glass-surface">
                   <div className="card-icon-capsule signup-capsule">

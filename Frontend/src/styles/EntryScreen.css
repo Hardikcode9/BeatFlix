@@ -602,7 +602,7 @@ html { scrollbar-width: none; }
 /* =========================================================
    MOBILE / ULTRA-SMOOTH FALLBACK
 ========================================================= */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   /* Disable the invisible scrolling height since we disabled GSAP scroll scrubbing */
   .scroll-background-section {
     height: auto !important;
