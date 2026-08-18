@@ -110,6 +110,16 @@ function Navbar({ viewer, onSwitchProfile }) {
             <span className="side-link-label">About BeatFlix</span>
             <div className="nav-tooltip">About BeatFlix</div>
           </NavLink>
+
+          {/* MOBILE LOGOUT BUTTON */}
+          <button 
+            className="side-link mobile-logout-btn" 
+            onClick={onSwitchProfile}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+          >
+            <span className="side-icon" style={{ color: '#ef4444' }}><FaSignOutAlt /></span>
+            <span className="side-link-label" style={{ color: '#ef4444' }}>Disconnect</span>
+          </button>
         </div>
 
         <div className="side-bottom">

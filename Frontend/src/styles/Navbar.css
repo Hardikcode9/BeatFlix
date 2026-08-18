@@ -223,6 +223,13 @@
     transform: translateX(6px);
 }
 
+/* Hide mobile logout button on desktop */
+@media (min-width: 769px) {
+    .mobile-logout-btn {
+        display: none !important;
+    }
+}
+
 .side-icon {
     font-size: 18px;
     min-width: 24px;
