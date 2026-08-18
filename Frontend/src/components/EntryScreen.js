@@ -415,9 +415,13 @@ function EntryScreen({ onEnter }) {
           
           {isMobileDevice ? (
             <div className="mobile-premium-view">
-              <div className="mobile-premium-header">
-                <img src={logo} alt="BeatFlix" />
-                <h1>Who's Watching?</h1>
+              <div className="who-title-container" style={{ position: 'relative', top: '0', left: '0', transform: 'none', margin: '0 auto 40px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 20 }}>
+                <ParticleEffect isMobileDevice={false} />
+                <div className="entry-brand" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px' }}>
+                  <div className="entry-brand-icon"><img src={logo} alt="BeatFlix" style={{ display: 'block', margin: '0 auto' }} /></div>
+                  <div className="entry-brand-name" style={{ textAlign: 'center' }}><span className="brand-white">Beat</span><span className="brand-blue">Flix</span></div>
+                </div>
+                <h1 className="who-title" style={{ fontSize: 'clamp(36px, 9vw, 52px)', textAlign: 'center', width: '100%', margin: '15px 0 0' }}>Who's Watching?</h1>
               </div>
 
               {!formType && (
