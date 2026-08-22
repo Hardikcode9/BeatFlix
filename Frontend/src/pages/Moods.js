@@ -986,7 +986,7 @@ askBeatFlix(
 
             <form className="search-box mood-search-box" onSubmit={handleChatSubmit}>
               <FaMagic className="search-icon" />
-              <input placeholder="Tell BeatFlix AI how you're feeling right now..." value={input} onChange={(e) => setInput(e.target.value)} />
+              <input placeholder="Tell BeatFlix AI... (Try the mic! 🎤)" value={input} onChange={(e) => setInput(e.target.value)} />
               
               <button
                 type="button"
@@ -994,8 +994,12 @@ askBeatFlix(
                 onClick={startListening}
                 title="Speak your mood"
                 style={{
-                  background: 'none', border: 'none', color: isListening ? '#ff416c' : '#aaa', 
-                  fontSize: '1.2rem', cursor: 'pointer', padding: '0 10px', transition: 'color 0.2s'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  minWidth: '50px', height: '50px',
+                  background: 'rgba(255, 62, 165, 0.2)', border: '1px solid #ff3ea5', 
+                  borderRadius: '50%', color: isListening ? '#ff416c' : '#fff', 
+                  fontSize: '1.5rem', cursor: 'pointer', margin: '0 15px', transition: 'all 0.2s',
+                  zIndex: 9999
                 }}
               >
                 <FaMicrophone />
