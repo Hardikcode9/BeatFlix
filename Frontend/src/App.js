@@ -16,6 +16,24 @@ import Footer from "./components/common/Footer";
 import CollectionPage from "./pages/CollectionPage";
 import Subscription from "./pages/Subscription";
 import AccountManagement from "./pages/AccountManagement";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+
+import Navbar from "./components/common/Navbar";
+import EntryScreen from "./components/EntryScreen";
+
+import Home from "./pages/Home";
+import Movies from "./pages/Movies";
+import Music from "./pages/Music";
+import MusicDetails from "./pages/MusicDetails";
+import Playlist from "./pages/Playlist";
+import Moods from "./pages/Moods";
+import About from "./pages/About";
+import MovieDetails from "./pages/MovieDetails";
+import Footer from "./components/common/Footer";
+import CollectionPage from "./pages/CollectionPage";
+import Subscription from "./pages/Subscription";
+import AccountManagement from "./pages/AccountManagement";
 import MyListPage from "./pages/MyListPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import FreeMovies from "./pages/FreeMovies";
@@ -23,6 +41,7 @@ import FreeMovies from "./pages/FreeMovies";
 import { MusicProvider } from "./context/MusicContext";
 import GlobalMusicPlayer from "./components/GlobalMusicPlayer";
 import ScrollToTop from "./components/ScrollToTop";
+import SmartConcierge from "./components/SmartConcierge";
 
 import "./App.css";
 
@@ -84,6 +103,7 @@ function App() {
         </main>
 
         <GlobalMusicPlayer />
+        <SmartConcierge />
         <Footer />
       </div>
     </BrowserRouter>
