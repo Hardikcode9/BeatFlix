@@ -12,6 +12,7 @@ import {
   FaMagic,
   FaPlay,
   FaEye,
+  FaMicrophone,
 } from "react-icons/fa";
 import * as faceapi from "face-api.js";
 import ChatSidebar from "../components/ChatSidebar";
@@ -263,6 +264,72 @@ const updateMessages = (newMessages) => {
   const hasLoadedChats = useRef(false);
 
   const [tokensLeft, setTokensLeft] = useState(null);
+
+  const [isListening, setIsListening] = useState(false);
+  const [envContext, setEnvContext] = useState("");
+  const recognitionRef = useRef(null);
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInput((prev) => (prev ? prev + ' ' + transcript : transcript));
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        setIsListening(false);
+        console.error("Speech Recognition Error:", event.error);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+
+  const startListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.start();
+    } else {
+      alert("Voice recognition is not supported in this browser.");
+    }
+  };
+
+  useEffect(() => {
+    // Try to get weather context in background
+    const getContext = async () => {
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+        });
+        const { latitude, longitude } = position.coords;
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+        const data = await res.json();
+        const code = data.current_weather.weathercode;
+        let weatherContext = "mild";
+        if (code === 0) weatherContext = "clear and sunny";
+        else if (code >= 1 && code <= 3) weatherContext = "a bit cloudy";
+        else if (code >= 51 && code <= 67) weatherContext = "raining";
+        else if (code >= 71 && code <= 77) weatherContext = "snowing";
+        
+        setEnvContext(weatherContext);
+      } catch (e) {
+        console.log("Could not get location for environment context.");
+      }
+    };
+    getContext();
+  }, []);
 
   const fetchTokens = async () => {
     try {
@@ -545,6 +612,13 @@ await saveMessage(activeChatId, aiMessage);
 
 setStreamingText("");
 
+// Optional: Text to speech if you want the AI to read the message out loud
+if (window.speechSynthesis) {
+  const utterance = new SpeechSynthesisUtterance(finalReply);
+  utterance.pitch = 1.05;
+  window.speechSynthesis.speak(utterance);
+}
+
 setRecommendedMovies(matchedItems);    } catch (err) {
       updateMessages([
         ...currentMessages,
@@ -571,7 +645,22 @@ updateMessages(updatedMessages);
 await saveMessage(activeChatId, userMessage);
     setInput("");
     setIsThinking(true); 
-    askBeatFlix(userMessage.text, updatedMessages);
+
+    let timeContext = "daytime";
+    const hour = new Date().getHours();
+    if (hour < 12) timeContext = "morning";
+    else if (hour < 18) timeContext = "afternoon";
+    else if (hour < 22) timeContext = "evening";
+    else timeContext = "late night";
+
+    let contextString = "";
+    if (envContext) {
+      contextString = ` (System Note: The user's current environment is ${envContext} and it is ${timeContext}. Please tailor your recommendation to this environmental vibe if appropriate.)`;
+    } else {
+      contextString = ` (System Note: It is currently ${timeContext}.)`;
+    }
+
+    askBeatFlix(userMessage.text + contextString, updatedMessages);
   };
 
   const startScanner = async () => {
@@ -898,6 +987,20 @@ askBeatFlix(
             <form className="search-box mood-search-box" onSubmit={handleChatSubmit}>
               <FaMagic className="search-icon" />
               <input placeholder="Tell BeatFlix AI how you're feeling right now..." value={input} onChange={(e) => setInput(e.target.value)} />
+              
+              <button
+                type="button"
+                className={`voice-btn ${isListening ? 'listening' : ''}`}
+                onClick={startListening}
+                title="Speak your mood"
+                style={{
+                  background: 'none', border: 'none', color: isListening ? '#ff416c' : '#aaa', 
+                  fontSize: '1.2rem', cursor: 'pointer', padding: '0 10px', transition: 'color 0.2s'
+                }}
+              >
+                <FaMicrophone />
+              </button>
+
               {tokensLeft !== null && (
                 <div className="input-token-counter" title={`${tokensLeft} Tokens Left`}>
                   <span className="token-icon">⚡</span> 

@@ -24,7 +24,6 @@ import FreeMovies from "./pages/FreeMovies";
 import { MusicProvider } from "./context/MusicContext";
 import GlobalMusicPlayer from "./components/GlobalMusicPlayer";
 import ScrollToTop from "./components/ScrollToTop";
-import SmartConcierge from "./components/SmartConcierge";
 
 import "./App.css";
 
@@ -86,7 +85,6 @@ function App() {
         </main>
 
         <GlobalMusicPlayer />
-        <SmartConcierge />
         <Footer />
       </div>
     </BrowserRouter>
