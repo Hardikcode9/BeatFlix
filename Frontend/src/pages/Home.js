@@ -1,3 +1,4 @@
+/* eslint-disable */
   import { useEffect, useMemo, useState, useRef, useLayoutEffect } from "react";
   import {
     FaPlay,

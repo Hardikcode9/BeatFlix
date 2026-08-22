@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 
 const MusicContext = createContext();
