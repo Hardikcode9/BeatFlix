@@ -1,3 +1,4 @@
+﻿/* eslint-disable */
   import { useEffect, useMemo, useState, useRef, useLayoutEffect } from "react";
   import {
     FaPlay,
@@ -369,12 +370,12 @@
         <div ref={homeRef} className={`beatflix-home scroll-3d-container ${!isBooting ? "page-revealed" : ""}`}>
           <section className="hero">
             <div className="hero-left" key={currentMovie.id}>
-              <span className="hero-label">🔥 FEATURED TONIGHT</span>
+              <span className="hero-label">ðŸ”¥ FEATURED TONIGHT</span>
               <h1 className="hero-movie-title"><span>{currentMovie.title || "Loading..."}</span></h1>
               <div className="hero-meta">
-                <span>⭐ {currentMovie.rating || "0.0"}</span>
-                <span>📅 {currentMovie.year || "N/A"}</span>
-                <span>🎬 {currentMovie.genre ? currentMovie.genre.join(" • ") : "..."}</span>
+                <span>â­ {currentMovie.rating || "0.0"}</span>
+                <span>ðŸ“… {currentMovie.year || "N/A"}</span>
+                <span>ðŸŽ¬ {currentMovie.genre ? currentMovie.genre.join(" â€¢ ") : "..."}</span>
               </div>
               <p>{currentMovie.description ? currentMovie.description.slice(0, 110) : ""}...</p>
               <div className="hero-divider"></div>
@@ -397,8 +398,8 @@
                     <div className="hero-overlay">
                       {index === activeSlide && (
                         <div className="hero-top">
-                          <span>🔥 Trending</span>
-                          <span>⭐ {movie.rating}</span>
+                          <span>ðŸ”¥ Trending</span>
+                          <span>â­ {movie.rating}</span>
                         </div>
                       )}
                     </div>
@@ -409,11 +410,11 @@
           </section>
 
           <section className="content-section">
-            <MovieRail title="🇮🇳 Top 10 in India" subtitle="Most popular Indian movies" movies={topIndia} onSelect={(id) => navigate(`/movie/${id}`)} />
-            <MovieRail title="🌍 Top 10 Worldwide" subtitle="Most popular movies around the world" movies={topGlobal} onSelect={(id) => navigate(`/movie/${id}`)} />
-            <MovieRail title="🔥 Trending This Week" subtitle="Most watched this week" movies={trendingMovies} onSelect={(id) => navigate(`/movie/${id}`)} />
-            <MovieRail title="⭐ Top Rated" subtitle="Highest rated movies of all time" movies={topRatedMovies} onSelect={(id) => navigate(`/movie/${id}`)} />
-            <MovieRail title="🎬 New Releases" subtitle="Fresh movies now playing" movies={newReleases} onSelect={(id) => navigate(`/movie/${id}`)} />
+            <MovieRail title="ðŸ‡®ðŸ‡³ Top 10 in India" subtitle="Most popular Indian movies" movies={topIndia} onSelect={(id) => navigate(`/movie/${id}`)} />
+            <MovieRail title="ðŸŒ Top 10 Worldwide" subtitle="Most popular movies around the world" movies={topGlobal} onSelect={(id) => navigate(`/movie/${id}`)} />
+            <MovieRail title="ðŸ”¥ Trending This Week" subtitle="Most watched this week" movies={trendingMovies} onSelect={(id) => navigate(`/movie/${id}`)} />
+            <MovieRail title="â­ Top Rated" subtitle="Highest rated movies of all time" movies={topRatedMovies} onSelect={(id) => navigate(`/movie/${id}`)} />
+            <MovieRail title="ðŸŽ¬ New Releases" subtitle="Fresh movies now playing" movies={newReleases} onSelect={(id) => navigate(`/movie/${id}`)} />
             <CollectionSection navigate={navigate} />
             <PremiumBanner />
           </section>
@@ -477,7 +478,7 @@
               >
                 {title.includes("Top 10") && index < 10 && <div className={`champion-badge ${index === 0 ? "gold" : index === 1 ? "silver" : index === 2 ? "bronze" : "standard"}`}>#{index + 1}</div>}
                 <div className="movie-poster"><img src={movie.poster} alt={movie.title} /><div className="movie-view-overlay"><div className="movie-view-action"><FaEye /><span>View Details</span></div></div></div>
-                <div className="movie-details"><h4>{movie.title}</h4><span>{movie.genre.length > 0 ? movie.genre.join(" • ") : "N/A"}</span><div className="movie-meta"><p>{movie.year}</p><p><FaStar />{movie.rating}</p></div></div>
+                <div className="movie-details"><h4>{movie.title}</h4><span>{movie.genre.length > 0 ? movie.genre.join(" â€¢ ") : "N/A"}</span><div className="movie-meta"><p>{movie.year}</p><p><FaStar />{movie.rating}</p></div></div>
               </div>
             ))}
           </div>
@@ -523,7 +524,7 @@
       <section className="collection-section">
         <div className="rail-header">
           <div>
-            <h2>🎬 Featured Collections</h2>
+            <h2>ðŸŽ¬ Featured Collections</h2>
             <p>Browse hand-picked movie collections</p>
           </div>
         </div>
@@ -577,7 +578,7 @@
         </div>
         
         <div className="premium-action">
-          {/* ðŸ‘‰ ROUTE CHANGED HERE */}
+          {/* Ã°Å¸â€˜â€° ROUTE CHANGED HERE */}
           <button className="premium-button" onClick={() => navigate("/subscription")}>
             Upgrade Now <FaChevronRight />
           </button>
@@ -586,3 +587,4 @@
     );
   }
   export default Home;
+

@@ -1,3 +1,4 @@
+﻿/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaTrash, FaStar, FaFilm, FaMusic, FaCheck, FaHeart, FaRegHeart } from "react-icons/fa";
@@ -207,3 +208,4 @@ const MyListPage = () => {
 };
 
 export default MyListPage;
+

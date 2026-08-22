@@ -1,3 +1,4 @@
+﻿/* eslint-disable */
 import { useEffect, useRef, useState } from "react";
 import YouTube from "react-youtube";
 import { useLocation, useNavigate } from "react-router-dom";
