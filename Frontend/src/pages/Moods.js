@@ -716,7 +716,7 @@ await saveMessage(activeChatId, userMessage);
         expressions[a] > expressions[b] ? a : b
       );
 
-      if (expressions[strongestEmotion] < 0.45) return;
+      if (expressions[strongestEmotion] < 0.70 || strongestEmotion === "neutral") return;
 
       emotionHistoryRef.current.push(strongestEmotion);
 
@@ -735,25 +735,27 @@ await saveMessage(activeChatId, userMessage);
       );
 
       if (counts[stableEmotion] >= 4 && !scanLockedRef.current) {
-scanLockedRef.current = true;
+        scanLockedRef.current = true;
+        clearInterval(scanIntervalRef.current);
+        stopScanner();
 
-clearInterval(scanIntervalRef.current);
-stopScanner();
+        const detectedEmotion = stableEmotion;
 
-const detectedEmotion = stableEmotion;
+        const updatedMessages = [
+          ...messages,
+          {
+            sender: "user",
+            text: `[Biometric Scan: ${detectedEmotion.toUpperCase()}]`,
+          },
+        ];
 
-updateMessages([
-  ...messages,
-  {
-    sender: "user",
-    text: `[Biometric Scan: ${detectedEmotion.toUpperCase()}]`,
-  },
-]);
+        updateMessages(updatedMessages);
 
-askBeatFlix(
-  `I am feeling ${detectedEmotion}. Ask me if I want to watch a movie or listen to music.`
-);
-      }
+        askBeatFlix(
+          `I am feeling ${detectedEmotion}. Ask me if I want to watch a movie or listen to music.`,
+          updatedMessages
+        );
+      }  
     } catch (err) {
       console.error(err);
     } finally {
