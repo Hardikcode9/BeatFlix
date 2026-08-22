@@ -1,4 +1,3 @@
-﻿/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPlay, FaTrash, FaMusic, FaArrowLeft, FaRandom } from "react-icons/fa";
@@ -143,4 +142,3 @@ const Playlist = () => {
 };
 
 export default Playlist;
-

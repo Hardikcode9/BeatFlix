@@ -1,4 +1,3 @@
-﻿/* eslint-disable */
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import YouTube from 'react-youtube';
@@ -93,4 +92,3 @@ const GlobalMusicPlayer = () => {
 };
 
 export default GlobalMusicPlayer;
-

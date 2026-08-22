@@ -1,4 +1,3 @@
-﻿/* eslint-disable */
 import { useState } from "react";
 import "../../styles/Navbar.css";
 import { NavLink, Link } from "react-router-dom";

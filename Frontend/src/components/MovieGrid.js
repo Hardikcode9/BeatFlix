@@ -1,4 +1,3 @@
-﻿/* eslint-disable */
 import { useEffect, useRef, useState, useCallback } from "react";
 import "../styles/MovieGrid.css";
 import MovieCard from "./MovieCard";

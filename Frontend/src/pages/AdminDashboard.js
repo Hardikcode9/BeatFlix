@@ -1,4 +1,3 @@
-﻿/* eslint-disable */
 import React, { useState, useEffect, useMemo } from 'react';
 import '../styles/AdminDashboard.css';
 import { 
@@ -442,4 +441,3 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard;
-

@@ -1,4 +1,3 @@
-﻿/* eslint-disable */
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 
 const MusicContext = createContext();
@@ -231,4 +230,3 @@ export const MusicProvider = ({ children }) => {
     </MusicContext.Provider>
   );
 };
-

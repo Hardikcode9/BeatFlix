@@ -1,4 +1,3 @@
-﻿/* eslint-disable */
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
@@ -262,7 +261,7 @@ const submitForm = async (event) => {
   // LENIS SMOOTH SCROLL
   // ==========================================
   useEffect(() => {
-    // Skip Lenis on mobile â€” native momentum scrolling is smoother
+    // Skip Lenis on mobile — native momentum scrolling is smoother
     // and Lenis's rAF loop causes jank on low-end phones
     if (isMobileDevice) return;
 
@@ -541,7 +540,7 @@ const submitForm = async (event) => {
                 data-lenis-prevent
               >
                 <button className="back-choice" type="button" onClick={() => { setFormType(""); setMessage(""); }}>
-                  â† Back
+                  ← Back
                 </button>
                 <div className="form-icon">{formType === "login" ? <FaUserShield /> : <FaUserPlus />}</div>
                 <p className="entry-kicker">BEATFLIX PROFILE</p>
@@ -613,7 +612,7 @@ const submitForm = async (event) => {
       {showSuccess && (
         <div className="success-overlay">
           <div className="success-card">
-            <div className="success-check">âœ“</div>
+            <div className="success-check">✓</div>
             <h2>Profile Created!</h2><p>Your BeatFlix account is ready.</p><span>Redirecting to Login...</span>
           </div>
         </div>

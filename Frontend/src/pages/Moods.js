@@ -1,4 +1,3 @@
-﻿/* eslint-disable */
 import {
   useState,
   useRef,
@@ -38,7 +37,7 @@ function Moods() {
   {
     sender: "ai",
     text:
-      "Welcome to BeatFlix! ðŸ‘‹\n\nHow are you feeling today? Tell me what's on your mind, or let's use the camera to find the perfect movies for you.",
+      "Welcome to BeatFlix! 👋\n\nHow are you feeling today? Tell me what's on your mind, or let's use the camera to find the perfect movies for you.",
   },
 ];
 
@@ -796,9 +795,9 @@ askBeatFlix(
       );
     }
 
-    if (trimmed.startsWith("â€¢") || trimmed.startsWith("-") || trimmed.startsWith("*")) {
+    if (trimmed.startsWith("•") || trimmed.startsWith("-") || trimmed.startsWith("*")) {
       // Remove bullet char
-      trimmed = trimmed.replace(/^[-â€¢*]\s*/, "");
+      trimmed = trimmed.replace(/^[-•*]\s*/, "");
       
       // Auto-bold the title if there's a colon but no existing bold
       if (!trimmed.includes("**") && trimmed.includes(":")) {
@@ -835,7 +834,7 @@ askBeatFlix(
         className="mood-container"
       >
         <section className="moods-hero">
-          {/* ðŸš€ RESTORED PULSING BADGE */}
+          {/* 🚀 RESTORED PULSING BADGE */}
           <span className="hero-label">
             <span className="badge-dot"></span> BEATFLIX ASSISTANT
           </span>
@@ -890,11 +889,11 @@ askBeatFlix(
 
                                           <div className="chat-movie-meta">
                                             <span>{movie.year}</span>
-                                            <span>â­ {movie.rating}</span>
+                                            <span>⭐ {movie.rating}</span>
                                           </div>
 
                                           <div className="chat-movie-genres">
-                                            {movie.genre?.join(" â€¢ ") || "Unknown"}
+                                            {movie.genre?.join(" • ") || "Unknown"}
                                           </div>
                                           <p className="chat-movie-reason">
                                             {movie.reason ||
@@ -1004,7 +1003,7 @@ askBeatFlix(
 
               {tokensLeft !== null && (
                 <div className="input-token-counter" title={`${tokensLeft} Tokens Left`}>
-                  <span className="token-icon">âš¡</span> 
+                  <span className="token-icon">⚡</span> 
                   <span className="token-text">{tokensLeft}</span>
                 </div>
               )}
@@ -1017,7 +1016,7 @@ askBeatFlix(
               <span className="line"></span>
             </div>
 
-            {/* ðŸš€ ADDED GLOW WRAPPER */}
+            {/* 🚀 ADDED GLOW WRAPPER */}
             <div className="premium-scan-wrapper">
               <button className="premium-scan-btn" onClick={startScanner} type="button">
                 <div className="btn-content">
@@ -1041,7 +1040,7 @@ askBeatFlix(
           {recommendedMovies.length > 0 && (
             <div className="movie-rail">
               <div className="rail-header">
-                <h2>ðŸŽ¬ Recommended For You</h2>
+                <h2>🎬 Recommended For You</h2>
                 <p>Based on your current mood</p>
               </div>
               <div className="mood-grid-container">
@@ -1057,7 +1056,7 @@ askBeatFlix(
                     <div className="movie-poster">
                       <img src={movie.poster} alt={movie.title} />
                       
-                      {/* ðŸš€ UPGRADED 3D OVERLAY WITH PLAY BUTTON */}
+                      {/* 🚀 UPGRADED 3D OVERLAY WITH PLAY BUTTON */}
                       <div className="movie-view-overlay">
                         <div className="movie-play-btn">
                           <FaPlay />
@@ -1071,7 +1070,7 @@ askBeatFlix(
                     <div className="movie-details">
                       <h4>{movie.title}</h4>
                       <span>{movie.genre?.length > 0
-  ? movie.genre.join(" â€¢ ")
+  ? movie.genre.join(" • ")
   : "Unknown"}</span>
                       <div className="movie-meta">
                         <p>{movie.year}</p>

@@ -1,4 +1,3 @@
-﻿/* eslint-disable */
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
@@ -193,7 +192,7 @@ function MovieDetails() {
                 className="btn-primary"
                 onClick={() => setShowTrailer(true)}
               >
-                <span className="play-circle">â–¶</span>
+                <span className="play-circle">▶</span>
                 Watch Trailer
               </button>
 
