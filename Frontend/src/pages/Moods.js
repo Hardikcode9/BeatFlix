@@ -498,6 +498,9 @@ const streamReply = async (reply) => {
   setStreamingText("");
 
   for (let i = 0; i < reply.length; i++) {
+    if (abortControllerRef.current?.signal.aborted) {
+      break;
+    }
     await new Promise((resolve) => setTimeout(resolve, 12));
     setStreamingText(reply.slice(0, i + 1));
   }
@@ -616,9 +619,24 @@ await saveMessage(activeChatId, aiMessage);
 setStreamingText("");
 
 // Optional: Text to speech if you want the AI to read the message out loud
-if (window.speechSynthesis) {
+if (window.speechSynthesis && !abortControllerRef.current?.signal.aborted) {
+  window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(finalReply);
-  utterance.pitch = 1.05;
+  utterance.pitch = 0.9;
+  utterance.rate = 0.95;
+  
+  const voices = window.speechSynthesis.getVoices();
+  const femaleVoice = voices.find(v => 
+    v.name.includes('Female') || 
+    v.name.includes('Zira') || 
+    v.name.includes('Samantha') || 
+    v.name.includes('Victoria') ||
+    (v.name.includes('Google') && v.name.includes('UK English Female'))
+  );
+  if (femaleVoice) {
+    utterance.voice = femaleVoice;
+  }
+  
   window.speechSynthesis.speak(utterance);
 }
 
@@ -634,9 +652,22 @@ setRecommendedMovies(matchedItems);    } catch (err) {
     setIsThinking(false);
   };
 
+  const handleStopReply = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setIsThinking(false);
+  };
+
   const handleChatSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
+    if (isThinking) return; // Prevent concurrent sends
+    
+    abortControllerRef.current = new AbortController();
     const userMessage = { sender: "user", text: input };
     setMood(input);
 const updatedMessages = [
@@ -993,20 +1024,28 @@ await saveMessage(activeChatId, userMessage);
 
             <form className="search-box mood-search-box" onSubmit={handleChatSubmit}>
               <FaMagic className="search-icon" />
-              <input placeholder="Tell BeatFlix AI... (Try the mic! 🎤)" value={input} onChange={(e) => setInput(e.target.value)} />
+              <input 
+                placeholder="Tell BeatFlix AI... (Try the mic! 🎤)" 
+                value={input} 
+                onChange={(e) => setInput(e.target.value)} 
+                disabled={isThinking}
+                style={{ opacity: isThinking ? 0.5 : 1 }}
+              />
               
               <button
                 type="button"
                 className={`voice-btn ${isListening ? 'listening' : ''}`}
                 onClick={startListening}
                 title="Speak your mood"
+                disabled={isThinking}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   minWidth: '50px', height: '50px',
                   background: 'rgba(255, 62, 165, 0.2)', border: '1px solid #ff3ea5', 
                   borderRadius: '50%', color: isListening ? '#ff416c' : '#fff', 
-                  fontSize: '1.5rem', cursor: 'pointer', margin: '0 15px', transition: 'all 0.2s',
-                  zIndex: 9999
+                  fontSize: '1.5rem', cursor: isThinking ? 'not-allowed' : 'pointer', margin: '0 15px', transition: 'all 0.2s',
+                  zIndex: 9999,
+                  opacity: isThinking ? 0.5 : 1
                 }}
               >
                 <FaMicrophone />
@@ -1018,7 +1057,18 @@ await saveMessage(activeChatId, userMessage);
                   <span className="token-text">{tokensLeft}</span>
                 </div>
               )}
-              <button className="watch-btn mood-send-btn" type="submit">Send</button>
+              {isThinking || streamingText ? (
+                <button 
+                  className="watch-btn mood-send-btn" 
+                  type="button" 
+                  onClick={handleStopReply}
+                  style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)', boxShadow: '0 15px 35px rgba(239, 68, 68, 0.35)' }}
+                >
+                  <FaTimes style={{ marginRight: '8px' }} /> Stop
+                </button>
+              ) : (
+                <button className="watch-btn mood-send-btn" type="submit">Send</button>
+              )}
             </form>
 
             <div className="fancy-divider">

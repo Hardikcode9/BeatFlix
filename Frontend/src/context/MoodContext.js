@@ -242,7 +242,7 @@ export const MoodProvider = ({ children }) => {
     let normalized = moodInput.toLowerCase().trim();
     
     // Default fallback
-    let foundMood = "neutral";
+    let foundMood = null;
     
     // 1. Direct match for keys
     const moodKeys = Object.keys(moodThemes);
@@ -268,10 +268,8 @@ export const MoodProvider = ({ children }) => {
     if (normalized.includes("mad") || normalized.includes("furious") || normalized.includes("annoyed")) foundMood = "angry";
 
     // Set the state if valid
-    if (moodThemes[foundMood]) {
+    if (foundMood && moodThemes[foundMood]) {
       setCurrentMood(foundMood);
-    } else {
-      setCurrentMood("neutral");
     }
   };
 
