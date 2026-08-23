@@ -128,6 +128,88 @@ Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy
   }
 };
 
+const generateVibePlaylist = async (req, res) => {
+  try {
+    const { movieTitle, moviePlot, movieGenres } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    let currentTokens = user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
+
+    if (user.subscription !== "ultimate" && currentTokens <= 0) {
+      return res.status(403).json({
+        success: false,
+        message: "You've reached your BeatFlix AI limit. Please upgrade your plan.",
+      });
+    }
+
+    const prompt = `
+You are the BeatFlix Synesthesia Engine. Your job is to translate a movie into a musical playlist.
+Given the movie title, plot, and genres, you must generate a list of 5 to 7 specific songs that perfectly match the "vibe", emotion, pacing, and theme of the movie. 
+These should be real, popular songs (not necessarily the official soundtrack).
+
+Movie Title: ${movieTitle}
+Genres: ${movieGenres}
+Plot: ${moviePlot}
+
+Return ONLY valid JSON in this exact format:
+{
+  "songs": ["Song Name - Artist", "Song Name - Artist"]
+}
+`;
+
+    let response;
+    let retries = 2;
+    while (retries >= 0) {
+      try {
+        response = await axios.post(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+          {
+            contents: [{ parts: [{ text: prompt }] }],
+          }
+        );
+        break;
+      } catch (err) {
+        if (retries === 0 || (err.response && err.response.status !== 503 && err.response.status !== 429)) {
+          throw err;
+        }
+        retries--;
+        await new Promise(res => setTimeout(res, 1000));
+      }
+    }
+
+    const text = response.data.candidates[0].content.parts[0].text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    if (user.subscription !== "ultimate") {
+      currentTokens -= 1;
+      user.aiTokens = currentTokens;
+      await user.save();
+    }
+
+    let responseData;
+    try {
+      responseData = JSON.parse(text);
+    } catch (parseError) {
+      console.warn("Gemini did not return JSON:", text);
+      responseData = { songs: [] };
+    }
+    
+    responseData.tokensLeft = user.subscription === "ultimate" ? "Unlimited" : currentTokens;
+
+    res.json(responseData);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ success: false, message: "Failed to generate playlist" });
+  }
+};
+
 module.exports = {
   chatWithGemini,
+  generateVibePlaylist,
 };

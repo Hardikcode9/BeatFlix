@@ -10,8 +10,10 @@ import {
   FaTimes,
   FaBookmark,
   FaRegBookmark,
+  FaMagic,
 } from "react-icons/fa";
 import "../styles/MovieDetails.css";
+import { useMusic } from "../context/MusicContext";
 
 const IMAGE_URL = "https://image.tmdb.org/t/p/original";
 const POSTER_URL = "https://image.tmdb.org/t/p/w500";
@@ -45,6 +47,9 @@ function MovieDetails() {
   const [showTrailer, setShowTrailer] = useState(false);
   const [loading, setLoading] = useState(true);
   const [watchProviders, setWatchProviders] = useState(null);
+
+  const { playQueue } = useMusic();
+  const [isGeneratingVibe, setIsGeneratingVibe] = useState(false);
 
   // 1. Sync button state with LocalStorage on load and when the custom event fires
   useEffect(() => {
@@ -103,6 +108,61 @@ function MovieDetails() {
       
       return newState;
     });
+  };
+
+  const handleGenerateVibePlaylist = async () => {
+    if (!movie) return;
+    setIsGeneratingVibe(true);
+    try {
+      const token = localStorage.getItem("token");
+      const genres = movie.genres.map(g => g.name).join(", ");
+      
+      const vibeRes = await fetch(`${process.env.REACT_APP_API_URL}/api/gemini/vibe-playlist`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          movieTitle: movie.title,
+          moviePlot: movie.overview,
+          movieGenres: genres
+        })
+      });
+      const vibeData = await vibeRes.json();
+      
+      if (!vibeData.songs || vibeData.songs.length === 0) {
+        alert("Failed to generate vibe playlist. Try again.");
+        setIsGeneratingVibe(false);
+        return;
+      }
+
+      const songPromises = vibeData.songs.map(async (songQuery) => {
+        try {
+          const res = await fetch(`${process.env.REACT_APP_API_URL}/api/music/search?q=${encodeURIComponent(songQuery)}`);
+          const searchData = await res.json();
+          if (searchData.success && searchData.songs && searchData.songs.length > 0) {
+            return searchData.songs[0];
+          }
+        } catch (e) {
+          console.error("Music search error", e);
+        }
+        return null;
+      });
+
+      const fetchedSongs = (await Promise.all(songPromises)).filter(s => s !== null);
+      
+      if (fetchedSongs.length > 0) {
+        playQueue(fetchedSongs, 0);
+      } else {
+        alert("Could not find playable tracks for this vibe.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error generating playlist. Do you have AI tokens left?");
+    } finally {
+      setIsGeneratingVibe(false);
+    }
   };
 
   if (loading) {
@@ -210,6 +270,18 @@ function MovieDetails() {
                   <FaRegBookmark className="bookmark-icon" />
                 )}
                 <span>{isInList ? "In My List" : "Add to My List"}</span>
+              </button>
+
+              {/* Vibe Playlist Button */}
+              <button 
+                type="button" 
+                className="btn-secondary"
+                onClick={handleGenerateVibePlaylist}
+                disabled={isGeneratingVibe}
+                style={{ background: "linear-gradient(45deg, #ff00cc, #333399)", border: "none", color: "white" }}
+              >
+                <FaMagic style={{ marginRight: "6px" }} /> 
+                {isGeneratingVibe ? "Generating..." : "Generate Vibe Playlist"}
               </button>
 
               {/* Back Button */}
