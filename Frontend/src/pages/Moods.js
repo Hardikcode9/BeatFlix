@@ -40,6 +40,7 @@ function Moods() {
 
   const [allMovies, setAllMovies] = useState([]);
   const [recommendedMovies, setRecommendedMovies] = useState([]);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [input, setInput] = useState("");
   const BASE_URL = `${process.env.REACT_APP_API_URL}/api/chat`;
 
@@ -59,97 +60,99 @@ const activeChat =
   chats.find((chat) => chat._id === activeChatId) || chats[0];
 
   const createNewChat = async () => {
-  if (creatingChatRef.current) return;
-  creatingChatRef.current = true;
-
-  try {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
-
-    setChats((prev) => {
-      if (prev.find((chat) => chat._id === data.chat._id)) {
-        return prev;
+    if (creatingChatRef.current) return;
+    creatingChatRef.current = true;
+  
+    try {
+      const token = localStorage.getItem("token");
+      
+      // Guest mode - create local chat
+      if (!token) {
+        const localChatId = "guest_" + Date.now();
+        setChats((prev) => [
+          { _id: localChatId, messages: [...welcomeMessages] },
+          ...prev,
+        ]);
+        setActiveChatId(localChatId);
+        setRecommendedMovies([]);
+        creatingChatRef.current = false;
+        return;
       }
-
-      return [
-        {
-          ...data.chat,
-          messages: [...welcomeMessages],
+  
+      const response = await fetch(BASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        ...prev,
-      ];
-    });
-
-    setActiveChatId(data.chat._id);
-    setRecommendedMovies([]);
-  } catch (err) {
-    console.error(err);
-  } finally {
-    creatingChatRef.current = false;
-  }
-};
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+  
+      setChats((prev) => {
+        if (prev.find((chat) => chat._id === data.chat._id)) {
+          return prev;
+        }
+  
+        return [
+          {
+            ...data.chat,
+            messages: [...welcomeMessages],
+          },
+          ...prev,
+        ];
+      });
+  
+      setActiveChatId(data.chat._id);
+      setRecommendedMovies([]);
+    } catch (error) {
+      console.error("Error creating chat:", error);
+    } finally {
+      creatingChatRef.current = false;
+    }
+  };
 
 const loadChats = async () => {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // Guest mode fallback
+        createNewChat();
+        return;
+      }
+      const response = await fetch(BASE_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!token) return;
+      const data = await response.json();
+      console.log("Mongo Chats:", data.chats);
+      console.log("Mongo Count:", data.chats.length);
 
-    const response = await fetch(BASE_URL, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-
-    console.log("Mongo Chats:", data.chats);
-    console.log("Mongo Count:", data.chats.length);
-
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
-
-    if (data.chats.length === 0) {
+      if (data.chats.length === 0) {
         setChats([]);
         setActiveChatId(null);
-        return;
+        createNewChat();
+      } else {
+        setChats(data.chats);
+        setActiveChatId(data.chats[0]._id);
+      }
+    } catch (error) {
+      console.error("Error loading chats:", error);
     }
-
-    const chatsWithWelcome = data.chats.map((chat) => ({
-      ...chat,
-      messages:
-        chat.messages.length > 0
-          ? chat.messages
-          : [...welcomeMessages],
-    }));
-
-    setChats(chatsWithWelcome);
-    setActiveChatId(chatsWithWelcome[0]._id);
-
-  } catch (err) {
-    console.error("Load Chats:", err);
-  }
-};
+  };
 
 const saveMessage = async (chatId, message) => {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return; // Skip saving for guests
 
-    const response = await fetch(`${BASE_URL}/${chatId}/message`, {
+      const response = await fetch(`${BASE_URL}/${chatId}/message`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -660,6 +663,9 @@ if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
       window.currentAudio = audio;
+      audio.onplay = () => setIsPlayingAudio(true);
+      audio.onended = () => setIsPlayingAudio(false);
+      audio.onerror = () => setIsPlayingAudio(false);
       audio.play();
       playedElevenLabs = true;
     } else {
@@ -677,6 +683,9 @@ if (!playedElevenLabs && window.speechSynthesis && !abortControllerRef.current?.
   // Fallback to local TTS if ElevenLabs key is missing or fails
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(finalReply);
+  utterance.onstart = () => setIsPlayingAudio(true);
+  utterance.onend = () => setIsPlayingAudio(false);
+  utterance.onerror = () => setIsPlayingAudio(false);
   utterance.pitch = 0.95;
   utterance.rate = 0.95;
   
@@ -709,14 +718,14 @@ setRecommendedMovies(matchedItems);    } catch (err) {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
     if (window.currentAudio) {
       window.currentAudio.pause();
       window.currentAudio.currentTime = 0;
     }
+    window.speechSynthesis.cancel();
+    setStreamingText("");
     setIsThinking(false);
+    setIsPlayingAudio(false);
   };
 
   const handleChatSubmit = async (e) => {
@@ -1114,7 +1123,7 @@ await saveMessage(activeChatId, userMessage);
                   <span className="token-text">{tokensLeft}</span>
                 </div>
               )}
-              {isThinking || streamingText ? (
+              {isThinking || streamingText || isPlayingAudio ? (
                 <button 
                   className="watch-btn mood-send-btn" 
                   type="button" 
