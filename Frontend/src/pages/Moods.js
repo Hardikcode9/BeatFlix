@@ -20,6 +20,13 @@ import ChatSidebar from "../components/ChatSidebar";
 import "../styles/Moods.css";
 import { useMood } from "../context/MoodContext";
 
+let keys = {};
+try {
+  keys = require("../config/keys.json");
+} catch (e) {
+  console.warn("Local keys not found");
+}
+
 const genreMap = {
   28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime",
   99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History",
@@ -619,7 +626,7 @@ await saveMessage(activeChatId, aiMessage);
 setStreamingText("");
 
 // Optional: Text to speech if you want the AI to read the message out loud
-const elevenLabsKey = process.env.REACT_APP_ELEVENLABS_API_KEY;
+const elevenLabsKey = keys.ELEVENLABS_API_KEY || process.env.REACT_APP_ELEVENLABS_API_KEY;
 let playedElevenLabs = false;
 
 if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
@@ -630,13 +637,13 @@ if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
     }
     
     // User must provide their own Voice ID if they are on the Free Tier
-    const voiceId = process.env.REACT_APP_ELEVENLABS_VOICE_ID || "Ah9BYzLpolyTAW6DAm7L"; 
+    const voiceId = (keys.ELEVENLABS_VOICE_ID || process.env.REACT_APP_ELEVENLABS_VOICE_ID || "Ah9BYzLpolyTAW6DAm7L").trim(); 
     
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "xi-api-key": elevenLabsKey
+        "xi-api-key": elevenLabsKey.trim()
       },
       body: JSON.stringify({
         text: finalReply,
