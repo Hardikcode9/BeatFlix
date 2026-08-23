@@ -27,6 +27,30 @@ import GlobalMusicPlayer from "./components/GlobalMusicPlayer";
 import ScrollToTop from "./components/ScrollToTop";
 
 import "./App.css";
+import React from 'react';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary caught an error", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{ color: "red", padding: "50px", background: "black", zIndex: 99999, position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
+        <h1>Something went wrong.</h1>
+        <pre>{this.state.error && this.state.error.toString()}</pre>
+        <pre>{this.state.error && this.state.error.stack}</pre>
+      </div>;
+    }
+    return this.props.children;
+  }
+}
 
 function App() {
   const [viewer, setViewer] = useState(() => {
@@ -50,48 +74,50 @@ function App() {
   };
 
   return (
-    <MoodProvider>
-      {!viewer ? (
-        <EntryScreen onEnter={handleEnter} />
-      ) : (
-        <MusicProvider>
-          <BrowserRouter>
-            <ScrollToTop />
-            <div className="app-shell">
-              <Navbar
-                viewer={viewer}
-                onSwitchProfile={handleLogout}
-              />
+    <ErrorBoundary>
+      <MoodProvider>
+        {!viewer ? (
+          <EntryScreen onEnter={handleEnter} />
+        ) : (
+          <MusicProvider>
+            <BrowserRouter>
+              <ScrollToTop />
+              <div className="app-shell">
+                <Navbar
+                  viewer={viewer}
+                  onSwitchProfile={handleLogout}
+                />
 
-              <main className="app-content">
-                <Routes>
-                  <Route path="/" element={<Home viewer={viewer} />} />
-                  <Route path="/movies" element={<Movies />} />
-                  <Route path="/music" element={<Music />} />
-                  <Route path="/music/:id" element={<MusicDetails />} />
-                  <Route path="/playlist" element={<Playlist />} />
-                  <Route path="/moods" element={<Moods />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/movie/:id" element={<MovieDetails />} />
-                  <Route path="/collection/:slug" element={<CollectionPage />} />
-                  <Route path="/mylist" element={<MyListPage />} />
-                  <Route path="/subscription" element={<Subscription />} />
-                  <Route path="/free" element={<FreeMovies />} />
-                  <Route path="/account" element={<AccountManagement />} />
-                  <Route 
-                    path="/admin" 
-                    element={localStorage.getItem("userEmail") === "jeehardik2@gmail.com" ? <AdminDashboard /> : <Home viewer={viewer} />} 
-                  />
-                </Routes>
-              </main>
+                <main className="app-content">
+                  <Routes>
+                    <Route path="/" element={<Home viewer={viewer} />} />
+                    <Route path="/movies" element={<Movies />} />
+                    <Route path="/music" element={<Music />} />
+                    <Route path="/music/:id" element={<MusicDetails />} />
+                    <Route path="/playlist" element={<Playlist />} />
+                    <Route path="/moods" element={<Moods />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/movie/:id" element={<MovieDetails />} />
+                    <Route path="/collection/:slug" element={<CollectionPage />} />
+                    <Route path="/mylist" element={<MyListPage />} />
+                    <Route path="/subscription" element={<Subscription />} />
+                    <Route path="/free" element={<FreeMovies />} />
+                    <Route path="/account" element={<AccountManagement />} />
+                    <Route 
+                      path="/admin" 
+                      element={localStorage.getItem("userEmail") === "jeehardik2@gmail.com" ? <AdminDashboard /> : <Home viewer={viewer} />} 
+                    />
+                  </Routes>
+                </main>
 
-              <GlobalMusicPlayer />
-              <Footer />
-            </div>
-          </BrowserRouter>
-        </MusicProvider>
-      )}
-    </MoodProvider>
+                <GlobalMusicPlayer />
+                <Footer />
+              </div>
+            </BrowserRouter>
+          </MusicProvider>
+        )}
+      </MoodProvider>
+    </ErrorBoundary>
   );
 }
 
