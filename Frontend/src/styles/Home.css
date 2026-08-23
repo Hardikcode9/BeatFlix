@@ -33,7 +33,7 @@
 
     padding:35px 40px 100px;
 
-    background: var(--theme-bg, radial-gradient(circle at 15% 20%,rgba(90,100,255,.22),transparent 35%), radial-gradient(circle at 85% 25%,rgba(0,195,255,.18),transparent 30%), radial-gradient(circle at 50% 85%,rgba(155,70,255,.18),transparent 35%), linear-gradient(135deg, #02040b 0%, #050816 30%, #08111d 60%, #02040b 100%));
+    background: var(--theme-bg);
 
 }
 
