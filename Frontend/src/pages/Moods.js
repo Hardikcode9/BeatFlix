@@ -638,6 +638,7 @@ setRecommendedMovies(matchedItems);    } catch (err) {
     e.preventDefault();
     if (!input.trim()) return;
     const userMessage = { sender: "user", text: input };
+    setMood(input);
 const updatedMessages = [
   ...messages,
   userMessage,
