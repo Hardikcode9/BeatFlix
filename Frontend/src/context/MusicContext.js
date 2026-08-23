@@ -8,15 +8,7 @@ export const useMusic = () => useContext(MusicContext);
 export const MusicProvider = ({ children }) => {
   const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 
-const MusicContext = createContext();
-
-export const useMusic = () => useContext(MusicContext);
-
-export const MusicProvider = ({ children }) => {
-  const [currentSong, setCurrentSong] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(80);
