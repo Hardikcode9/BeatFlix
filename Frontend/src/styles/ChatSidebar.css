@@ -40,7 +40,7 @@
     font-size: 16px;
     font-weight: 800;
     
-    background: linear-gradient(135deg, #5d5fef, #38bdf8);
+    background: linear-gradient(135deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8));
     box-shadow: 0 15px 35px rgba(93, 95, 239, 0.35);
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s;
 }
@@ -51,7 +51,7 @@
     position: absolute;
     inset: -35%;
     border-radius: 40px;
-    background: conic-gradient(#5d5fef, #38bdf8, #8b5cf6, #ff3ea5, #5d5fef);
+    background: conic-gradient(var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8), var(--theme-accent, #8b5cf6), #ff3ea5, var(--theme-accent, #5d5fef));
     filter: blur(28px);
     opacity: 0;
     z-index: -1;
@@ -108,13 +108,13 @@
     
     /* Custom Sleek Scrollbar */
     scrollbar-width: thin;
-    scrollbar-color: rgba(56, 189, 248, 0.5) transparent;
+    scrollbar-color: var(--theme-glow, rgba(56, 189, 248, )) transparent;
 }
 
 .chat-history::-webkit-scrollbar { width: 6px; }
 .chat-history::-webkit-scrollbar-track { background: transparent; }
 .chat-history::-webkit-scrollbar-thumb { 
-    background: rgba(56, 189, 248, 0.5); 
+    background: var(--theme-glow, rgba(56, 189, 248, )); 
     border-radius: 20px; 
 }
 
@@ -153,9 +153,9 @@
 
 /* ACTIVE STATE */
 .history-item.active {
-    background: linear-gradient(135deg, rgba(93, 95, 239, 0.3), rgba(56, 189, 248, 0.15));
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15);
+    background: linear-gradient(135deg, rgba(93, 95, 239, 0.3), var(--theme-glow, rgba(56, 189, 248, )));
+    border: 1px solid var(--theme-glow, rgba(56, 189, 248, ));
+    box-shadow: 0 10px 25px var(--theme-glow, rgba(56, 189, 248, ));
     color: white;
 }
 
@@ -167,8 +167,8 @@
     width: 4px;
     height: 60%;
     border-radius: 50px;
-    background: #38bdf8;
-    box-shadow: 0 0 15px #38bdf8;
+    background: var(--theme-accent-secondary, #38bdf8);
+    box-shadow: 0 0 15px var(--theme-accent-secondary, #38bdf8);
 }
 
 .history-item span {
@@ -191,24 +191,24 @@
     align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, 0.06);
-    color: #38bdf8;
+    color: var(--theme-accent-secondary, #38bdf8);
     transition: 0.3s;
     flex-shrink: 0;
 }
 
 .history-item:hover .chat-icon, 
 .history-item.active .chat-icon {
-    background: linear-gradient(135deg, #5d5fef, #38bdf8);
+    background: linear-gradient(135deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8));
     color: white;
     transform: scale(1.1) rotate(-8deg);
-    box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+    box-shadow: 0 5px 15px var(--theme-glow, rgba(56, 189, 248, ));
 }
 
 .rename-input {
     width: 100%;
     background: rgba(0, 0, 0, 0.3);
-    border: 1px solid #38bdf8;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+    border: 1px solid var(--theme-accent-secondary, #38bdf8);
+    box-shadow: 0 0 15px var(--theme-glow, rgba(56, 189, 248, ));
     border-radius: 8px;
     color: white;
     padding: 8px 12px;
@@ -269,7 +269,7 @@
     /* Added Borders and Shadows */
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 14px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--theme-glow, rgba(56, 189, 248, ));
     overflow: hidden;
     
     /* Pop-in Animation */

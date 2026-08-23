@@ -31,7 +31,7 @@
 .playlist-page-container::after {
   bottom: 100px;
   right: -200px;
-  background: rgba(56, 189, 248, 0.2); /* Cyan */
+  background: var(--theme-glow, rgba(56, 189, 248, )); /* Cyan */
   animation-delay: -5s;
 }
 
@@ -78,7 +78,7 @@
   font-size: 4rem;
   font-weight: 900;
   margin: 0 0 10px 0;
-  background: linear-gradient(135deg, #fff 0%, #38bdf8 50%, #c084fc 100%);
+  background: linear-gradient(135deg, #fff 0%, var(--theme-accent-secondary, #38bdf8) 50%, #c084fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -1px;
@@ -114,12 +114,12 @@
 .play-all-btn {
   background: linear-gradient(135deg, var(--primary-cyan) 0%, #818cf8 100%);
   color: #fff;
-  box-shadow: 0 10px 25px rgba(56, 189, 248, 0.4);
+  box-shadow: 0 10px 25px var(--theme-glow, rgba(56, 189, 248, ));
 }
 
 .play-all-btn:hover {
   transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 15px 35px rgba(56, 189, 248, 0.6);
+  box-shadow: 0 15px 35px var(--theme-glow, rgba(56, 189, 248, ));
 }
 
 .shuffle-all-btn {
@@ -170,7 +170,7 @@
   color: var(--primary-cyan);
   opacity: 0.8;
   margin-bottom: 24px;
-  filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.5));
+  filter: drop-shadow(0 0 20px var(--theme-glow, rgba(56, 189, 248, )));
 }
 
 .empty-playlist h2 {
@@ -195,12 +195,12 @@
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
-  box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 10px 25px var(--theme-glow, rgba(56, 189, 248, ));
 }
 
 .go-to-music-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(56, 189, 248, 0.5);
+  box-shadow: 0 15px 35px var(--theme-glow, rgba(56, 189, 248, ));
 }
 
 /* Playlist List */
@@ -245,9 +245,9 @@
 }
 
 .playlist-item.active {
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  box-shadow: 0 0 30px rgba(56, 189, 248, 0.1) inset;
+  background: var(--theme-glow, rgba(56, 189, 248, ));
+  border: 1px solid var(--theme-glow, rgba(56, 189, 248, ));
+  box-shadow: 0 0 30px var(--theme-glow, rgba(56, 189, 248, )) inset;
 }
 
 .playlist-item-index {

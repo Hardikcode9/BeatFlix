@@ -15,6 +15,7 @@ export const moodThemes = {
     blob1: "rgba(90,100,255,.22)",
     blob2: "rgba(0,195,255,.18)",
     blob3: "rgba(155,70,255,.18)",
+    imageTint: "rgba(56, 189, 248, 0.15)",
   },
   happy: {
     name: "happy",
@@ -26,6 +27,7 @@ export const moodThemes = {
     blob1: "rgba(255,140,0,.22)",
     blob2: "rgba(251,191,36,.18)",
     blob3: "rgba(245,158,11,.18)",
+    imageTint: "rgba(255, 140, 0, 0.2)",
   },
   sad: {
     name: "sad",
@@ -37,6 +39,7 @@ export const moodThemes = {
     blob1: "rgba(29,78,216,.22)",
     blob2: "rgba(96,165,250,.18)",
     blob3: "rgba(59,130,246,.18)",
+    imageTint: "rgba(29, 78, 216, 0.25)",
   },
   angry: {
     name: "angry",
@@ -48,6 +51,7 @@ export const moodThemes = {
     blob1: "rgba(239,68,68,.22)",
     blob2: "rgba(249,115,22,.18)",
     blob3: "rgba(220,38,38,.18)",
+    imageTint: "rgba(239, 68, 68, 0.3)",
   },
   surprised: {
     name: "surprised",
@@ -59,6 +63,7 @@ export const moodThemes = {
     blob1: "rgba(168,85,247,.22)",
     blob2: "rgba(236,72,153,.18)",
     blob3: "rgba(192,132,252,.18)",
+    imageTint: "rgba(168, 85, 247, 0.25)",
   },
   fearful: {
     name: "fearful",
@@ -70,6 +75,7 @@ export const moodThemes = {
     blob1: "rgba(20,184,166,.22)",
     blob2: "rgba(16,185,129,.18)",
     blob3: "rgba(5,150,105,.18)",
+    imageTint: "rgba(20, 184, 166, 0.2)",
   },
   disgusted: {
     name: "disgusted",
@@ -81,6 +87,7 @@ export const moodThemes = {
     blob1: "rgba(34,197,94,.22)",
     blob2: "rgba(132,204,22,.18)",
     blob3: "rgba(21,128,61,.18)",
+    imageTint: "rgba(132, 204, 22, 0.2)",
   },
 };
 
@@ -101,6 +108,7 @@ export const MoodProvider = ({ children }) => {
     root.style.setProperty("--theme-blob-1", theme.blob1);
     root.style.setProperty("--theme-blob-2", theme.blob2);
     root.style.setProperty("--theme-blob-3", theme.blob3);
+    root.style.setProperty("--theme-image-tint", theme.imageTint);
 
     // Save to local storage
     localStorage.setItem("beatflixMood", currentMood);

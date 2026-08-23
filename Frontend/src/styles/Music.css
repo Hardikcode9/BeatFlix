@@ -7,17 +7,17 @@
   background:
     radial-gradient(
       circle at 50% -10%,
-      rgba(139, 92, 246, 0.22),
+      var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, ))),
       transparent 35%
     ),
     radial-gradient(
       circle at 100% 45%,
-      rgba(59, 130, 246, 0.1),
+      var(--theme-glow, rgba(59, 130, 246, 0.1)),
       transparent 30%
     ),
     radial-gradient(
       circle at 0% 70%,
-      rgba(236, 72, 153, 0.08),
+      var(--theme-glow, rgba(236, 72, 153, 0.08)),
       transparent 30%
     ),
     #050407;
@@ -82,20 +82,20 @@
 .color-1 {
   top: -260px;
   left: -180px;
-  background: #8b5cf6;
+  background: var(--theme-accent, var(--theme-accent, #8b5cf6));
 }
 
 .color-2 {
   top: 25%;
   right: -270px;
-  background: #2563eb;
+  background: var(--theme-accent-secondary, #2563eb);
   animation-delay: -5s;
 }
 
 .color-3 {
   bottom: -300px;
   left: 32%;
-  background: #ec4899;
+  background: var(--theme-accent, var(--theme-accent-secondary, #ec4899));
   animation-delay: -9s;
 }
 
@@ -151,7 +151,7 @@
   background:
     radial-gradient(
       ellipse,
-      rgba(139, 92, 246, 0.2),
+      var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, ))),
       transparent 68%
     );
   filter: blur(20px);
@@ -187,10 +187,10 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #a855f7;
+  background: var(--theme-accent, #a855f7);
   box-shadow:
     0 0 15px
-    rgba(168, 85, 247, 0.9);
+    var(--theme-glow, rgba(168, 85, 247, 0.9));
 }
 
 .music-title {
@@ -212,9 +212,9 @@
     linear-gradient(
       135deg,
       #ffffff 5%,
-      #ddd6fe 42%,
-      #a855f7 74%,
-      #ec4899 100%
+      var(--theme-accent-secondary, #ddd6fe) 42%,
+      var(--theme-accent, #a855f7) 74%,
+      var(--theme-accent, var(--theme-accent-secondary, #ec4899)) 100%
     );
   -webkit-background-clip: text;
   background-clip: text;
@@ -277,12 +277,12 @@
 
 .search-glass-wrapper:focus-within {
   border-color:
-    rgba(168, 85, 247, 0.38);
+    var(--theme-glow, rgba(168, 85, 247, 0.38));
   box-shadow:
     0 30px 80px
     rgba(0, 0, 0, 0.42),
     0 0 0 3px
-    rgba(168, 85, 247, 0.07);
+    var(--theme-glow, rgba(168, 85, 247, 0.07));
 }
 
 .music-search-icon {
@@ -389,9 +389,9 @@
 .genre-filter-btn.active {
   transform: translateY(-1px);
   border-color:
-    rgba(168, 85, 247, 0.34);
+    var(--theme-glow, rgba(168, 85, 247, 0.34));
   background:
-    rgba(168, 85, 247, 0.11);
+    var(--theme-glow, rgba(168, 85, 247, 0.11));
   color: #fff;
 }
 
@@ -481,13 +481,13 @@
     linear-gradient(
       135deg,
       #ffffff,
-      #ddd6fe 50%,
-      #a855f7
+      var(--theme-accent-secondary, #ddd6fe) 50%,
+      var(--theme-accent, #a855f7)
     );
   color: #0a0610;
   box-shadow:
     0 10px 30px
-    rgba(168, 85, 247, 0.32);
+    var(--theme-glow, rgba(168, 85, 247, 0.32));
   cursor: pointer;
   transition:
     transform 0.2s ease,
@@ -498,18 +498,18 @@
   transform: scale(1.08);
   box-shadow:
     0 14px 40px
-    rgba(168, 85, 247, 0.45);
+    var(--theme-glow, rgba(168, 85, 247, 0.45));
 }
 
 .music-card.current
 .music-card-cover {
   border-color:
-    rgba(168, 85, 247, 0.44);
+    var(--theme-glow, rgba(168, 85, 247, 0.44));
   box-shadow:
     0 0 0 1px
-    rgba(168, 85, 247, 0.15),
+    var(--theme-glow, rgba(168, 85, 247, 0.15)),
     0 20px 60px
-    rgba(139, 92, 246, 0.18);
+    var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, )));
 }
 
 .music-card-info {
@@ -576,7 +576,7 @@
   border:
     2px solid
     rgba(255, 255, 255, 0.1);
-  border-top-color: #a855f7;
+  border-top-color: var(--theme-accent, #a855f7);
   border-radius: 50%;
   animation:
     musicSpin
@@ -621,8 +621,8 @@
   background:
     linear-gradient(
       135deg,
-      #a855f7,
-      #ec4899
+      var(--theme-accent, #a855f7),
+      var(--theme-accent, var(--theme-accent-secondary, #ec4899))
     );
   color: #fff;
   cursor: pointer;
@@ -669,7 +669,7 @@
     0 35px 100px
     rgba(0, 0, 0, 0.74),
     0 0 80px
-    rgba(139, 92, 246, 0.13),
+    var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, ))),
     inset
     0 1px 0
     rgba(255, 255, 255, 0.06);
@@ -741,7 +741,7 @@
   background:
     radial-gradient(
       circle,
-      rgba(168, 85, 247, 0.54),
+      var(--theme-glow, rgba(168, 85, 247, 0.54)),
       transparent 65%
     );
   filter: blur(28px);
@@ -974,9 +974,9 @@ span:nth-child(5) {
   transform: translateY(-1px);
   color: #fff;
   border-color:
-    rgba(168, 85, 247, 0.3);
+    var(--theme-glow, rgba(168, 85, 247, 0.3));
   background:
-    rgba(139, 92, 246, 0.16);
+    var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, )));
 }
 
 /* =========================================================
@@ -1031,8 +1031,8 @@ span:nth-child(5) {
   background:
     linear-gradient(
       90deg,
-      #a855f7,
-      #ec4899
+      var(--theme-accent, #a855f7),
+      var(--theme-accent, var(--theme-accent-secondary, #ec4899))
     );
 }
 
@@ -1055,7 +1055,7 @@ span:nth-child(5) {
 
   box-shadow:
     0 0 0 4px
-    rgba(168, 85, 247, 0.16);
+    var(--theme-glow, rgba(168, 85, 247, 0.16));
 }
 
 .premium-seek::-moz-range-thumb,
@@ -1102,15 +1102,15 @@ span:nth-child(5) {
     linear-gradient(
       135deg,
       #fff,
-      #ddd6fe 52%,
-      #a855f7
+      var(--theme-accent-secondary, #ddd6fe) 52%,
+      var(--theme-accent, #a855f7)
     );
 
   color: #0a0610;
 
   box-shadow:
     0 12px 35px
-    rgba(168, 85, 247, 0.3);
+    var(--theme-glow, rgba(168, 85, 247, 0.3));
 
   cursor: pointer;
 
@@ -1124,7 +1124,7 @@ span:nth-child(5) {
 
   box-shadow:
     0 16px 42px
-    rgba(168, 85, 247, 0.42);
+    var(--theme-glow, rgba(168, 85, 247, 0.42));
 }
 
 .premium-play-button:disabled {
@@ -1188,11 +1188,11 @@ span:nth-child(5) {
 
   border-radius: 50%;
 
-  background: #a855f7;
+  background: var(--theme-accent, #a855f7);
 
   box-shadow:
     0 0 12px
-    rgba(168, 85, 247, 0.75);
+    var(--theme-glow, rgba(168, 85, 247, 0.75));
 }
 
 /* =========================================================
@@ -1323,3 +1323,7 @@ span:nth-child(5) {
   visibility: hidden;
   pointer-events: none;
 }
+
+
+.music-card-cover::before { content: ""; position: absolute; inset: 0; background: var(--theme-image-tint, var(--theme-glow, rgba(56, 189, 248, ))); mix-blend-mode: overlay; z-index: 2; pointer-events: none; }
+.premium-player-media::before { content: ""; position: absolute; inset: 0; background: var(--theme-image-tint, var(--theme-glow, rgba(56, 189, 248, ))); mix-blend-mode: overlay; z-index: 2; pointer-events: none; }

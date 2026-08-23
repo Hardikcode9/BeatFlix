@@ -56,7 +56,7 @@
 }
 
 .mylist-tab.active {
-  background: linear-gradient(135deg, #5d5fef, #38bdf8);
+  background: linear-gradient(135deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8));
   border-color: transparent;
   box-shadow: 0 5px 15px rgba(93, 95, 239, 0.4);
 }
@@ -190,9 +190,9 @@
 }
 
 .active-check {
-  color: #38bdf8;
-  border-color: #38bdf8;
-  background: rgba(56, 189, 248, 0.1);
+  color: var(--theme-accent-secondary, #38bdf8);
+  border-color: var(--theme-accent-secondary, #38bdf8);
+  background: var(--theme-glow, rgba(56, 189, 248, ));
 }
 
 .mylist-rating {
@@ -233,7 +233,7 @@
 
 .mylist-review textarea:focus {
   outline: none;
-  border-color: #38bdf8;
+  border-color: var(--theme-accent-secondary, #38bdf8);
 }
 
 .empty-list {

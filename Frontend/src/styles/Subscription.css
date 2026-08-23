@@ -29,7 +29,7 @@
 .orb-right {
   bottom: -20%; right: -10%;
   width: 40vw; height: 40vw;
-  background: #ec4899;
+  background: var(--theme-accent-secondary, #ec4899);
   animation-delay: -4s;
 }
 
@@ -93,7 +93,7 @@
   letter-spacing: -1px;
 }
 .sub-title span {
-  background: linear-gradient(to right, #6366f1, #a855f7, #ec4899);
+  background: linear-gradient(to right, #6366f1, #a855f7, var(--theme-accent-secondary, #ec4899));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -171,7 +171,7 @@
 }
 .basic-icon { color: #94a3b8; }
 .pro-icon { color: #fde047; filter: drop-shadow(0 0 10px rgba(253, 224, 71, 0.5)); }
-.ultimate-icon { color: #38bdf8; }
+.ultimate-icon { color: var(--theme-accent-secondary, #38bdf8); }
 
 .card-top h3 {
   font-size: 1.8rem;
@@ -251,7 +251,7 @@
 }
 
 .btn-pro {
-  background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+  background: linear-gradient(90deg, #6366f1, #a855f7, var(--theme-accent-secondary, #ec4899));
   background-size: 200% auto;
   color: white;
   box-shadow: 0 10px 20px rgba(168, 85, 247, 0.4);

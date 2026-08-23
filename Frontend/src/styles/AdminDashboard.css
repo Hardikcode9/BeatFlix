@@ -13,8 +13,8 @@
   --text: #ffffff;
   --muted: #9aa7c7;
 
-  --primary: #5d5fef;
-  --secondary: #38bdf8;
+  --primary: var(--theme-accent, #5d5fef);
+  --secondary: var(--theme-accent-secondary, #38bdf8);
   --pink: #ff3ea5;
 
   --font-main: 'Plus Jakarta Sans', sans-serif;
@@ -45,7 +45,7 @@ body {
   inset: -25%;
   background:
     radial-gradient(circle, rgba(93, 95, 239, 0.1) 0%, transparent 45%),
-    radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 40%),
+    radial-gradient(circle, var(--theme-glow, rgba(56, 189, 248, )) 0%, transparent 40%),
     radial-gradient(circle, rgba(255, 62, 165, 0.1) 0%, transparent 45%);
   background-size: 45% 45%, 55% 55%, 60% 60%;
   background-position: 0% 0%, 100% 40%, 50% 100%;

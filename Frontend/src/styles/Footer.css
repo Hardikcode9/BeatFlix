@@ -10,7 +10,7 @@
     background:
         radial-gradient(
             circle at 10% 20%,
-            rgba(139, 92, 246, 0.08),
+            var(--theme-glow, rgba(139, 92, 246, )),
             transparent 30%
         ),
         radial-gradient(
@@ -40,7 +40,7 @@
             transparent,
             #7c3aed,
             #6366f1,
-            #38bdf8,
+            var(--theme-accent-secondary, #38bdf8),
             #6366f1,
             #7c3aed,
             transparent
@@ -177,7 +177,7 @@
         linear-gradient(
             90deg,
             #a78bfa,
-            #38bdf8
+            var(--theme-accent-secondary, #38bdf8)
         );
 
     -webkit-background-clip: text;
@@ -233,8 +233,8 @@
     background:
         linear-gradient(
             90deg,
-            #8b5cf6,
-            #38bdf8
+            var(--theme-accent, #8b5cf6),
+            var(--theme-accent-secondary, #38bdf8)
         );
 }
 
@@ -275,7 +275,7 @@
 
 
 .footer-social a svg {
-    color: #8b5cf6;
+    color: var(--theme-accent, #8b5cf6);
 
     font-size: 16px;
 
@@ -331,7 +331,7 @@
 
 
 .footer-made svg {
-    color: #8b5cf6;
+    color: var(--theme-accent, #8b5cf6);
 
     font-size: 11px;
 }

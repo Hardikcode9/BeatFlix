@@ -164,8 +164,8 @@
 }
 
 .nav-toggle:hover {
-    background: var(--theme-glow, rgba(56, 189, 248, 0.15));
-    border-color: var(--theme-glow, rgba(56, 189, 248, 0.3));
+    background: var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
+    border-color: var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
     color: #fff;
     transform: scale(1.1);
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -247,8 +247,8 @@
 
 .side-link:hover .side-icon {
     transform: scale(1.15) translateY(-2px);
-    color: var(--theme-accent, #38bdf8);
-    filter: drop-shadow(0 4px 10px var(--theme-glow, rgba(56,189,248,0.4)));
+    color: var(--theme-accent, var(--theme-accent-secondary, #38bdf8));
+    filter: drop-shadow(0 4px 10px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, ))));
 }
 
 .side-link-label {
@@ -265,9 +265,9 @@
 /* --- THE LIQUID AURORA ACTIVE STATE --- */
 .side-link.is-active {
     color: #fff;
-    border-color: var(--theme-glow, rgba(56, 189, 248, 0.4));
-    background: linear-gradient(90deg, var(--theme-glow, rgba(56, 189, 248, 0.15)), transparent);
-    box-shadow: 0 10px 30px var(--theme-glow, rgba(56, 189, 248, 0.25)), inset 0 0 15px var(--theme-glow, rgba(56, 189, 248, 0.1));
+    border-color: var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
+    background: linear-gradient(90deg, var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, ))), transparent);
+    box-shadow: 0 10px 30px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, ))), inset 0 0 15px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
     transform: translateX(4px);
 }
 
@@ -381,7 +381,7 @@
     height: 44px;
     min-width: 44px;
     border-radius: 16px;
-    background: linear-gradient(135deg, var(--theme-accent, #a855f7), var(--theme-accent-secondary, #ec4899));
+    background: linear-gradient(135deg, var(--theme-accent, #a855f7), var(--theme-accent-secondary, var(--theme-accent-secondary, #ec4899)));
     color: white;
     font-weight: 900;
     font-size: 18px;
@@ -472,8 +472,8 @@
 }
 
 @keyframes neonPulse {
-    0% { box-shadow: 0 0 10px var(--theme-accent, #38bdf8), 0 0 20px var(--theme-accent-secondary, #5d5fef); }
-    100% { box-shadow: 0 0 20px var(--theme-accent, #38bdf8), 0 0 40px var(--theme-accent-secondary, #5d5fef); }
+    0% { box-shadow: 0 0 10px var(--theme-accent, var(--theme-accent-secondary, #38bdf8)), 0 0 20px var(--theme-accent-secondary, var(--theme-accent, #5d5fef)); }
+    100% { box-shadow: 0 0 20px var(--theme-accent, var(--theme-accent-secondary, #38bdf8)), 0 0 40px var(--theme-accent-secondary, var(--theme-accent, #5d5fef)); }
 }
 
 @keyframes avatarFloat {
@@ -552,8 +552,8 @@
     }
 
     .side-link.is-active {
-        background: var(--theme-glow, rgba(56, 189, 248, 0.15));
-        border-color: var(--theme-glow, rgba(56, 189, 248, 0.3));
+        background: var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
+        border-color: var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
         transform: translateY(-4px);
     }
 

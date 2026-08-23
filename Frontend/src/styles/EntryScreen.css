@@ -896,7 +896,7 @@ html { scrollbar-width: none; }
   border-radius: 50%;
   pointer-events: none;
 }
-.mc-guest .mc-glow { background: #38bdf8; }
+.mc-guest .mc-glow { background: var(--theme-accent-secondary, #38bdf8); }
 .mc-login .mc-glow { background: #a855f7; }
 .mc-signup .mc-glow { background: #10b981; }
 
@@ -1028,7 +1028,7 @@ html { scrollbar-width: none; }
   border-color: rgba(255,255,255,0.4);
 }
 
-.mobile-premium-card.mc-guest { border-color: rgba(56, 189, 248, 0.3); }
+.mobile-premium-card.mc-guest { border-color: var(--theme-glow, rgba(56, 189, 248, )); }
 .mobile-premium-card.mc-login { border-color: rgba(168, 85, 247, 0.3); }
 .mobile-premium-card.mc-signup { border-color: rgba(16, 185, 129, 0.3); }
 
@@ -1044,7 +1044,7 @@ html { scrollbar-width: none; }
   border-radius: 50%;
   pointer-events: none;
 }
-.mc-guest .mc-glow { background: #38bdf8; }
+.mc-guest .mc-glow { background: var(--theme-accent-secondary, #38bdf8); }
 .mc-login .mc-glow { background: #a855f7; }
 .mc-signup .mc-glow { background: #10b981; }
 
@@ -1159,7 +1159,7 @@ html { scrollbar-width: none; }
   position: absolute;
   bottom: 10%; right: -10%;
   width: 70vw; height: 70vw;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.3), transparent 70%);
+  background: radial-gradient(circle, var(--theme-glow, rgba(56, 189, 248, )), transparent 70%);
   filter: blur(70px);
   z-index: -1;
   animation: orbFloat2 15s ease-in-out infinite reverse;
@@ -1193,7 +1193,7 @@ html { scrollbar-width: none; }
 /* ULTRA PREMIUM MOBILE TEXT & LOGO ANIMATIONS */
 @keyframes textGlowShift {
   0% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
-  50% { background-position: 100% 50%; filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.6)); }
+  50% { background-position: 100% 50%; filter: drop-shadow(0 0 25px var(--theme-glow, rgba(56, 189, 248, ))); }
   100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
 }
 
@@ -1203,7 +1203,7 @@ html { scrollbar-width: none; }
 }
 
 .mobile-premium-view .who-title {
-  background: linear-gradient(to right, #ffffff, #a855f7, #38bdf8, #ffffff);
+  background: linear-gradient(to right, #ffffff, #a855f7, var(--theme-accent-secondary, #38bdf8), #ffffff);
   background-size: 300% 300%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -1247,7 +1247,7 @@ html { scrollbar-width: none; }
   animation: logoPulseGlow 4s ease-in-out infinite alternate;
 }
 
-.mc-guest::after { background: radial-gradient(circle, rgba(56,189,248,0.4) 0%, transparent 70%); }
+.mc-guest::after { background: radial-gradient(circle, var(--theme-glow, rgba(56, 189, 248, )) 0%, transparent 70%); }
 .mc-login::after { background: radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%); }
 .mc-signup::after { background: radial-gradient(circle, rgba(16,185,129,0.4) 0%, transparent 70%); }
 
@@ -1312,7 +1312,7 @@ html { scrollbar-width: none; }
 /* 4. Desktop Text Gradient and Logo Pulse fallback for mobile */
 @keyframes textGlowShift {
   0% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
-  50% { background-position: 100% 50%; filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.6)); }
+  50% { background-position: 100% 50%; filter: drop-shadow(0 0 25px var(--theme-glow, rgba(56, 189, 248, ))); }
   100% { background-position: 0% 50%; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
 }
 
@@ -1322,7 +1322,7 @@ html { scrollbar-width: none; }
 }
 
 .mobile-premium-view .who-title {
-  background: linear-gradient(to right, #ffffff, #a855f7, #38bdf8, #ffffff);
+  background: linear-gradient(to right, #ffffff, #a855f7, var(--theme-accent-secondary, #38bdf8), #ffffff);
   background-size: 300% 300%;
   -webkit-background-clip: text;
   background-clip: text;

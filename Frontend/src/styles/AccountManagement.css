@@ -176,7 +176,7 @@
 }
 
 .icon-gold { color: #facc15; }
-.icon-blue { color: #38bdf8; }
+.icon-blue { color: var(--theme-accent-secondary, #38bdf8); }
 
 .plan-badge {
   background: linear-gradient(90deg, #6366f1, #a855f7);
@@ -413,7 +413,7 @@
   font-weight: 700;
   cursor: pointer;
   border: none;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #6366f1, var(--theme-accent, #8b5cf6));
   color: white;
   transition: all 0.3s ease;
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);

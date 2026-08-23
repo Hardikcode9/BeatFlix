@@ -93,7 +93,7 @@
 }
 
 .filter-tab.active {
-  background: linear-gradient(135deg, rgba(93, 95, 239, 0.3), rgba(56, 189, 248, 0.2));
+  background: linear-gradient(135deg, rgba(93, 95, 239, 0.3), var(--theme-glow, rgba(56, 189, 248, )));
   color: #fff;
   border-color: rgba(93, 95, 239, 0.5);
   box-shadow: 0 0 20px rgba(93, 95, 239, 0.2);

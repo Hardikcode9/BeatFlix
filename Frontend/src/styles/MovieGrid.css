@@ -43,7 +43,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, transparent, rgba(56, 189, 248, 0.1) 50%, rgba(56, 189, 248, 0.4) 50%, transparent 51%);
+    background: linear-gradient(to bottom, transparent, var(--theme-glow, rgba(56, 189, 248, )) 50%, var(--theme-glow, rgba(56, 189, 248, )) 50%, transparent 51%);
     background-size: 100% 200%;
     animation: scanLaser 2s linear infinite;
     pointer-events: none;
@@ -92,8 +92,8 @@
     height: 40px;
     border-radius: 50%;
     border: 3px solid rgba(255,255,255,0.05);
-    border-top: 3px solid #38bdf8;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    border-top: 3px solid var(--theme-accent-secondary, #38bdf8);
+    box-shadow: 0 0 15px var(--theme-glow, rgba(56, 189, 248, ));
     animation: spin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
 }
 
