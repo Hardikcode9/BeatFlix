@@ -619,49 +619,59 @@ await saveMessage(activeChatId, aiMessage);
 setStreamingText("");
 
 // Optional: Text to speech if you want the AI to read the message out loud
-if (window.speechSynthesis && !abortControllerRef.current?.signal.aborted) {
+const elevenLabsKey = process.env.REACT_APP_ELEVENLABS_API_KEY;
+if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
+  try {
+    // Stop any existing audio
+    if (window.currentAudio) {
+      window.currentAudio.pause();
+    }
+    
+    // Rachel (Calm, Female, American)
+    const voiceId = "21m00Tcm4TlvDq8ikWAM"; 
+    
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "xi-api-key": elevenLabsKey
+      },
+      body: JSON.stringify({
+        text: finalReply,
+        model_id: "eleven_monolingual_v1",
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75
+        }
+      })
+    });
+    
+    if (response.ok && !abortControllerRef.current?.signal.aborted) {
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      window.currentAudio = audio;
+      audio.play();
+    }
+  } catch (error) {
+    console.error("ElevenLabs TTS Error:", error);
+  }
+} else if (window.speechSynthesis && !abortControllerRef.current?.signal.aborted) {
+  // Fallback to local TTS if ElevenLabs key is missing or fails
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(finalReply);
-  utterance.pitch = 0.95; // slightly lower is calmer
-  utterance.rate = 0.95;  // slower is calmer
+  utterance.pitch = 0.95;
+  utterance.rate = 0.95;
   
   let voices = window.speechSynthesis.getVoices();
-  
-  // Wait for voices to load (Chrome/Edge load them asynchronously)
-  let attempts = 0;
-  while (voices.length === 0 && attempts < 10) {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    voices = window.speechSynthesis.getVoices();
-    attempts++;
-  }
-  
-  // Prioritize high-quality human-like neural voices available on Edge/Chrome/macOS
-  const preferredVoices = [
-    "Microsoft Jenny Online", // Edge highly realistic female
-    "Microsoft Aria Online", // Edge highly realistic female
-    "Google UK English Female", // Chrome
-    "Google US English", // Chrome default (often female and good quality)
-    "Samantha", // macOS
-    "Karen", // macOS
-    "Microsoft Zira" // Windows desktop fallback female
-  ];
-
+  const preferredVoices = ["Microsoft Jenny Online", "Microsoft Aria Online", "Google UK English Female", "Google US English", "Samantha", "Karen"];
   let selectedVoice = null;
   for (const name of preferredVoices) {
     const match = voices.find(v => v.name.includes(name));
-    if (match) {
-      selectedVoice = match;
-      break;
-    }
+    if (match) { selectedVoice = match; break; }
   }
-
-  if (!selectedVoice) {
-    selectedVoice = voices.find(v => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("woman"));
-  }
-
-  if (selectedVoice) {
-    utterance.voice = selectedVoice;
-  }
+  if (!selectedVoice) selectedVoice = voices.find(v => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("woman"));
+  if (selectedVoice) utterance.voice = selectedVoice;
   
   window.speechSynthesis.speak(utterance);
 }
@@ -684,6 +694,10 @@ setRecommendedMovies(matchedItems);    } catch (err) {
     }
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
+    }
+    if (window.currentAudio) {
+      window.currentAudio.pause();
+      window.currentAudio.currentTime = 0;
     }
     setIsThinking(false);
   };
