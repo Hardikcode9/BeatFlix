@@ -622,19 +622,45 @@ setStreamingText("");
 if (window.speechSynthesis && !abortControllerRef.current?.signal.aborted) {
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(finalReply);
-  utterance.pitch = 0.9;
-  utterance.rate = 0.95;
+  utterance.pitch = 0.95; // slightly lower is calmer
+  utterance.rate = 0.95;  // slower is calmer
   
-  const voices = window.speechSynthesis.getVoices();
-  const femaleVoice = voices.find(v => 
-    v.name.includes('Female') || 
-    v.name.includes('Zira') || 
-    v.name.includes('Samantha') || 
-    v.name.includes('Victoria') ||
-    (v.name.includes('Google') && v.name.includes('UK English Female'))
-  );
-  if (femaleVoice) {
-    utterance.voice = femaleVoice;
+  let voices = window.speechSynthesis.getVoices();
+  
+  // Wait for voices to load (Chrome/Edge load them asynchronously)
+  let attempts = 0;
+  while (voices.length === 0 && attempts < 10) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    voices = window.speechSynthesis.getVoices();
+    attempts++;
+  }
+  
+  // Prioritize high-quality human-like neural voices available on Edge/Chrome/macOS
+  const preferredVoices = [
+    "Microsoft Jenny Online", // Edge highly realistic female
+    "Microsoft Aria Online", // Edge highly realistic female
+    "Google UK English Female", // Chrome
+    "Google US English", // Chrome default (often female and good quality)
+    "Samantha", // macOS
+    "Karen", // macOS
+    "Microsoft Zira" // Windows desktop fallback female
+  ];
+
+  let selectedVoice = null;
+  for (const name of preferredVoices) {
+    const match = voices.find(v => v.name.includes(name));
+    if (match) {
+      selectedVoice = match;
+      break;
+    }
+  }
+
+  if (!selectedVoice) {
+    selectedVoice = voices.find(v => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("woman"));
+  }
+
+  if (selectedVoice) {
+    utterance.voice = selectedVoice;
   }
   
   window.speechSynthesis.speak(utterance);
