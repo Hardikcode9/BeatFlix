@@ -25,10 +25,10 @@
 
 .gmp-progress-bar {
   height: 3px;
-  background: #38bdf8;
+  background: var(--theme-accent, #38bdf8);
   width: 0%;
   transition: width 0.2s linear;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+  box-shadow: 0 0 10px var(--theme-glow, rgba(56, 189, 248, 0.8));
 }
 
 .gmp-content {
@@ -113,7 +113,7 @@
 }
 
 .gmp-btn:hover {
-  color: #38bdf8;
+  color: var(--theme-accent, #38bdf8);
   transform: scale(1.1);
 }
 
