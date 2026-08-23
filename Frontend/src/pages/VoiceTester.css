@@ -1,0 +1,96 @@
+.voice-tester-container {
+  padding: 100px 20px 50px;
+  max-width: 600px;
+  margin: 0 auto;
+  color: white;
+  min-height: 80vh;
+}
+
+.voice-tester-container h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #E50914;
+}
+
+.voice-tester-container p {
+  color: #aaa;
+  margin-bottom: 30px;
+}
+
+.tester-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: #111;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #333;
+}
+
+.tester-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #ddd;
+}
+
+.tester-form input,
+.tester-form textarea {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #222;
+  color: white;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.tester-form input:focus,
+.tester-form textarea:focus {
+  outline: none;
+  border-color: #E50914;
+}
+
+.test-btn {
+  background: #E50914;
+  color: white;
+  border: none;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-top: 10px;
+}
+
+.test-btn:hover:not(:disabled) {
+  background: #b80710;
+}
+
+.test-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.status-box {
+  padding: 15px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.status-box.error {
+  background: rgba(229, 9, 20, 0.2);
+  color: #ff4444;
+  border: 1px solid #E50914;
+}
+
+.status-box.success {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+  border: 1px solid #2ecc71;
+}

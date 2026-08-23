@@ -10,6 +10,7 @@ import Music from "./pages/Music";
 import MusicDetails from "./pages/MusicDetails";
 import Playlist from "./pages/Playlist";
 import Moods from "./pages/Moods";
+import VoiceTester from "./pages/VoiceTester";
 import About from "./pages/About";
 import MovieDetails from "./pages/MovieDetails";
 import Footer from "./components/common/Footer";
@@ -96,6 +97,7 @@ function App() {
                     <Route path="/music/:id" element={<MusicDetails />} />
                     <Route path="/playlist" element={<Playlist />} />
                     <Route path="/moods" element={<Moods />} />
+                    <Route path="/voice-tester" element={<VoiceTester />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/movie/:id" element={<MovieDetails />} />
                     <Route path="/collection/:slug" element={<CollectionPage />} />

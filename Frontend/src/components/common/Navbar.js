@@ -26,6 +26,7 @@ function Navbar({ viewer, onSwitchProfile }) {
     { to: "/movies", label: "Browse movies", icon: <FaFilm /> },
     { to: "/music", label: "Music", icon: <FaMusic /> },
     { to: "/moods", label: "Mood match", icon: <FaTheaterMasks /> },
+    { to: "/voice-tester", label: "Voice Debugger", icon: <FaInfoCircle /> },
     { to: "/free", label: "Free Movies", icon: <FaGift /> },
     { to: "/subscription", label: "Subscription", icon: <FaStar /> },
   ];
