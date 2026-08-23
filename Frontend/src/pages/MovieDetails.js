@@ -153,7 +153,8 @@ function MovieDetails() {
       const fetchedSongs = (await Promise.all(songPromises)).filter(s => s !== null);
       
       if (fetchedSongs.length > 0) {
-        playQueue(fetchedSongs, 0);
+        const vibeContext = { movieTitle: movie.title, moviePlot: movie.overview, movieGenres: genres };
+        playQueue(fetchedSongs, 0, vibeContext);
       } else {
         alert("Could not find playable tracks for this vibe.");
       }

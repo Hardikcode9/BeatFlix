@@ -8,6 +8,15 @@ export const useMusic = () => useContext(MusicContext);
 export const MusicProvider = ({ children }) => {
   const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
+
+const MusicContext = createContext();
+
+export const useMusic = () => useContext(MusicContext);
+
+export const MusicProvider = ({ children }) => {
+  const [currentSong, setCurrentSong] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(80);
@@ -18,6 +27,8 @@ export const MusicProvider = ({ children }) => {
     return JSON.parse(localStorage.getItem("beatflix_playlist")) || [];
   });
   const [queueIndex, setQueueIndex] = useState(-1);
+  const [vibeContext, setVibeContext] = useState(null);
+  const [isFetchingMoreVibe, setIsFetchingMoreVibe] = useState(false);
 
   const queueRef = useRef(queue);
   const queueIndexRef = useRef(-1);
@@ -57,7 +68,7 @@ export const MusicProvider = ({ children }) => {
     isManualTrackChangeRef.current = true;
   };
 
-  const playQueue = (songs, startIndex = 0) => {
+  const playQueue = (songs, startIndex = 0, newVibeContext = null) => {
     if (!songs || songs.length === 0) return;
     queueRef.current = songs;
     queueIndexRef.current = startIndex;
@@ -66,6 +77,7 @@ export const MusicProvider = ({ children }) => {
     setQueue(songs);
     setQueueIndex(startIndex);
     setCurrentSong(songs[startIndex]);
+    setVibeContext(newVibeContext);
   };
 
   const playNext = () => {
@@ -223,7 +235,62 @@ export const MusicProvider = ({ children }) => {
     setCachedActiveSearch,
     cachedSelectedMood,
     setCachedSelectedMood,
+    vibeContext,
+    setVibeContext,
   };
+
+  useEffect(() => {
+    // Eagerly fetch more vibe songs if we are on the last or second to last song
+    if (vibeContext && queue.length > 0 && queueIndex >= queue.length - 2 && !isFetchingMoreVibe) {
+      const fetchMoreVibes = async () => {
+        setIsFetchingMoreVibe(true);
+        try {
+          const token = localStorage.getItem("token");
+          const excludeSongs = queue.map(s => s.title).slice(-15);
+          
+          const vibeRes = await fetch(`${process.env.REACT_APP_API_URL}/api/gemini/vibe-playlist`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              ...vibeContext,
+              excludeSongs
+            })
+          });
+          const vibeData = await vibeRes.json();
+          
+          if (vibeData.songs && vibeData.songs.length > 0) {
+            const songPromises = vibeData.songs.map(async (songQuery) => {
+              try {
+                const res = await fetch(`${process.env.REACT_APP_API_URL}/api/music/search?q=${encodeURIComponent(songQuery)}`);
+                const searchData = await res.json();
+                if (searchData.success && searchData.songs && searchData.songs.length > 0) {
+                  return searchData.songs[0];
+                }
+              } catch (e) {}
+              return null;
+            });
+            const fetchedSongs = (await Promise.all(songPromises)).filter(s => s !== null);
+            
+            if (fetchedSongs.length > 0) {
+              const newQueue = [...queueRef.current, ...fetchedSongs];
+              queueRef.current = newQueue;
+              setQueue(newQueue);
+              localStorage.setItem("beatflix_playlist", JSON.stringify(newQueue));
+            }
+          }
+        } catch(e) {
+          console.error("Eager vibe fetch failed", e);
+        } finally {
+          setIsFetchingMoreVibe(false);
+        }
+      };
+      
+      fetchMoreVibes();
+    }
+  }, [queueIndex, vibeContext, queue.length, isFetchingMoreVibe, queue]);
 
   return (
     <MusicContext.Provider value={value}>

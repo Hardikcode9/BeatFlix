@@ -18,6 +18,7 @@ import {
 import * as faceapi from "face-api.js";
 import ChatSidebar from "../components/ChatSidebar";
 import "../styles/Moods.css";
+import { useMood } from "../context/MoodContext";
 
 const genreMap = {
   28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime",
@@ -28,6 +29,7 @@ const genreMap = {
 
 function Moods() {
   const navigate = useNavigate();
+  const { setMood } = useMood();
 
   const [allMovies, setAllMovies] = useState([]);
   const [recommendedMovies, setRecommendedMovies] = useState([]);
@@ -740,6 +742,7 @@ await saveMessage(activeChatId, userMessage);
         stopScanner();
 
         const detectedEmotion = stableEmotion;
+        setMood(detectedEmotion);
 
         const updatedMessages = [
           ...messages,

@@ -130,7 +130,7 @@ Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy
 
 const generateVibePlaylist = async (req, res) => {
   try {
-    const { movieTitle, moviePlot, movieGenres } = req.body;
+    const { movieTitle, moviePlot, movieGenres, excludeSongs } = req.body;
     const user = await User.findById(req.user.id);
 
     if (!user) {
@@ -154,6 +154,7 @@ These should be real, popular songs (not necessarily the official soundtrack).
 Movie Title: ${movieTitle}
 Genres: ${movieGenres}
 Plot: ${moviePlot}
+${excludeSongs && excludeSongs.length > 0 ? `\nCRITICAL: DO NOT RECOMMEND ANY OF THE FOLLOWING SONGS: ${excludeSongs.join(", ")}` : ""}
 
 Return ONLY valid JSON in this exact format:
 {

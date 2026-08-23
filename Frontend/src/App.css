@@ -6,7 +6,8 @@
 html, body {
     margin: 0 !important;
     padding: 0 !important;
-    background: #060a14;
+    background: var(--theme-bg, #060a14);
+    transition: background 1s ease;
 }
 
 * {
@@ -15,7 +16,7 @@ html, body {
 
 .app-shell {
     min-height: 100vh;
-    background: #060a14;
+    background: var(--theme-bg, #060a14);
     color: #f7f9ff;
     
     /* 2. This stops margin collapse from the children */
@@ -23,6 +24,7 @@ html, body {
     flex-direction: column;
     margin: 0 !important;
     padding: 0 !important;
+    transition: background 1s ease;
 }
 
 .app-content {

@@ -14,6 +14,8 @@ import "../styles/EntryScreen.css";
 import { auth, googleProvider } from "../firebase/firebase";
 import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from "firebase/auth";
 import { toast } from "react-toastify";
+import * as faceapi from "face-api.js";
+import { useMood, moodThemes } from "../context/MoodContext";
 
 import ScrollBackground from "./ScrollBackground";
 
@@ -56,6 +58,23 @@ function EntryScreen({ onEnter }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth <= 1024);
+  const { setMood, themeData } = useMood();
+  const [pendingName, setPendingName] = useState("");
+  const [showEmoji, setShowEmoji] = useState(false);
+  
+  // Scanner state
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanPhase, setScanPhase] = useState("");
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+  const scanIntervalRef = useRef(null);
+  const emotionHistoryRef = useRef([]);
+
+  useEffect(() => {
+    return () => {
+      stopScanner();
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setIsMobileDevice(window.innerWidth <= 1024);
@@ -101,7 +120,8 @@ function EntryScreen({ onEnter }) {
       localStorage.setItem("token", data.token);
       localStorage.setItem("userEmail", data.user.email);
       toast.success(`Welcome back, ${data.user.name}!`);
-      onEnter(data.user.name || "User");
+      setPendingName(data.user.name || "User");
+      setFormType("mood");
     } catch (error) {
       if (error.code !== "auth/popup-closed-by-user" && error.code !== "auth/cancelled-popup-request") {
         toast.error(error.message || "Google login failed.");
@@ -134,7 +154,8 @@ const submitForm = async (event) => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userEmail", data.user.email);
         toast.success("Welcome back!");
-        onEnter(data.user.name || "User");
+        setPendingName(data.user.name || "User");
+        setFormType("mood");
       } else {
         if (!name || !email || !password || !confirmPassword) {
           setMessage("Please fill in all fields.");
@@ -256,6 +277,97 @@ const submitForm = async (event) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ==========================================
+  // MOOD SCANNER LOGIC
+  // ==========================================
+  const submitMood = (moodName) => {
+    setMood(moodName);
+    setShowEmoji(true);
+    setTimeout(() => {
+      onEnter(pendingName);
+    }, 2000);
+  };
+
+  const startScanner = async () => {
+    try {
+      setIsScanning(true);
+      setScanPhase("Warming up the lens...");
+      const MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+      ]);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (err) {
+      toast.error("Camera access denied or failed to load models.");
+      stopScanner();
+    }
+  };
+
+  const stopScanner = () => {
+    if (scanIntervalRef.current) clearInterval(scanIntervalRef.current);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    emotionHistoryRef.current = [];
+    setIsScanning(false);
+  };
+
+  const handleVideoPlay = () => {
+    setScanPhase("Analyzing micro-expressions...");
+    emotionHistoryRef.current = [];
+
+    if (scanIntervalRef.current) clearInterval(scanIntervalRef.current);
+
+    scanIntervalRef.current = setInterval(async () => {
+      if (!videoRef.current) return;
+
+      try {
+        const detection = await faceapi
+          .detectSingleFace(
+            videoRef.current,
+            new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.5 })
+          )
+          .withFaceExpressions();
+
+        if (!detection) {
+          setScanPhase("Searching for face...");
+          return;
+        }
+
+        const expressions = detection.expressions;
+        const strongestEmotion = Object.keys(expressions).reduce((a, b) =>
+          expressions[a] > expressions[b] ? a : b
+        );
+
+        if (expressions[strongestEmotion] < 0.70) return;
+
+        emotionHistoryRef.current.push(strongestEmotion);
+        if (emotionHistoryRef.current.length > 5) emotionHistoryRef.current.shift();
+
+        const counts = {};
+        emotionHistoryRef.current.forEach((e) => {
+          counts[e] = (counts[e] || 0) + 1;
+        });
+
+        const stableEmotion = Object.keys(counts).reduce((a, b) =>
+          counts[a] > counts[b] ? a : b
+        );
+
+        if (counts[stableEmotion] >= 4) {
+          clearInterval(scanIntervalRef.current);
+          stopScanner();
+          submitMood(stableEmotion);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 300);
   };
 
   // ==========================================
@@ -433,7 +545,7 @@ const submitForm = async (event) => {
 
               {!formType && (
                 <div className="mobile-premium-slider">
-                  <button className="mobile-premium-card mc-guest" onClick={() => onEnter("Guest")}>
+                  <button className="mobile-premium-card mc-guest" onClick={() => { setPendingName("Guest"); setFormType("mood"); }}>
                     <div className="mc-glow" />
                     <div className="mc-icon"><FaCompass /></div>
                     <h3>Guest</h3>
@@ -480,7 +592,7 @@ const submitForm = async (event) => {
               <div className="netflix-profiles">
                 
                 {/* GUEST CARD */}
-                <button className="cinematic-card guest-card" onClick={() => onEnter("Guest")}>
+                <button className="cinematic-card guest-card" onClick={() => { setPendingName("Guest"); setFormType("mood"); }}>
                   <ParticleEffect isMobileDevice={isMobileDevice} />
                   <div className="card-ambient-glow guest-glow" />
                   <div className="card-glass-surface">
@@ -543,65 +655,113 @@ const submitForm = async (event) => {
                 <button className="back-choice" type="button" onClick={() => { setFormType(""); setMessage(""); }}>
                   ← Back
                 </button>
-                <div className="form-icon">{formType === "login" ? <FaUserShield /> : <FaUserPlus />}</div>
-                <p className="entry-kicker">BEATFLIX PROFILE</p>
-                <h1>{formType === "login" ? "Welcome back." : "Create your profile."}</h1>
-                <p className="form-description">
-                  {formType === "login" 
-                    ? "Enter your details and continue discovering movies made for your mood." 
-                    : "Create your BeatFlix profile and start building a more personal movie experience."}
-                </p>
-
-                <label>{formType === "login" ? "Email or Username" : "Username"}
-                  <div className="input-box">
-                    <span className="input-icon"><FaUser /></span>
-                    <input value={name} onChange={(e) => setName(e.target.value)} placeholder={formType === "login" ? "Enter email or username" : "Choose a username"} autoFocus />
-                  </div>
-                </label>
-
-                {formType === "signup" && (
-                  <label>Email
-                    <div className="input-box">
-                      <span className="input-icon"><FaEnvelope /></span>
-                      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" />
-                    </div>
-                  </label>
-                )}
-
-                <label>Password
-                  <div className="input-box">
-                    <span className="input-icon"><FaLock /></span>
-                    <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-                    <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</button>
-                  </div>
-                </label>
-
-                {formType === "signup" && (
-                  <label>Confirm Password
-                    <div className="input-box">
-                      <span className="input-icon"><FaLock /></span>
-                      <input type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" />
-                      <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>{showConfirmPassword ? <FaEyeSlash /> : <FaEye />}</button>
-                    </div>
-                  </label>
-                )}
-
-                {message && <p className="entry-message">{message}</p>}
-
-                <button className="enter-button" type="submit">
-                  {loading ? "Please wait..." : formType === "login" ? "Enter BeatFlix" : "Create Profile"} <FaArrowRight />
-                </button>
+                <div className="form-icon">
+                  {formType === "mood" ? "🎭" : formType === "login" ? <FaUserShield /> : <FaUserPlus />}
+                </div>
                 
-                <div className="entry-divider"><span></span><p>OR</p><span></span></div>
-                
-                <button type="button" className="google-button" onClick={handleGoogleLogin} disabled={loading}>
-                  <FaGoogle /> {loading ? "Connecting..." : "Continue with Google"}
-                </button>
-                
-                {formType === "login" && (
-                  <button type="button" className="forgot-password" onClick={() => { setForgotEmail(""); setMessage(""); setShowForgotModal(true); }}>
-                    Forgot Password?
-                  </button>
+                {formType === "mood" ? (
+                  <>
+                    <p className="entry-kicker">SET THE VIBE</p>
+                    <h1>How are you feeling?</h1>
+                    <p className="form-description">We will tailor the entire BeatFlix experience to your current mood.</p>
+                    
+                    {!isScanning ? (
+                      <>
+                        <label>Your Mood
+                          <div className="input-box">
+                            <input 
+                              value={moodInput} 
+                              onChange={(e) => setMoodInput(e.target.value)} 
+                              placeholder="e.g. happy, sad, energetic, chill..." 
+                              autoFocus 
+                            />
+                          </div>
+                        </label>
+                        <button className="enter-button" type="button" onClick={() => submitMood(moodInput || "neutral")}>
+                          Set Mood <FaArrowRight />
+                        </button>
+                        
+                        <div className="entry-divider"><span></span><p>OR</p><span></span></div>
+                        
+                        <button type="button" className="google-button" onClick={startScanner} style={{ background: 'rgba(255,255,255,0.1)' }}>
+                          📷 Scan Face Instead
+                        </button>
+                      </>
+                    ) : (
+                      <div className="scanner-container" style={{ textAlign: 'center', marginTop: '20px' }}>
+                        <div className="video-wrapper" style={{ position: 'relative', borderRadius: '15px', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.2)', marginBottom: '10px' }}>
+                          <video ref={videoRef} autoPlay muted playsInline onPlay={handleVideoPlay} style={{ width: '100%', height: 'auto', transform: 'scaleX(-1)' }} />
+                          <div className="scan-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(to bottom, rgba(56,189,248,0.2) 0%, transparent 50%, rgba(56,189,248,0.2) 100%)', pointerEvents: 'none', animation: 'scanLine 2s linear infinite' }} />
+                        </div>
+                        <p className="scan-phase" style={{ color: '#38bdf8', fontWeight: 'bold' }}>{scanPhase}</p>
+                        <button type="button" className="back-choice" onClick={stopScanner} style={{ marginTop: '10px' }}>
+                          Cancel Scan
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className="entry-kicker">BEATFLIX PROFILE</p>
+                    <h1>{formType === "login" ? "Welcome back." : "Create your profile."}</h1>
+                    <p className="form-description">
+                      {formType === "login" 
+                        ? "Enter your details and continue discovering movies made for your mood." 
+                        : "Create your BeatFlix profile and start building a more personal movie experience."}
+                    </p>
+
+                    <label>{formType === "login" ? "Email or Username" : "Username"}
+                      <div className="input-box">
+                        <span className="input-icon"><FaUser /></span>
+                        <input value={name} onChange={(e) => setName(e.target.value)} placeholder={formType === "login" ? "Enter email or username" : "Choose a username"} autoFocus />
+                      </div>
+                    </label>
+
+                    {formType === "signup" && (
+                      <label>Email
+                        <div className="input-box">
+                          <span className="input-icon"><FaEnvelope /></span>
+                          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" />
+                        </div>
+                      </label>
+                    )}
+
+                    <label>Password
+                      <div className="input-box">
+                        <span className="input-icon"><FaLock /></span>
+                        <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+                        <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</button>
+                      </div>
+                    </label>
+
+                    {formType === "signup" && (
+                      <label>Confirm Password
+                        <div className="input-box">
+                          <span className="input-icon"><FaLock /></span>
+                          <input type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" />
+                          <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>{showConfirmPassword ? <FaEyeSlash /> : <FaEye />}</button>
+                        </div>
+                      </label>
+                    )}
+
+                    {message && <p className="entry-message">{message}</p>}
+
+                    <button className="enter-button" type="submit">
+                      {loading ? "Please wait..." : formType === "login" ? "Enter BeatFlix" : "Create Profile"} <FaArrowRight />
+                    </button>
+                    
+                    <div className="entry-divider"><span></span><p>OR</p><span></span></div>
+                    
+                    <button type="button" className="google-button" onClick={handleGoogleLogin} disabled={loading}>
+                      <FaGoogle /> {loading ? "Connecting..." : "Continue with Google"}
+                    </button>
+                    
+                    {formType === "login" && (
+                      <button type="button" className="forgot-password" onClick={() => { setForgotEmail(""); setMessage(""); setShowForgotModal(true); }}>
+                        Forgot Password?
+                      </button>
+                    )}
+                  </>
                 )}
               </motion.form>
             )}
@@ -651,6 +811,31 @@ const submitForm = async (event) => {
           </div>
         </div>
       )}
+
+      <AnimatePresence>
+        {showEmoji && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1.5, opacity: 1, rotate: [0, 10, -10, 0] }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ duration: 0.5, type: "spring" }}
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              background: 'rgba(0,0,0,0.8)',
+              zIndex: 9999,
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            <div style={{ fontSize: '100px' }}>{themeData?.emoji}</div>
+            <h2 style={{ marginTop: '20px', color: '#fff' }}>Setting up {themeData?.name} vibe...</h2>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

@@ -22,6 +22,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import FreeMovies from "./pages/FreeMovies";
 
 import { MusicProvider } from "./context/MusicContext";
+import { MoodProvider } from "./context/MoodContext";
 import GlobalMusicPlayer from "./components/GlobalMusicPlayer";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -48,47 +49,49 @@ function App() {
     setViewer(null);
   };
 
-  if (!viewer) {
-    return <EntryScreen onEnter={handleEnter} />;
-  }
-
   return (
-    <MusicProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <div className="app-shell">
-          <Navbar
-            viewer={viewer}
-          onSwitchProfile={handleLogout}
-        />
+    <MoodProvider>
+      {!viewer ? (
+        <EntryScreen onEnter={handleEnter} />
+      ) : (
+        <MusicProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <div className="app-shell">
+              <Navbar
+                viewer={viewer}
+                onSwitchProfile={handleLogout}
+              />
 
-        <main className="app-content">
-          <Routes>
-            <Route path="/" element={<Home viewer={viewer} />} />
-            <Route path="/movies" element={<Movies />} />
-            <Route path="/music" element={<Music />} />
-            <Route path="/music/:id" element={<MusicDetails />} />
-            <Route path="/playlist" element={<Playlist />} />
-            <Route path="/moods" element={<Moods />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/movie/:id" element={<MovieDetails />} />
-            <Route path="/collection/:slug" element={<CollectionPage />} />
-            <Route path="/mylist" element={<MyListPage />} />
-            <Route path="/subscription" element={<Subscription />} />
-            <Route path="/free" element={<FreeMovies />} />
-            <Route path="/account" element={<AccountManagement />} />
-            <Route 
-              path="/admin" 
-              element={localStorage.getItem("userEmail") === "jeehardik2@gmail.com" ? <AdminDashboard /> : <Home viewer={viewer} />} 
-            />
-          </Routes>
-        </main>
+              <main className="app-content">
+                <Routes>
+                  <Route path="/" element={<Home viewer={viewer} />} />
+                  <Route path="/movies" element={<Movies />} />
+                  <Route path="/music" element={<Music />} />
+                  <Route path="/music/:id" element={<MusicDetails />} />
+                  <Route path="/playlist" element={<Playlist />} />
+                  <Route path="/moods" element={<Moods />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/movie/:id" element={<MovieDetails />} />
+                  <Route path="/collection/:slug" element={<CollectionPage />} />
+                  <Route path="/mylist" element={<MyListPage />} />
+                  <Route path="/subscription" element={<Subscription />} />
+                  <Route path="/free" element={<FreeMovies />} />
+                  <Route path="/account" element={<AccountManagement />} />
+                  <Route 
+                    path="/admin" 
+                    element={localStorage.getItem("userEmail") === "jeehardik2@gmail.com" ? <AdminDashboard /> : <Home viewer={viewer} />} 
+                  />
+                </Routes>
+              </main>
 
-        <GlobalMusicPlayer />
-        <Footer />
-      </div>
-    </BrowserRouter>
-    </MusicProvider>
+              <GlobalMusicPlayer />
+              <Footer />
+            </div>
+          </BrowserRouter>
+        </MusicProvider>
+      )}
+    </MoodProvider>
   );
 }
 
