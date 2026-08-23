@@ -51,6 +51,12 @@ const VoiceTester = () => {
     }
   };
 
+  const saveKeys = () => {
+    localStorage.setItem("beatflix_elevenlabs_key", apiKey.trim());
+    localStorage.setItem("beatflix_elevenlabs_voice", voiceId.trim());
+    setStatus("Keys saved to browser! The AI Chatbot will now use these keys.");
+  };
+
   return (
     <div className="voice-tester-container">
       <h2>ElevenLabs Voice Debugger</h2>
@@ -86,13 +92,24 @@ const VoiceTester = () => {
           />
         </label>
         
-        <button 
-          className="test-btn" 
-          onClick={testVoice}
-          disabled={loading}
-        >
-          {loading ? "Generating..." : "Test Audio"}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+          <button 
+            className="test-btn" 
+            onClick={testVoice}
+            disabled={loading}
+            style={{ flex: 1 }}
+          >
+            {loading ? "Generating..." : "Test Audio"}
+          </button>
+          
+          <button 
+            className="test-btn" 
+            onClick={saveKeys}
+            style={{ flex: 1, background: '#2ecc71' }}
+          >
+            Save Keys for Chatbot
+          </button>
+        </div>
         
         {status && (
           <div className={`status-box ${status.includes('Error') ? 'error' : 'success'}`}>

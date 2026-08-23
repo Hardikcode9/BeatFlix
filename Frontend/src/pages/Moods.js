@@ -626,7 +626,7 @@ await saveMessage(activeChatId, aiMessage);
 setStreamingText("");
 
 // Optional: Text to speech if you want the AI to read the message out loud
-const elevenLabsKey = keys.ELEVENLABS_API_KEY || process.env.REACT_APP_ELEVENLABS_API_KEY;
+const elevenLabsKey = localStorage.getItem("beatflix_elevenlabs_key") || keys.ELEVENLABS_API_KEY || process.env.REACT_APP_ELEVENLABS_API_KEY;
 let playedElevenLabs = false;
 
 if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
@@ -637,7 +637,7 @@ if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
     }
     
     // User must provide their own Voice ID if they are on the Free Tier
-    const voiceId = (keys.ELEVENLABS_VOICE_ID || process.env.REACT_APP_ELEVENLABS_VOICE_ID || "Ah9BYzLpolyTAW6DAm7L").trim(); 
+    const voiceId = (localStorage.getItem("beatflix_elevenlabs_voice") || keys.ELEVENLABS_VOICE_ID || process.env.REACT_APP_ELEVENLABS_VOICE_ID || "Ah9BYzLpolyTAW6DAm7L").trim(); 
     
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: "POST",
