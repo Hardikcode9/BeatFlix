@@ -7,7 +7,7 @@
     min-height: 100vh;
     color: white;
     overflow-x: hidden;
-    background: #02040a; /* Deep Space Black */
+    background: transparent; /* Deep Space Black */
     padding-left: 100px; /* Accounts for the new floating sidebar */
 }
 
@@ -100,7 +100,7 @@
 }
 
 .text-gradient {
-    background: linear-gradient(120deg, #ffffff 0%, var(--theme-accent-secondary, #38bdf8) 25%, #a855f7 50%, var(--theme-accent-secondary, #ec4899) 75%, #ffffff 100%);
+    background: linear-gradient(120deg, #ffffff 0%, var(--theme-accent-secondary) 25%, var(--theme-accent) 50%, var(--theme-accent-secondary) 75%, #ffffff 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;

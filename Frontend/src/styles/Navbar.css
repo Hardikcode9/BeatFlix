@@ -381,7 +381,7 @@
     height: 44px;
     min-width: 44px;
     border-radius: 16px;
-    background: linear-gradient(135deg, var(--theme-accent, #a855f7), var(--theme-accent-secondary, var(--theme-accent-secondary, #ec4899)));
+    background: linear-gradient(135deg, var(--theme-accent, var(--theme-accent, #a855f7)), var(--theme-accent-secondary, var(--theme-accent-secondary, #ec4899)));
     color: white;
     font-weight: 900;
     font-size: 18px;

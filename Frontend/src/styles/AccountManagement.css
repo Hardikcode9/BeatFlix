@@ -24,7 +24,7 @@
 .purple-orb {
   top: 0%; right: 10%;
   width: 40vw; height: 40vw;
-  background: #a855f7;
+  background: var(--theme-accent, #a855f7);
 }
 .blue-orb {
   bottom: -10%; left: 0%;
@@ -179,7 +179,7 @@
 .icon-blue { color: var(--theme-accent-secondary, #38bdf8); }
 
 .plan-badge {
-  background: linear-gradient(90deg, #6366f1, #a855f7);
+  background: linear-gradient(90deg, #6366f1, var(--theme-accent, #a855f7));
   padding: 6px 14px;
   border-radius: 50px;
   font-size: 0.85rem;
@@ -193,7 +193,7 @@
 }
 
 .manage-plan-btn {
-  background: linear-gradient(90deg, #6366f1, #a855f7);
+  background: linear-gradient(90deg, #6366f1, var(--theme-accent, #a855f7));
   color: white;
   border: none;
   padding: 12px 24px;

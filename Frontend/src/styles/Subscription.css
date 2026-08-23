@@ -81,9 +81,9 @@
 .pro-badge .dot {
   width: 8px;
   height: 8px;
-  background: #a855f7;
+  background: var(--theme-accent, #a855f7);
   border-radius: 50%;
-  box-shadow: 0 0 10px #a855f7;
+  box-shadow: 0 0 10px var(--theme-accent, #a855f7);
 }
 
 .sub-title {
@@ -93,7 +93,7 @@
   letter-spacing: -1px;
 }
 .sub-title span {
-  background: linear-gradient(to right, #6366f1, #a855f7, var(--theme-accent-secondary, #ec4899));
+  background: linear-gradient(to right, #6366f1, var(--theme-accent, #a855f7), var(--theme-accent-secondary, #ec4899));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -137,7 +137,7 @@
 /* Pro Tier Highlight */
 .pricing-card.pro-tier {
   background: linear-gradient(180deg, var(--theme-glow, rgba(168, 85, 247, 0.1)) 0%, rgba(0, 0, 0, 0.8) 100%);
-  border: 1px solid #a855f7;
+  border: 1px solid var(--theme-accent, #a855f7);
   transform: scale(1.05); /* Make it stand out */
   box-shadow: 0 20px 50px var(--theme-glow, rgba(168, 85, 247, 0.2));
   z-index: 2;
@@ -154,7 +154,7 @@
   top: -15px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(90deg, #6366f1, #a855f7);
+  background: linear-gradient(90deg, #6366f1, var(--theme-accent, #a855f7));
   color: white;
   font-size: 0.8rem;
   font-weight: 800;
@@ -251,7 +251,7 @@
 }
 
 .btn-pro {
-  background: linear-gradient(90deg, #6366f1, #a855f7, var(--theme-accent-secondary, #ec4899));
+  background: linear-gradient(90deg, #6366f1, var(--theme-accent, #a855f7), var(--theme-accent-secondary, #ec4899));
   background-size: 200% auto;
   color: white;
   box-shadow: 0 10px 20px var(--theme-glow, rgba(168, 85, 247, 0.4));

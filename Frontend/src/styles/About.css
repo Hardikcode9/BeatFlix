@@ -5,7 +5,7 @@
 .about-page {
     position: relative;
     min-height: 100vh;
-    background: #02040a; 
+    background: transparent; 
     color: #fff;
     font-family: "Poppins", sans-serif;
     overflow-x: hidden;
@@ -81,7 +81,7 @@
     border-radius: 50px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #a855f7;
+    color: var(--theme-accent, #a855f7);
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 2px;
@@ -92,8 +92,8 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #a855f7;
-    box-shadow: 0 0 12px #a855f7;
+    background: var(--theme-accent, #a855f7);
+    box-shadow: 0 0 12px var(--theme-accent, #a855f7);
     animation: pulseDot 1.2s infinite alternate;
 }
 
@@ -113,7 +113,7 @@
 }
 
 .text-gradient {
-    background: linear-gradient(120deg, #ffffff 0%, #a855f7 25%, var(--theme-accent-secondary, #38bdf8) 50%, var(--theme-accent-secondary, #ec4899) 75%, #ffffff 100%);
+    background: linear-gradient(120deg, #ffffff 0%, var(--theme-accent, #a855f7) 25%, var(--theme-accent-secondary, #38bdf8) 50%, var(--theme-accent-secondary, #ec4899) 75%, #ffffff 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;

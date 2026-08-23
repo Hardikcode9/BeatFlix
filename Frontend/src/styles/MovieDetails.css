@@ -286,7 +286,7 @@ body, html, #root {
 }
 
 .btn-primary {
-    background: linear-gradient(90deg, #6366f1, #a855f7, var(--theme-accent-secondary, #ec4899));
+    background: linear-gradient(90deg, #6366f1, var(--theme-accent, #a855f7), var(--theme-accent-secondary, #ec4899));
     background-size: 200% auto;
     color: white;
     box-shadow: 0 10px 30px var(--theme-glow, rgba(168, 85, 247, 0.4));
@@ -305,7 +305,7 @@ body, html, #root {
     width: 32px;
     height: 32px;
     background: white;
-    color: #a855f7;
+    color: var(--theme-accent, #a855f7);
     border-radius: 50%;
     font-size: 0.8rem;
 }
@@ -350,13 +350,13 @@ body, html, #root {
 /* Active State (When Added to List) */
 .btn-secondary.btn-mylist.in-list {
     background: var(--theme-glow, rgba(168, 85, 247, 0.2)) !important;
-    border-color: #a855f7 !important;
+    border-color: var(--theme-accent, #a855f7) !important;
     color: #c084fc !important;
     box-shadow: 0 0 25px var(--theme-glow, rgba(168, 85, 247, 0.45)) !important;
 }
 
 .btn-secondary.btn-mylist.in-list .bookmark-icon {
-    color: #a855f7 !important;
+    color: var(--theme-accent, #a855f7) !important;
     animation: heartPop 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.49) forwards;
 }
 

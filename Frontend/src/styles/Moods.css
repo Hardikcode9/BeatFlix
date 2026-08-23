@@ -24,7 +24,7 @@
     isolation: isolate;
     min-height: 100vh;
     padding: 100px 40px 100px;
-    background: #02040a;
+    background: transparent;
     color: var(--text);
     font-family: "Poppins", sans-serif;
 }
