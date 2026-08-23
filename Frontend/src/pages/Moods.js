@@ -630,7 +630,7 @@ if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
     }
     
     // User must provide their own Voice ID if they are on the Free Tier
-    const voiceId = process.env.REACT_APP_ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM"; 
+    const voiceId = process.env.REACT_APP_ELEVENLABS_VOICE_ID || "Ah9BYzLpolyTAW6DAm7L"; 
     
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: "POST",
@@ -656,10 +656,13 @@ if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
       audio.play();
       playedElevenLabs = true;
     } else {
-      console.error("ElevenLabs Failed:", await response.text());
+      const errText = await response.text();
+      console.error("ElevenLabs Failed:", errText);
+      alert("ElevenLabs Error: " + errText);
     }
   } catch (error) {
     console.error("ElevenLabs TTS Error:", error);
+    alert("ElevenLabs Connection Error: " + error.message);
   }
 } 
 
