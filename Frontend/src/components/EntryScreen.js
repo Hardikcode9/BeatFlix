@@ -61,6 +61,7 @@ function EntryScreen({ onEnter }) {
   const { setMood, themeData } = useMood();
   const [pendingName, setPendingName] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
+  const [moodInput, setMoodInput] = useState("");
   
   // Scanner state
   const [isScanning, setIsScanning] = useState(false);
