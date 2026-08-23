@@ -28,7 +28,7 @@
   background: var(--theme-accent, var(--theme-accent-secondary, #38bdf8));
   width: 0%;
   transition: width 0.2s linear;
-  box-shadow: 0 0 10px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
+  box-shadow: 0 0 10px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, 0.8)));
 }
 
 .gmp-content {

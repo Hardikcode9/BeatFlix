@@ -4,7 +4,7 @@
 .subscription-page {
   position: relative;
   min-height: 100vh;
-  background-color: #030610;
+  background: var(--theme-bg);
   color: #fff;
   font-family: 'Inter', sans-serif;
   overflow: hidden;
@@ -136,16 +136,16 @@
 
 /* Pro Tier Highlight */
 .pricing-card.pro-tier {
-  background: linear-gradient(180deg, rgba(168, 85, 247, 0.1) 0%, rgba(3, 6, 16, 0.8) 100%);
+  background: linear-gradient(180deg, var(--theme-glow, rgba(168, 85, 247, 0.1)) 0%, rgba(0, 0, 0, 0.8) 100%);
   border: 1px solid #a855f7;
   transform: scale(1.05); /* Make it stand out */
-  box-shadow: 0 20px 50px rgba(168, 85, 247, 0.2);
+  box-shadow: 0 20px 50px var(--theme-glow, rgba(168, 85, 247, 0.2));
   z-index: 2;
 }
 
 .pricing-card.pro-tier:hover {
   transform: scale(1.05) translateY(-10px);
-  box-shadow: 0 30px 60px rgba(168, 85, 247, 0.35);
+  box-shadow: 0 30px 60px var(--theme-glow, rgba(168, 85, 247, 0.35));
   border-color: #c084fc;
 }
 
@@ -161,7 +161,7 @@
   padding: 6px 16px;
   border-radius: 50px;
   letter-spacing: 1px;
-  box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 5px 15px var(--theme-glow, rgba(168, 85, 247, 0.4));
 }
 
 /* Card Content Details */
@@ -254,11 +254,11 @@
   background: linear-gradient(90deg, #6366f1, #a855f7, var(--theme-accent-secondary, #ec4899));
   background-size: 200% auto;
   color: white;
-  box-shadow: 0 10px 20px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 10px 20px var(--theme-glow, rgba(168, 85, 247, 0.4));
 }
 .btn-pro:hover {
   background-position: right center;
-  box-shadow: 0 15px 30px rgba(236, 72, 153, 0.6);
+  box-shadow: 0 15px 30px var(--theme-glow, rgba(236, 72, 153, 0.6));
 }
 
 /* Animations */

@@ -1,5 +1,5 @@
 body, html, #root {
-    background-color: #030610; /* Or #050816 to match your sidebar */
+    background: var(--theme-bg); /* Or #050816 to match your sidebar */
     margin: 0;
     padding: 0;
 }
@@ -11,7 +11,7 @@ body, html, #root {
     position: relative;
     width: 100%;
     min-height: 100vh;
-    background: #030610; 
+    background: var(--theme-bg); 
     color: #fff;
     overflow-x: hidden;
     font-family: 'Inter', sans-serif;
@@ -68,8 +68,8 @@ body, html, #root {
     z-index: 1;
     /* Combines the bottom fade with a shifting side fade */
     background: 
-        linear-gradient(to top, #030610 0%, rgba(3, 6, 16, 0.95) 15%, transparent 100%),
-        linear-gradient(to right, #030610 0%, rgba(3, 6, 16, 0.9) 15%, var(--theme-glow, rgba(139, 92, 246, )) 50%, transparent 100%);
+        linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0, 0, 0, 0.95) 15%, transparent 100%),
+        linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0, 0, 0, 0.9) 15%, var(--theme-glow, rgba(139, 92, 246, 0.15)) 50%, transparent 100%);
     background-size: 200% 200%;
     animation: shiftGradient 12s ease-in-out infinite alternate;
 }
@@ -103,8 +103,8 @@ body, html, #root {
     inset: -4px; /* Stretches past edges to prevent bleed */
     z-index: 1;
     background: 
-        linear-gradient(to top, #030610 0%, rgba(3, 6, 16, 0.9) 20%, transparent 100%),
-        linear-gradient(to right, #030610 0%, rgba(3, 6, 16, 0.9) 10%, rgba(3, 6, 16, 0.6) 40%, transparent 100%);
+        linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0, 0, 0, 0.9) 20%, transparent 100%),
+        linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0, 0, 0, 0.9) 10%, rgba(0, 0, 0, 0.6) 40%, transparent 100%);
 }
 
 .movie-hero {
@@ -135,7 +135,7 @@ body, html, #root {
     transform: translate(-50%, -50%);
     width: 90%;
     height: 90%;
-    background: radial-gradient(circle, var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, ))) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--theme-glow, rgba(139, 92, 246, 0.6)) 0%, transparent 70%);
     filter: blur(50px);
     z-index: 0;
     animation: pulseGlow 4s infinite alternate;
@@ -195,7 +195,7 @@ body, html, #root {
 
 .tagline {
     font-size: 1.4rem;
-    color: var(--theme-accent-secondary, var(--theme-accent-secondary, #38bdf8));
+    color: var(--theme-accent-secondary, #38bdf8);
     font-style: italic;
     font-weight: 500;
     margin-bottom: 35px;
@@ -231,7 +231,7 @@ body, html, #root {
     color: #fde047;
 }
 
-.accent-icon { color: var(--theme-accent, #a78bfa); }
+.accent-icon { color: #a78bfa; }
 
 /* ===============================
    NEON GENRE CHIPS
@@ -246,9 +246,9 @@ body, html, #root {
 .neon-chip {
     padding: 8px 22px;
     border-radius: 8px;
-    background: var(--theme-glow, rgba(139, 92, 246, ));
-    border: 1px solid var(--theme-accent, var(--theme-accent, var(--theme-glow, rgba(139, 92, 246, ))));
-    color: var(--theme-accent, #ddd6fe);
+    background: var(--theme-glow, rgba(139, 92, 246, 0.1));
+    border: 1px solid var(--theme-glow, rgba(139, 92, 246, 0.5));
+    color: #ddd6fe;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.8rem;
@@ -257,9 +257,9 @@ body, html, #root {
 }
 
 .neon-chip:hover {
-    background: var(--theme-accent, var(--theme-glow, rgba(139, 92, 246, )));
+    background: var(--theme-glow, rgba(139, 92, 246, 0.9));
     color: white;
-    box-shadow: 0 0 20px var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, )));
+    box-shadow: 0 0 20px var(--theme-glow, rgba(139, 92, 246, 0.6));
     transform: translateY(-3px);
 }
 
@@ -286,7 +286,7 @@ body, html, #root {
 }
 
 .btn-primary {
-    background: linear-gradient(90deg, var(--theme-accent, #6366f1), var(--theme-accent-secondary, #a855f7), var(--theme-accent, var(--theme-accent-secondary, #ec4899)));
+    background: linear-gradient(90deg, #6366f1, #a855f7, var(--theme-accent-secondary, #ec4899));
     background-size: 200% auto;
     color: white;
     box-shadow: 0 10px 30px var(--theme-glow, rgba(168, 85, 247, 0.4));
@@ -305,7 +305,7 @@ body, html, #root {
     width: 32px;
     height: 32px;
     background: white;
-    color: var(--theme-accent-secondary, #a855f7);
+    color: #a855f7;
     border-radius: 50%;
     font-size: 0.8rem;
 }
@@ -349,20 +349,20 @@ body, html, #root {
 
 /* Active State (When Added to List) */
 .btn-secondary.btn-mylist.in-list {
-    background: var(--theme-accent, rgba(168, 85, 247, 0.2)) !important;
-    border-color: var(--theme-accent-secondary, #a855f7) !important;
-    color: var(--theme-accent, #c084fc) !important;
+    background: var(--theme-glow, rgba(168, 85, 247, 0.2)) !important;
+    border-color: #a855f7 !important;
+    color: #c084fc !important;
     box-shadow: 0 0 25px var(--theme-glow, rgba(168, 85, 247, 0.45)) !important;
 }
 
 .btn-secondary.btn-mylist.in-list .bookmark-icon {
-    color: var(--theme-accent-secondary, #a855f7) !important;
+    color: #a855f7 !important;
     animation: heartPop 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.49) forwards;
 }
 
 /* Hover while active */
 .btn-secondary.btn-mylist.in-list:hover {
-    background: var(--theme-accent, rgba(168, 85, 247, 0.35)) !important;
+    background: var(--theme-glow, rgba(168, 85, 247, 0.35)) !important;
     color: #ffffff !important;
     box-shadow: 0 0 35px var(--theme-glow, rgba(168, 85, 247, 0.6)) !important;
     transform: translateY(-5px);
@@ -398,7 +398,7 @@ body, html, #root {
     top: 5px;
     bottom: 5px;
     width: 6px;
-    background: linear-gradient(to bottom, var(--theme-accent-secondary, var(--theme-accent-secondary, #38bdf8)), var(--theme-accent, var(--theme-accent, #8b5cf6)));
+    background: linear-gradient(to bottom, var(--theme-accent-secondary, #38bdf8), var(--theme-accent, #8b5cf6));
     border-radius: 10px;
 }
 
@@ -439,7 +439,7 @@ body, html, #root {
 .cast-color-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, var(--theme-accent, rgba(99, 102, 241, 0.8)), var(--theme-accent-secondary, rgba(236, 72, 153, 0.2)));
+    background: linear-gradient(to top, rgba(99, 102, 241, 0.8), var(--theme-glow, rgba(236, 72, 153, 0.2)));
     mix-blend-mode: overlay;
     opacity: 0;
     transition: opacity 0.5s ease;
@@ -468,7 +468,7 @@ body, html, #root {
 
 .cast-info-layer p {
     margin: 0;
-    color: var(--theme-accent-secondary, var(--theme-accent-secondary, #38bdf8));
+    color: var(--theme-accent-secondary, #38bdf8);
     font-size: 0.85rem;
     font-weight: 600;
 }
@@ -483,8 +483,8 @@ body, html, #root {
     transform: translateY(0);
 }
 .cast-card-3d:hover {
-    border-color: var(--theme-accent, var(--theme-accent, #8b5cf6));
-    box-shadow: 0 15px 40px var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, )));
+    border-color: var(--theme-accent, #8b5cf6);
+    box-shadow: 0 15px 40px var(--theme-glow, rgba(139, 92, 246, 0.3));
 }
 
 /* ===============================
@@ -517,7 +517,7 @@ body, html, #root {
 .similar-hover-sweep {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, var(--theme-accent, var(--theme-accent, var(--theme-glow, rgba(139, 92, 246, )))) 0%, transparent 50%, var(--theme-accent-secondary, var(--theme-glow, rgba(56, 189, 248, ))) 100%);
+    background: linear-gradient(135deg, var(--theme-glow, rgba(139, 92, 246, 0.5)) 0%, transparent 50%, var(--theme-glow, rgba(56, 189, 248, 0.4)) 100%);
     opacity: 0;
     mix-blend-mode: color-dodge;
     transition: opacity 0.4s ease;
@@ -532,7 +532,7 @@ body, html, #root {
     flex-direction: column;
     justify-content: flex-end;
     padding: 24px;
-    background: linear-gradient(to top, rgba(3, 6, 16, 0.98) 0%, rgba(3, 6, 16, 0.2) 60%, transparent 100%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 100%);
     transform: translateY(15px);
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -558,8 +558,8 @@ body, html, #root {
 
 .similar-bento-card:hover {
     transform: translateY(-15px) scale(1.03);
-    border-color: var(--theme-accent-secondary, var(--theme-accent-secondary, #38bdf8));
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
+    border-color: var(--theme-accent-secondary, #38bdf8);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px var(--theme-glow, rgba(56, 189, 248, 0.2));
 }
 .similar-bento-card:hover img {
     transform: scale(1.1) rotate(2deg);
@@ -628,8 +628,8 @@ body, html, #root {
     aspect-ratio: 16/9;
     background: black;
     border-radius: 20px;
-    box-shadow: 0 0 100px var(--theme-glow, rgba(139, 92, 246, ));
-    border: 1px solid var(--theme-accent, var(--theme-accent, var(--theme-glow, rgba(139, 92, 246, ))));
+    box-shadow: 0 0 100px var(--theme-glow, rgba(139, 92, 246, 0.4));
+    border: 1px solid var(--theme-glow, rgba(139, 92, 246, 0.5));
     animation: popIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
@@ -642,7 +642,7 @@ body, html, #root {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: var(--theme-accent, var(--theme-accent-secondary, #ec4899));
+    background: var(--theme-accent-secondary, #ec4899);
     color: white;
     border: none;
     font-size: 1.5rem;
@@ -692,8 +692,8 @@ body, html, #root {
 
 .watch-card:hover {
     transform: translateY(-8px);
-    border-color: var(--theme-accent, var(--theme-accent, #8b5cf6));
-    box-shadow: 0 15px 35px var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, )));
+    border-color: var(--theme-accent, #8b5cf6);
+    box-shadow: 0 15px 35px var(--theme-glow, rgba(139, 92, 246, .35));
 }
 
 .watch-card img {
@@ -873,36 +873,6 @@ body, html, #root {
 }
 
 
-/* <ب� MOOD-BASED IMAGE TINT OVERLAYS */
-.poster-3d-wrapper::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 24px;
-    background: var(--theme-image-tint, var(--theme-glow, rgba(56, 189, 248, )));
-    mix-blend-mode: overlay;
-    z-index: 3;
-    pointer-events: none;
-    transition: background 1s ease;
-}
-.cast-card-3d::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--theme-image-tint, var(--theme-glow, rgba(56, 189, 248, )));
-    mix-blend-mode: overlay;
-    z-index: 1;
-    pointer-events: none;
-    transition: background 1s ease;
-}
-.similar-bento-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--theme-image-tint, var(--theme-glow, rgba(56, 189, 248, )));
-    mix-blend-mode: overlay;
-    z-index: 1;
-    pointer-events: none;
-    transition: background 1s ease;
-}
-
+.poster-3d-wrapper::after { content: ""; position: absolute; inset: 0; border-radius: 24px; background: var(--theme-image-tint, rgba(56, 189, 248, 0.15)); mix-blend-mode: overlay; z-index: 3; pointer-events: none; }
+.cast-card-3d::after { content: ""; position: absolute; inset: 0; background: var(--theme-image-tint, rgba(56, 189, 248, 0.15)); mix-blend-mode: overlay; z-index: 1; pointer-events: none; }
+.similar-bento-card::after { content: ""; position: absolute; inset: 0; background: var(--theme-image-tint, rgba(56, 189, 248, 0.15)); mix-blend-mode: overlay; z-index: 1; pointer-events: none; }

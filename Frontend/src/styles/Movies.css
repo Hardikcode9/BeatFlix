@@ -33,7 +33,7 @@
 
 .color-1 { width: 600px; height: 600px; background: var(--theme-accent-secondary, #38bdf8); top: -150px; left: 10%; }
 .color-2 { width: 500px; height: 500px; background: var(--theme-accent, #5d5fef); top: 40%; right: -100px; animation-delay: -5s; }
-.color-3 { width: 400px; height: 400px; background: #ff3ea5; bottom: -100px; left: 30%; animation-delay: -10s; }
+.color-3 { width: 400px; height: 400px; background: var(--theme-accent-secondary, #ff3ea5); bottom: -100px; left: 30%; animation-delay: -10s; }
 
 @keyframes pulseAmbient {
     0% { transform: translate(0, 0) scale(1); }
@@ -151,8 +151,8 @@
 
 .search-glass-wrapper:focus-within {
     transform: translateY(-4px);
-    border-color: var(--theme-glow, rgba(56, 189, 248, ));
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 40px var(--theme-glow, rgba(56, 189, 248, ));
+    border-color: var(--theme-glow, rgba(56, 189, 248, 0.4));
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 40px var(--theme-glow, rgba(56, 189, 248, 0.2));
 }
 
 .search-glass-wrapper input {
@@ -181,7 +181,7 @@
 
 .search-glass-wrapper:focus-within .movies-search-icon {
     color: var(--theme-accent-secondary, #38bdf8);
-    filter: drop-shadow(0 0 8px var(--theme-glow, rgba(56, 189, 248, )));
+    filter: drop-shadow(0 0 8px var(--theme-glow, rgba(56, 189, 248, 0.5)));
 }
 
 .search-glow-line {
@@ -190,7 +190,7 @@
     left: 0;
     height: 2px;
     width: 0%;
-    background: linear-gradient(90deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8), #ff3ea5);
+    background: linear-gradient(90deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8), var(--theme-accent-secondary, #ff3ea5));
     transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -242,9 +242,9 @@
 
 .genre-filter-btn.active {
     color: #fff;
-    background: var(--theme-glow, rgba(56, 189, 248, ));
-    border-color: var(--theme-glow, rgba(56, 189, 248, ));
-    box-shadow: 0 10px 20px var(--theme-glow, rgba(56, 189, 248, )), inset 0 0 10px var(--theme-glow, rgba(56, 189, 248, ));
+    background: var(--theme-glow, rgba(56, 189, 248, 0.1));
+    border-color: var(--theme-glow, rgba(56, 189, 248, 0.4));
+    box-shadow: 0 10px 20px var(--theme-glow, rgba(56, 189, 248, 0.15)), inset 0 0 10px var(--theme-glow, rgba(56, 189, 248, 0.1));
     transform: translateY(-2px);
 }
 

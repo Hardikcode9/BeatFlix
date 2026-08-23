@@ -12,10 +12,10 @@
       radial-gradient(circle at 50% 85%,rgba(155,70,255,.18),transparent 35%),
       linear-gradient(
           135deg,
-          #02040b 0%,
+          transparent 0%,
           #050816 30%,
           #08111d 60%,
-          #02040b 100%
+          transparent 100%
       );
 }
 
@@ -36,7 +36,7 @@
   align-items: center;
   gap: 8px;
   background: rgba(255, 62, 165, 0.15);
-  color: #ff3ea5;
+  color: var(--theme-accent-secondary, #ff3ea5);
   padding: 8px 16px;
   border-radius: 30px;
   font-weight: 700;
@@ -93,10 +93,10 @@
 }
 
 .filter-tab.active {
-  background: linear-gradient(135deg, rgba(93, 95, 239, 0.3), var(--theme-glow, rgba(56, 189, 248, )));
+  background: linear-gradient(135deg, var(--theme-glow, rgba(93, 95, 239, 0.3)), var(--theme-glow, rgba(56, 189, 248, 0.2)));
   color: #fff;
-  border-color: rgba(93, 95, 239, 0.5);
-  box-shadow: 0 0 20px rgba(93, 95, 239, 0.2);
+  border-color: var(--theme-glow, rgba(93, 95, 239, 0.5));
+  box-shadow: 0 0 20px var(--theme-glow, rgba(93, 95, 239, 0.2));
 }
 
 /* =========================================
@@ -122,8 +122,8 @@
 
 .free-movie-card:hover {
   transform: translateY(-10px);
-  border-color: rgba(93, 95, 239, 0.4);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(93, 95, 239, 0.15);
+  border-color: var(--theme-glow, rgba(93, 95, 239, 0.4));
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px var(--theme-glow, rgba(93, 95, 239, 0.15));
 }
 
 .card-image-wrapper {
@@ -183,7 +183,7 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: rgba(93, 95, 239, 0.85);
+  background: var(--theme-glow, rgba(93, 95, 239, 0.85));
   backdrop-filter: blur(8px);
   color: #fff;
   font-size: 11px;
@@ -296,7 +296,7 @@
   background: #000;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 60px rgba(93, 95, 239, 0.3);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 60px var(--theme-glow, rgba(93, 95, 239, 0.3));
   transform: scale(0.95);
   animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

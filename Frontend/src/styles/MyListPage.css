@@ -8,10 +8,10 @@
       radial-gradient(circle at 50% 85%,rgba(155,70,255,.18),transparent 35%),
       linear-gradient(
           135deg,
-          #02040b 0%,
+          transparent 0%,
           #050816 30%,
           #08111d 60%,
-          #02040b 100%
+          transparent 100%
       );
 }
 
@@ -58,7 +58,7 @@
 .mylist-tab.active {
   background: linear-gradient(135deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8));
   border-color: transparent;
-  box-shadow: 0 5px 15px rgba(93, 95, 239, 0.4);
+  box-shadow: 0 5px 15px var(--theme-glow, rgba(93, 95, 239, 0.4));
 }
 
 .mylist-page-grid {
@@ -192,7 +192,7 @@
 .active-check {
   color: var(--theme-accent-secondary, #38bdf8);
   border-color: var(--theme-accent-secondary, #38bdf8);
-  background: var(--theme-glow, rgba(56, 189, 248, ));
+  background: var(--theme-glow, rgba(56, 189, 248, 0.1));
 }
 
 .mylist-rating {

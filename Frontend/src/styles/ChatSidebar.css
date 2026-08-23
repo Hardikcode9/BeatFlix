@@ -41,7 +41,7 @@
     font-weight: 800;
     
     background: linear-gradient(135deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8));
-    box-shadow: 0 15px 35px rgba(93, 95, 239, 0.35);
+    box-shadow: 0 15px 35px var(--theme-glow, rgba(93, 95, 239, 0.35));
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s;
 }
 
@@ -51,7 +51,7 @@
     position: absolute;
     inset: -35%;
     border-radius: 40px;
-    background: conic-gradient(var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8), var(--theme-accent, #8b5cf6), #ff3ea5, var(--theme-accent, #5d5fef));
+    background: conic-gradient(var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8), var(--theme-accent, #8b5cf6), var(--theme-accent-secondary, #ff3ea5), var(--theme-accent, #5d5fef));
     filter: blur(28px);
     opacity: 0;
     z-index: -1;
@@ -61,7 +61,7 @@
 
 .new-chat-btn:hover {
     transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 25px 50px rgba(93, 95, 239, 0.55);
+    box-shadow: 0 25px 50px var(--theme-glow, rgba(93, 95, 239, 0.55));
 }
 
 .new-chat-btn:hover::after {
@@ -108,13 +108,13 @@
     
     /* Custom Sleek Scrollbar */
     scrollbar-width: thin;
-    scrollbar-color: var(--theme-glow, rgba(56, 189, 248, )) transparent;
+    scrollbar-color: var(--theme-glow, rgba(56, 189, 248, 0.5)) transparent;
 }
 
 .chat-history::-webkit-scrollbar { width: 6px; }
 .chat-history::-webkit-scrollbar-track { background: transparent; }
 .chat-history::-webkit-scrollbar-thumb { 
-    background: var(--theme-glow, rgba(56, 189, 248, )); 
+    background: var(--theme-glow, rgba(56, 189, 248, 0.5)); 
     border-radius: 20px; 
 }
 
@@ -153,9 +153,9 @@
 
 /* ACTIVE STATE */
 .history-item.active {
-    background: linear-gradient(135deg, rgba(93, 95, 239, 0.3), var(--theme-glow, rgba(56, 189, 248, )));
-    border: 1px solid var(--theme-glow, rgba(56, 189, 248, ));
-    box-shadow: 0 10px 25px var(--theme-glow, rgba(56, 189, 248, ));
+    background: linear-gradient(135deg, var(--theme-glow, rgba(93, 95, 239, 0.3)), var(--theme-glow, rgba(56, 189, 248, 0.15)));
+    border: 1px solid var(--theme-glow, rgba(56, 189, 248, 0.3));
+    box-shadow: 0 10px 25px var(--theme-glow, rgba(56, 189, 248, 0.15));
     color: white;
 }
 
@@ -201,14 +201,14 @@
     background: linear-gradient(135deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8));
     color: white;
     transform: scale(1.1) rotate(-8deg);
-    box-shadow: 0 5px 15px var(--theme-glow, rgba(56, 189, 248, ));
+    box-shadow: 0 5px 15px var(--theme-glow, rgba(56, 189, 248, 0.4));
 }
 
 .rename-input {
     width: 100%;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--theme-accent-secondary, #38bdf8);
-    box-shadow: 0 0 15px var(--theme-glow, rgba(56, 189, 248, ));
+    box-shadow: 0 0 15px var(--theme-glow, rgba(56, 189, 248, 0.2));
     border-radius: 8px;
     color: white;
     padding: 8px 12px;
@@ -269,7 +269,7 @@
     /* Added Borders and Shadows */
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 14px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--theme-glow, rgba(56, 189, 248, ));
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--theme-glow, rgba(56, 189, 248, 0.15));
     overflow: hidden;
     
     /* Pop-in Animation */
@@ -294,14 +294,14 @@
 }
 
 .chat-menu button:hover {
-    background: rgba(93, 95, 239, 0.35);
+    background: var(--theme-glow, rgba(93, 95, 239, 0.35));
     color: white;
     padding-left: 20px; /* Slight slide effect */
 }
 
 .chat-menu button.delete-action:hover {
     background: rgba(255, 62, 165, 0.25);
-    color: #ff3ea5;
+    color: var(--theme-accent-secondary, #ff3ea5);
 }
 
 /* =========================================

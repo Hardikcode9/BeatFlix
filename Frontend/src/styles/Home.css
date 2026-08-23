@@ -14,7 +14,7 @@
 
     --primary:var(--theme-accent, #5d5fef);
     --secondary:var(--theme-accent-secondary, #38bdf8);
-    --pink:#ff3ea5;
+    --pink:var(--theme-accent-secondary, #ff3ea5);
 
 }
 
@@ -235,8 +235,8 @@ z-index:-2;
     background: linear-gradient(
         120deg, 
         rgba(255, 255, 255, 1) 20%, 
-        var(--theme-accent-secondary, var(--theme-glow, rgba(139, 92, 246, ))) 40%, 
-        var(--theme-accent, var(--theme-glow, rgba(56, 189, 248, ))) 60%, 
+        var(--theme-accent-secondary, var(--theme-glow, rgba(139, 92, 246, 0.8))) 40%, 
+        var(--theme-accent, var(--theme-glow, rgba(56, 189, 248, 0.8))) 60%, 
         rgba(255, 255, 255, 1) 80%
     );
     background-size: 200% auto;
@@ -350,7 +350,7 @@ z-index:-2;
         var(--theme-accent, var(--theme-accent, #5d5fef)),
         var(--theme-accent-secondary, var(--theme-accent-secondary, #38bdf8)),
         var(--theme-accent, var(--theme-accent, #8b5cf6)),
-        var(--theme-accent-secondary, #ff3ea5),
+        var(--theme-accent-secondary, var(--theme-accent-secondary, #ff3ea5)),
         var(--theme-accent, var(--theme-accent, #5d5fef))
     );
 
@@ -421,7 +421,7 @@ z-index:-2;
     );
 
     box-shadow:
-        0 15px 35px var(--theme-glow, rgba(93,95,239,.35));
+        0 15px 35px var(--theme-glow, var(--theme-glow, rgba(93, 95, 239, .35)));
 
     transition:
         transform .35s,
@@ -447,7 +447,7 @@ z-index:-2;
         var(--theme-accent, var(--theme-accent, #5d5fef)),
         var(--theme-accent-secondary, var(--theme-accent-secondary, #38bdf8)),
         var(--theme-accent, var(--theme-accent, #8b5cf6)),
-        var(--theme-accent-secondary, #ff3ea5),
+        var(--theme-accent-secondary, var(--theme-accent-secondary, #ff3ea5)),
         var(--theme-accent, var(--theme-accent, #5d5fef))
     );
 
@@ -476,7 +476,7 @@ z-index:-2;
     letter-spacing:.6px;
 
     box-shadow:
-        0 25px 60px var(--theme-glow, rgba(93,95,239,.55));
+        0 25px 60px var(--theme-glow, var(--theme-glow, rgba(93, 95, 239, .55)));
 
 }
 
@@ -567,11 +567,11 @@ z-index:-2;
 
     background:
 
-    var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
+    var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, .15)));
 
     box-shadow:
 
-    0 20px 50px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, )));
+    0 20px 50px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, .25)));
 
 }
 
@@ -641,7 +641,7 @@ z-index:-2;
         var(--theme-accent, var(--theme-accent, #5d5fef)),
         var(--theme-accent-secondary, var(--theme-accent-secondary, #38bdf8)),
         var(--theme-accent, var(--theme-accent, #8b5cf6)),
-        var(--theme-accent-secondary, #ff3ea5),
+        var(--theme-accent-secondary, var(--theme-accent-secondary, #ff3ea5)),
         var(--theme-accent, var(--theme-accent, #5d5fef))
     );
 
@@ -769,8 +769,8 @@ z-index:-2;
     /* REPLACED BOX-SHADOW WITH AMBIENT GLOW */
     box-shadow: 
         0 40px 100px rgba(0,0,0,0.8),
-        0 0 80px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, ))),
-        0 0 120px var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, )));
+        0 0 80px var(--theme-glow, var(--theme-glow, rgba(56, 189, 248, 0.3))),
+        0 0 120px var(--theme-glow, var(--theme-glow, rgba(139, 92, 246, 0.2)));
 }
 
 .active-card:hover{
@@ -784,7 +784,7 @@ z-index:-2;
 
     box-shadow:
         0 45px 100px rgba(0,0,0,.7),
-        0 0 55px rgba(93,95,239,.22);
+        0 0 55px var(--theme-glow, rgba(93, 95, 239, .22));
 
 }
 
@@ -871,18 +871,6 @@ z-index:-2;
   transition:
     transform 4s ease;
 
-}
-
-/* 🎨 MOOD-BASED IMAGE TINT OVERLAY */
-.hero-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--theme-image-tint, var(--theme-glow, rgba(56, 189, 248, )));
-    mix-blend-mode: overlay;
-    z-index: 1;
-    pointer-events: none;
-    transition: background 1s ease;
 }
 
 .active-card img{
@@ -1028,9 +1016,9 @@ z-index:-2;
 
     135deg,
 
-    rgba(93,95,239,.4),
+    var(--theme-glow, rgba(93, 95, 239, .4)),
 
-    var(--theme-glow, rgba(56, 189, 248, )),
+    var(--theme-glow, rgba(56, 189, 248, .25)),
 
     rgba(255,62,165,.3)
 
@@ -1195,7 +1183,7 @@ z-index:-2;
 
     0 0 45px
 
-    var(--theme-glow, rgba(56, 189, 248, ));
+    var(--theme-glow, rgba(56, 189, 248, .25));
 
 }
 
@@ -1499,7 +1487,7 @@ z-index:-2;
     position: absolute;
     inset: -2px;
     border-radius: 18px;
-    background: linear-gradient(135deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8), #ff3ea5);
+    background: linear-gradient(135deg, var(--theme-accent, #5d5fef), var(--theme-accent-secondary, #38bdf8), var(--theme-accent-secondary, #ff3ea5));
     z-index: -1;
     opacity: 0;
     transition: opacity 0.4s ease;
@@ -1518,7 +1506,7 @@ z-index:-2;
     z-index: 5;
     background-image: 
         radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 1px, transparent 2px),
-        radial-gradient(circle at 70% 60%, var(--theme-glow, rgba(56, 189, 248, )) 1.5px, transparent 2px),
+        radial-gradient(circle at 70% 60%, var(--theme-glow, rgba(56, 189, 248, 0.5)) 1.5px, transparent 2px),
         radial-gradient(circle at 40% 80%, rgba(255,62,165,0.4) 1px, transparent 2px),
         radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 1px, transparent 2px);
     background-size: 150% 150%;
@@ -1534,7 +1522,7 @@ z-index:-2;
         rotateY(var(--rotateY, 0deg));
     box-shadow:
         0 40px 80px rgba(0,0,0,0.8),
-        0 0 50px var(--theme-glow, rgba(56, 189, 248, ));
+        0 0 50px var(--theme-glow, rgba(56, 189, 248, 0.3));
 }
 
 .movie-card:hover::before {
@@ -1803,7 +1791,7 @@ z-index:-2;
 
     180deg,
 
-    rgba(93,95,239,.08),
+    var(--theme-glow, rgba(93, 95, 239, .08)),
 
     rgba(12,18,37,1)
 
@@ -1860,7 +1848,7 @@ z-index:-2;
 
     circle,
 
-    rgba(93,95,239,.22),
+    var(--theme-glow, rgba(93, 95, 239, .22)),
 
     transparent 70%
 
@@ -2003,9 +1991,9 @@ z-index:-2;
 
     145deg,
 
-    rgba(93,95,239,.16),
+    var(--theme-glow, rgba(93, 95, 239, .16)),
 
-    var(--theme-glow, rgba(56, 189, 248, ))
+    var(--theme-glow, rgba(56, 189, 248, .10))
 
     );
 
@@ -2218,7 +2206,7 @@ z-index:-2;
 
         box-shadow:
 
-        0 0 0 var(--theme-glow, rgba(56, 189, 248, ));
+        0 0 0 var(--theme-glow, rgba(56, 189, 248, .25));
 
     }
 
@@ -2226,7 +2214,7 @@ z-index:-2;
 
         box-shadow:
 
-        0 0 45px var(--theme-glow, rgba(56, 189, 248, ));
+        0 0 45px var(--theme-glow, rgba(56, 189, 248, .45));
 
     }
 
@@ -3124,7 +3112,7 @@ scale(1);
     border-color: var(--theme-accent-secondary, #38bdf8) !important;
     box-shadow: 
         0 25px 45px rgba(0, 0, 0, 0.8),
-        0 0 35px var(--theme-glow, rgba(56, 189, 248, )) !important;
+        0 0 35px var(--theme-glow, rgba(56, 189, 248, 0.25)) !important;
 }
 
 /* 6. Keep corners rounded on pop */
@@ -3500,8 +3488,8 @@ scale(1);
 }
 
 @keyframes premiumPulse {
-    0% { box-shadow: 0 0 15px rgba(93, 95, 239, 0.3), 0 0 0 0 rgba(93, 95, 239, 0.1); }
-    100% { box-shadow: 0 15px 35px var(--theme-glow, rgba(56, 189, 248, )), 0 0 0 10px var(--theme-glow, rgba(56, 189, 248, )); }
+    0% { box-shadow: 0 0 15px var(--theme-glow, rgba(93, 95, 239, 0.3)), 0 0 0 0 var(--theme-glow, rgba(93, 95, 239, 0.1)); }
+    100% { box-shadow: 0 15px 35px var(--theme-glow, rgba(56, 189, 248, 0.5)), 0 0 0 10px var(--theme-glow, rgba(56, 189, 248, 0)); }
 }
 
 
@@ -3526,7 +3514,7 @@ scale(1);
     flex-direction: column;
     justify-content: flex-end;
     padding: 28px;
-    background: linear-gradient(to top, rgba(3, 6, 16, 0.95) 0%, rgba(3, 6, 16, 0.4) 50%, transparent 100%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -3584,7 +3572,7 @@ scale(1);
     width: 500px;
     height: 500px;
     border-radius: 50%;
-    background: radial-gradient(circle, var(--theme-glow, rgba(139, 92, 246, )), var(--theme-glow, rgba(56, 189, 248, )), transparent 60%);
+    background: radial-gradient(circle, var(--theme-glow, rgba(139, 92, 246, 0.25)), var(--theme-glow, rgba(56, 189, 248, 0.15)), transparent 60%);
     filter: blur(60px);
     pointer-events: none;
     animation: pulseGlow 6s alternate infinite ease-in-out;
