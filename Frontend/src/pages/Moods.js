@@ -620,6 +620,8 @@ setStreamingText("");
 
 // Optional: Text to speech if you want the AI to read the message out loud
 const elevenLabsKey = process.env.REACT_APP_ELEVENLABS_API_KEY;
+let playedElevenLabs = false;
+
 if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
   try {
     // Stop any existing audio
@@ -627,8 +629,8 @@ if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
       window.currentAudio.pause();
     }
     
-    // Rachel (Calm, Female, American)
-    const voiceId = "21m00Tcm4TlvDq8ikWAM"; 
+    // User must provide their own Voice ID if they are on the Free Tier
+    const voiceId = process.env.REACT_APP_ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM"; 
     
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: "POST",
@@ -638,7 +640,7 @@ if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
       },
       body: JSON.stringify({
         text: finalReply,
-        model_id: "eleven_monolingual_v1",
+        model_id: "eleven_multilingual_v2",
         voice_settings: {
           stability: 0.5,
           similarity_boost: 0.75
@@ -652,11 +654,16 @@ if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
       const audio = new Audio(url);
       window.currentAudio = audio;
       audio.play();
+      playedElevenLabs = true;
+    } else {
+      console.error("ElevenLabs Failed:", await response.text());
     }
   } catch (error) {
     console.error("ElevenLabs TTS Error:", error);
   }
-} else if (window.speechSynthesis && !abortControllerRef.current?.signal.aborted) {
+} 
+
+if (!playedElevenLabs && window.speechSynthesis && !abortControllerRef.current?.signal.aborted) {
   // Fallback to local TTS if ElevenLabs key is missing or fails
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(finalReply);
