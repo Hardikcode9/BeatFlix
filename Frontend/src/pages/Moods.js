@@ -474,6 +474,11 @@ useEffect(() => {
 
   const askGemini = async (userMessage, history) => {
     const token = localStorage.getItem("token");
+    
+    if (!token) {
+      throw new Error("Guest mode does not support AI Chat. Please log in or sign up to talk to BeatFlix AI!");
+    }
+
     const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/gemini/chat`, {
       method: "POST",
       headers: {
@@ -490,6 +495,9 @@ useEffect(() => {
 
     if (!response.ok) {
       console.log(data);
+      if (response.status === 401) {
+        throw new Error("Your session has expired. Please log in again to continue chatting.");
+      }
       if (response.status === 403) {
         throw new Error(data.message || "You've reached your BeatFlix AI limit. Upgrade to Pro or Ultimate for more tokens!");
       }
