@@ -38,6 +38,7 @@ function ChatSidebar({
   }, []);
 
   const getChatIcon = (title) => {
+    if (!title) return <FaComments />;
     const text = title.toLowerCase();
     if (text.includes("action")) return <FaFire />;
     if (text.includes("comedy")) return <FaLaugh />;
