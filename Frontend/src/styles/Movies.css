@@ -158,13 +158,14 @@
 .search-glass-wrapper input {
     width: 100%;
     height: 64px;
-    padding: 0 24px 0 60px;
+    padding: 0 24px 0 56px;
     background: transparent;
     border: none;
     outline: none;
     color: white;
     font-size: 16px;
     font-weight: 500;
+    box-sizing: border-box;
 }
 
 .search-glass-wrapper input::placeholder { color: #556585; }
@@ -172,11 +173,13 @@
 .movies-search-icon {
     position: absolute;
     top: 50%;
-    left: 24px;
+    left: 20px;
     transform: translateY(-50%);
     color: var(--theme-accent, #5d5fef);
-    font-size: 18px;
+    font-size: 17px;
+    pointer-events: none;
     transition: color 0.3s;
+    z-index: 2;
 }
 
 .search-glass-wrapper:focus-within .movies-search-icon {

@@ -926,12 +926,139 @@
     font-size: 1rem;
 }
 
+/* Mobile sidebar toggle — hidden on desktop */
+.mobile-sidebar-toggle {
+    display: none;
+}
+
 /* ===========================================================
    MOBILE RESPONSIVENESS
 =========================================================== */
 @media (max-width: 768px) {
+    .beatflix-moods {
+        padding: 80px 16px 100px;
+    }
+
+    .mood-container {
+        padding: 0;
+    }
+
+    /* Stack chat layout vertically on mobile */
+    .chat-layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 24px;
+    }
+
+    /* Mobile sidebar toggle button — visible only on mobile */
+    .mobile-sidebar-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(93, 95, 239, 0.15);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        grid-column: 1 / -1;
+        width: fit-content;
+        margin-bottom: 4px;
+        transition: background 0.2s;
+    }
+
+    .mobile-sidebar-toggle:hover {
+        background: rgba(93, 95, 239, 0.3);
+    }
+
+    /* Hide the sidebar by default on mobile — show AI chat area first */
+    .chat-sidebar {
+        display: none;
+    }
+
+    /* Show sidebar when toggled (via .mobile-sidebar-open class) */
+    .chat-layout.mobile-sidebar-open .chat-sidebar {
+        display: flex;
+        width: 100%;
+        min-width: unset;
+        border-radius: 20px;
+    }
+
+    .ai-control-center {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .chat-section {
+        width: 100%;
+    }
+
     .mood-grid-container {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
+    }
+
+    .moods-hero {
+        text-align: center;
+        padding: 0 8px;
+    }
+
+    .hero-movie-title {
+        font-size: clamp(1.8rem, 7vw, 2.5rem) !important;
+    }
+
+    .mood-subtitle {
+        font-size: 0.9rem;
+    }
+
+    /* Input area */
+    .chat-input-area {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .chat-input-area input,
+    .chat-input-area textarea {
+        font-size: 15px;
+    }
+
+    /* Movie cards in recommendations */
+    .movie-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px;
+    }
+
+    /* Scanner modal */
+    .scanner-modal-overlay {
+        padding: 16px;
+    }
+
+    .scanner-content {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .face-id-frame {
+        width: min(280px, 80vw);
+        height: min(280px, 80vw);
+    }
+
+    /* Domain cards */
+    .domain-cards-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .domain-card {
+        width: 100%;
+        min-height: 140px;
+    }
+
+    /* Recommendations section */
+    .recommendations {
+        margin-top: 40px;
     }
 }

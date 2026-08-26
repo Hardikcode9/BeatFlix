@@ -269,6 +269,8 @@ const updateMessages = (newMessages) => {
 
   const hasLoadedChats = useRef(false);
 
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
   const [tokensLeft, setTokensLeft] = useState(null);
 
   const [isListening, setIsListening] = useState(false);
@@ -939,7 +941,16 @@ await saveMessage(activeChatId, userMessage);
           <p className="mood-subtitle">Tell us how you're feeling, or let the camera find the perfect movies and music for your mood.</p>
         </section>
 
-        <div className="chat-layout">
+        <div className={`chat-layout${mobileSidebarOpen ? " mobile-sidebar-open" : ""}`}>
+
+          {/* Mobile sidebar toggle button */}
+          <button
+            className="mobile-sidebar-toggle"
+            onClick={() => setMobileSidebarOpen((prev) => !prev)}
+            aria-label="Toggle chat history"
+          >
+            {mobileSidebarOpen ? "✕ Close History" : "☰ Chat History"}
+          </button>
 
         <ChatSidebar
           chats={chats}
