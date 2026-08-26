@@ -369,8 +369,9 @@
         ========================================== */}
         <div ref={homeRef} className={`beatflix-home scroll-3d-container ${!isBooting ? "page-revealed" : ""}`}>
           <section className="hero">
-            <div className="hero-left" key={currentMovie.id}>
-              <span className="hero-label">🔥 FEATURED TONIGHT</span>
+            <div className="hero-left">
+              <div className="hero-left-content" key={currentMovie.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <span className="hero-label">🔥 FEATURED TONIGHT</span>
               <h1 className="hero-movie-title"><span>{currentMovie.title || "Loading..."}</span></h1>
               <div className="hero-meta">
                 <span>⭐ {currentMovie.rating || "0.0"}</span>
@@ -384,6 +385,7 @@
                   <FaEye /> View Details
                 </button>
                 <button className="list-btn"><FaPlus /> My List</button>
+              </div>
               </div>
             </div>
 
