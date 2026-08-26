@@ -115,10 +115,10 @@ function ChatSidebar({
                 <span
                   onDoubleClick={() => {
                     setEditingId(chat._id);
-                    setEditingText(chat.title);
+                    setEditingText(chat.title || "New Chat");
                   }}
                 >
-                  {chat.title}
+                  {chat.title || "New Chat"}
                 </span>
               )}
             </>

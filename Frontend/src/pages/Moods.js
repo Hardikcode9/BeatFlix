@@ -226,7 +226,7 @@ const updateMessages = (newMessages) => {
     prev.map((chat) => {
       if (chat._id !== activeChatId) return chat;
 
-      let title = chat.title;
+      let title = chat.title || "New Chat";
 
       if (
         title === "New Chat" &&
