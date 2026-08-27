@@ -36,6 +36,18 @@ code {
     * {
         -webkit-overflow-scrolling: touch;
     }
+
+    /* Prevent horizontal overflow on mobile */
+    html, body {
+        overflow-x: hidden !important;
+    }
+}
+
+/* ===========================================================
+   GLOBAL IMAGE SAFETY
+=========================================================== */
+img, video, iframe {
+    max-width: 100%;
 }
 
 /* ===========================================================
@@ -48,3 +60,4 @@ code {
         transition-duration: 0.01ms !important;
     }
 }
+

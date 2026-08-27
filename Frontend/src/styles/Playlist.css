@@ -355,10 +355,123 @@
 }
 
 @media (max-width: 768px) {
+  .playlist-page-container {
+    padding: 80px 15px 120px;
+  }
+
+  /* Reduce orb blur for performance */
+  .playlist-page-container::before,
+  .playlist-page-container::after {
+    filter: blur(60px);
+    animation: none;
+    opacity: 0.3;
+  }
+
+  .playlist-title-section h1 {
+    font-size: 2.2rem;
+    letter-spacing: -0.5px;
+  }
+
+  .playlist-title-section p {
+    font-size: 1rem;
+  }
+
+  .playlist-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .play-all-btn, .shuffle-all-btn, .clear-playlist-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+
   .clear-playlist-btn {
     margin-left: 0;
   }
-  .playlist-title-section h1 {
-    font-size: 2.5rem;
+
+  .playlist-item {
+    padding: 12px 16px;
+    gap: 14px;
+    border-radius: 14px;
+  }
+
+  .playlist-item-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+  }
+
+  .playlist-item-info h3 {
+    font-size: 0.95rem;
+  }
+
+  .playlist-item-info p {
+    font-size: 0.8rem;
+  }
+
+  .playlist-item-index {
+    width: 24px;
+    font-size: 0.95rem;
+  }
+
+  .remove-song-btn {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
+
+  .playlist-page-header .back-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .empty-playlist {
+    padding: 60px 20px;
+    border-radius: 20px;
+  }
+
+  .empty-playlist .empty-icon {
+    font-size: 3.5rem;
+  }
+
+  .empty-playlist h2 {
+    font-size: 1.6rem;
+  }
+
+  .empty-playlist p {
+    font-size: 0.95rem;
   }
 }
+
+@media (max-width: 480px) {
+  .playlist-page-container {
+    padding: 70px 12px 120px;
+  }
+
+  .playlist-title-section h1 {
+    font-size: 1.8rem;
+  }
+
+  .playlist-item {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .playlist-item-thumb {
+    width: 44px;
+    height: 44px;
+  }
+
+  .playlist-item-info h3 {
+    font-size: 0.85rem;
+  }
+
+  .play-all-btn, .shuffle-all-btn, .clear-playlist-btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+}
+

@@ -332,6 +332,14 @@
     padding: 30px 15px 100px;
     padding-left: 15px;
   }
+
+  /* Reduce background glow complexity */
+  .free-movies-page {
+    background:
+        radial-gradient(circle at 50% 20%, rgba(90,100,255,.15), transparent 40%),
+        linear-gradient(135deg, #050816 0%, #08111d 100%);
+  }
+
   .free-movies-header h1 {
     font-size: 28px;
   }
@@ -392,9 +400,22 @@
     width: 40px;
     height: 40px;
   }
+
+  /* Simplify card hover on mobile */
+  .free-movie-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .badge-glow {
+    font-size: 12px;
+    padding: 6px 14px;
+  }
 }
 
 @media (max-width: 480px) {
+  .free-movies-page {
+    padding: 25px 12px 100px;
+  }
   .free-movies-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
@@ -411,4 +432,16 @@
   .card-desc {
     display: none; /* Too cramped for descriptions */
   }
+  .card-badge {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+  .card-channel {
+    font-size: 8px;
+    padding: 3px 7px;
+  }
+  .free-movies-header {
+    margin-bottom: 30px;
+  }
 }
+

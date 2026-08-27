@@ -280,43 +280,102 @@
   text-shadow: 0 0 10px var(--theme-glow, rgba(56, 189, 248, 0.5));
 }
 
+
 @media (max-width: 768px) {
-  .md-layout {
-    flex-direction: column;
-    align-items: center;
+  .music-details-container {
+    padding: 60px 15px 120px;
   }
-  
-  .md-art-section {
-    width: 100%;
-    max-width: 300px;
+
+  .music-details-content {
+    padding: 30px 20px;
+    border-radius: 28px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
-  
-  .md-art-wrapper {
-    width: 100%;
-    padding-top: 100%;
-    position: relative;
-    height: 0;
+
+  /* Reduce background blur for performance */
+  .music-details-bg {
+    filter: blur(40px);
+    animation: none;
   }
-  
-  .md-art-wrapper img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+
+  .album-art-container {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 30px;
   }
-  
-  .md-info-section {
-    text-align: center;
+
+  .album-art-glow {
+    filter: blur(25px);
   }
-  
-  .md-title {
-    font-size: 2rem;
+
+  .song-title {
+    font-size: 1.5rem;
   }
-  
-  .md-artist {
-    font-size: 1.2rem;
-    justify-content: center;
+
+  .song-artist {
+    font-size: 1rem;
+  }
+
+  .main-controls {
+    gap: 20px;
+  }
+
+  .play-pause-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .back-btn {
+    top: 20px;
+    left: 20px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  .song-info {
+    margin-bottom: 25px;
+  }
+
+  .time-text {
+    font-size: 0.8rem;
+    min-width: 38px;
+  }
+}
+
+@media (max-width: 480px) {
+  .music-details-container {
+    padding: 50px 12px 120px;
+  }
+
+  .music-details-content {
+    padding: 24px 16px;
+    border-radius: 24px;
+  }
+
+  .album-art-container {
+    width: 160px;
+    height: 160px;
+  }
+
+  .song-title {
+    font-size: 1.3rem;
+  }
+
+  .main-controls {
+    gap: 16px;
+  }
+
+  .play-pause-btn {
+    width: 54px;
+    height: 54px;
+    font-size: 1.3rem;
+  }
+
+  .save-music-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
   }
 }
 

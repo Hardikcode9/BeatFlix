@@ -274,8 +274,94 @@
 /* =========================================
    MOBILE RESPONSIVENESS
 ========================================= */
-@media (max-width: 720px) {
-    .movies-page { padding-left: 0; padding-bottom: 80px; } /* Adjust for mobile dock nav */
-    .movies-title { font-size: 2.5rem; }
-    .genre-filter-btn { padding: 8px 14px; font-size: 12px; }
+@media (max-width: 768px) {
+    .movies-page {
+        padding-left: 0;
+        padding-bottom: 100px;
+    }
+
+    /* Reduce ambient blob performance cost */
+    .ambient-blob {
+        filter: blur(70px);
+        animation: none;
+        opacity: 0.15;
+    }
+
+    .movies-hero {
+        padding: 80px 15px 30px;
+    }
+
+    .movies-title {
+        font-size: 2.2rem;
+        letter-spacing: -1px;
+    }
+
+    .movies-subtitle {
+        font-size: 14px;
+    }
+
+    .movies-content-wrapper {
+        padding: 0 15px 80px;
+    }
+
+    /* Search bar */
+    .search-glass-wrapper {
+        border-radius: 16px;
+        padding: 0 16px;
+    }
+
+    .search-glass-wrapper input {
+        height: 52px;
+        font-size: 15px;
+    }
+
+    /* Genre filters — horizontal scroll */
+    .genre-filters {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: 10px;
+        border-radius: 16px;
+    }
+
+    .genre-filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .genre-filter-btn {
+        flex-shrink: 0;
+        padding: 8px 16px;
+        font-size: 12px;
+        border-radius: 12px;
+    }
+
+    .movies-filter-bar {
+        margin-bottom: 30px;
+    }
+
+    .movies-badge {
+        font-size: 10px;
+        padding: 6px 14px;
+    }
 }
+
+@media (max-width: 480px) {
+    .movies-hero {
+        padding: 70px 12px 20px;
+    }
+
+    .movies-title {
+        font-size: 1.8rem;
+    }
+
+    .movies-content-wrapper {
+        padding: 0 12px 80px;
+    }
+
+    .search-glass-wrapper input {
+        height: 48px;
+        font-size: 14px;
+    }
+}

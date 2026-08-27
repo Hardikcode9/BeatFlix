@@ -367,9 +367,85 @@
 ================================= */
 @media (max-width: 768px) {
   .mylist-header { padding: 20px 5%; }
-  .close-panel-btn { width: 45px; height: 45px; font-size: 1.1rem; }
-  .mylist-grid { grid-template-columns: 1fr; gap: 20px; }
-  .mylist-card-3d { padding: 12px; gap: 15px; }
-  .card-poster { width: 90px; height: 140px; }
-  .mylist-card-content h4 { font-size: 1.2rem; }
-}   
+  .mylist-header h2 { font-size: 1.8rem; }
+  .close-panel-btn { width: 42px; height: 42px; font-size: 1rem; }
+  .mylist-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 15px 4% 100px;
+  }
+  .mylist-card-3d {
+    padding: 12px;
+    gap: 14px;
+    /* Disable 3D transforms for performance */
+    transform-style: flat;
+    transform: none !important;
+  }
+  .mylist-card-wrapper:hover .mylist-card-3d {
+    transform: none !important;
+  }
+  .card-poster {
+    width: 85px;
+    height: 130px;
+    transform: none;
+  }
+  .mylist-card-wrapper:hover .card-poster {
+    transform: scale(1.02);
+  }
+  .mylist-card-content {
+    transform: none;
+  }
+  .mylist-card-wrapper:hover .mylist-card-content {
+    transform: none;
+  }
+  .mylist-card-content h4 {
+    font-size: 1.1rem;
+  }
+  .card-glass-bg {
+    transform: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .card-light-sweep {
+    display: none;
+  }
+  /* Reduce orb blur for performance */
+  .panel-glow-orb {
+    filter: blur(60px);
+    animation: none;
+    opacity: 0.2;
+  }
+  .empty-icon-wrapper {
+    font-size: 3.5rem;
+  }
+  .gradient-text {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mylist-header { padding: 15px 4%; }
+  .mylist-header h2 { font-size: 1.5rem; }
+  .mylist-grid {
+    padding: 10px 3% 100px;
+    gap: 12px;
+  }
+  .mylist-card-3d {
+    padding: 10px;
+    gap: 10px;
+  }
+  .card-poster {
+    width: 70px;
+    height: 105px;
+  }
+  .mylist-card-content h4 {
+    font-size: 1rem;
+  }
+  .rating {
+    font-size: 0.9rem;
+    padding: 4px 10px;
+  }
+  .remove-btn {
+    padding: 10px;
+  }
+}
