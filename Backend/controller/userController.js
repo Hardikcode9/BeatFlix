@@ -187,7 +187,7 @@ const googleLogin = async (req, res) => {
     if (!user) {
       const hashedPassword = await bcrypt.hash(
         "GOOGLE_LOGIN",
-        10
+        1
       );
 
       user = await User.create({
@@ -256,7 +256,7 @@ const sendOtp = async (req, res) => {
       expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    await sendOTP(email, otp);
+    sendOTP(email, otp).catch(err => console.error("Email send error in background:", err));
 
     res.json({
       success: true,
@@ -360,7 +360,7 @@ const forgotPassword = async (req, res) => {
       expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    await sendOTP(email, otp);
+    sendOTP(email, otp).catch(err => console.error("Email send error in background:", err));
 
     res.json({
       success: true,

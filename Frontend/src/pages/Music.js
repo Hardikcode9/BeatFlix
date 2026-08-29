@@ -80,7 +80,7 @@ function Music() {
       return song?.thumbnail || "";
     }
 
-    return `https://i.ytimg.com/vi/${song.videoId}/maxresdefault.jpg`;
+    return `https://i.ytimg.com/vi/${song.videoId}/hqdefault.jpg`;
   };
 
   const getPosterFallback = (song) => {
@@ -88,7 +88,7 @@ function Music() {
       return song?.thumbnail || "";
     }
 
-    return `https://i.ytimg.com/vi/${song.videoId}/hqdefault.jpg`;
+    return `https://i.ytimg.com/vi/${song.videoId}/mqdefault.jpg`;
   };
 
 
@@ -219,7 +219,7 @@ function Music() {
       setTimeout(() => {
         setActiveSearch(query);
         searchMusic(query);
-      }, 600);
+      }, 300);
   };
 
   const handleArtistClick = (
