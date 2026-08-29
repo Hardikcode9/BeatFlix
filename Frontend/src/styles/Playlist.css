@@ -356,7 +356,7 @@
 
 @media (max-width: 768px) {
   .playlist-page-container {
-    padding: 80px 15px 120px;
+    padding: 80px 15px 200px;
   }
 
   /* Reduce orb blur for performance */

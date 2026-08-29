@@ -1110,6 +1110,7 @@ html { scrollbar-width: none; }
   overflow-y: auto !important;
   margin: 0 !important;
   z-index: 1000 !important;
+  padding-bottom: 30px !important;
 
   /* Apple/Sony Premium 3D Glassmorphism */
   background: rgba(15, 15, 25, 0.7) !important;
@@ -1122,6 +1123,30 @@ html { scrollbar-width: none; }
   box-shadow: 
     0 40px 80px rgba(0,0,0,0.8), 
     inset 0 1px 1px rgba(255,255,255,0.4) !important;
+}
+
+/* Short phones (iPhone SE, Galaxy S8 etc) */
+@media (max-height: 700px) {
+  .mobile-entry-form {
+    top: 10px !important;
+    transform: translateX(-50%) !important;
+    max-height: calc(100vh - 20px) !important;
+    padding: 24px 20px 30px !important;
+    border-radius: 28px !important;
+  }
+  .mobile-entry-form h1 {
+    font-size: 24px !important;
+  }
+  .mobile-entry-form .form-description {
+    font-size: 13px !important;
+    margin-bottom: 18px !important;
+  }
+  .mobile-entry-form .form-icon {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 18px !important;
+    margin-bottom: 16px !important;
+  }
 }
 
 /* Custom scrollbar for mobile form */

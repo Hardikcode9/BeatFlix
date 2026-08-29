@@ -156,3 +156,39 @@
     /* Hide some secondary controls on very small screens if needed, but for now we'll just shrink gap */
   }
 }
+
+@media (max-width: 400px) {
+  .global-music-player {
+    height: 62px;
+    border-radius: 14px;
+    bottom: 100px;
+  }
+  .gmp-content {
+    padding: 0 10px;
+  }
+  .gmp-art {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+  }
+  .gmp-info {
+    gap: 10px;
+  }
+  .gmp-text h4 {
+    font-size: 0.85rem;
+    max-width: 110px;
+  }
+  .gmp-text p {
+    font-size: 0.7rem;
+    max-width: 110px;
+  }
+  .gmp-controls {
+    gap: 8px;
+  }
+  .gmp-btn {
+    font-size: 1rem;
+  }
+  .expand-btn {
+    display: none;
+  }
+}

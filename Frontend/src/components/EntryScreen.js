@@ -817,7 +817,7 @@ const submitForm = async (event) => {
         {showEmoji && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1.5, opacity: 1, rotate: [0, 10, -10, 0] }}
+            animate={{ scale: 1, opacity: 1, rotate: [0, 10, -10, 0] }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ duration: 0.5, type: "spring" }}
             style={{
@@ -827,13 +827,16 @@ const submitForm = async (event) => {
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              background: 'rgba(0,0,0,0.8)',
+              background: 'rgba(0,0,0,0.85)',
               zIndex: 9999,
-              backdropFilter: 'blur(10px)'
+              backdropFilter: 'blur(10px)',
+              padding: '20px',
+              textAlign: 'center',
+              overflow: 'hidden'
             }}
           >
-            <div style={{ fontSize: '100px' }}>{themeData?.emoji}</div>
-            <h2 style={{ marginTop: '20px', color: '#fff' }}>Setting up {themeData?.name} vibe...</h2>
+            <div style={{ fontSize: 'clamp(60px, 15vw, 100px)' }}>{themeData?.emoji}</div>
+            <h2 style={{ marginTop: '20px', color: '#fff', fontSize: 'clamp(1rem, 4vw, 1.5rem)', padding: '0 16px', lineHeight: 1.4 }}>Setting up {themeData?.name} vibe...</h2>
           </motion.div>
         )}
       </AnimatePresence>
