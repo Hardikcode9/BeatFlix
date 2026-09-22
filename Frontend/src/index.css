@@ -1,63 +1,60 @@
-/* ===========================================================
-   GLOBAL BASE STYLES
-=========================================================== */
+/* Global Base Styles */
 body, #root {
-    margin: 0 !important;
-    padding: 0 !important;
-    display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
 }
 
 body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    /* Mobile touch optimization */
-    -webkit-tap-highlight-color: transparent;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #050816;
+  color: #ffffff;
+  -webkit-tap-highlight-color: transparent;
 }
 
 code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-      monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-/* ===========================================================
-   MOBILE PERFORMANCE GLOBAL RULES
-=========================================================== */
-@media (max-width: 768px) {
-    /* Disable smooth scroll on mobile — let native momentum handle it */
-    html {
-        scroll-behavior: auto !important;
-    }
-
-    /* Force GPU compositing for smoother transforms */
-    * {
-        -webkit-overflow-scrolling: touch;
-    }
-
-    /* Prevent horizontal overflow on mobile */
-    html, body {
-        overflow-x: hidden !important;
-    }
+/* Off-screen rendering optimization for scroll rails */
+.movie-rail,
+.collection-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 380px;
 }
 
-/* ===========================================================
-   GLOBAL IMAGE SAFETY
-=========================================================== */
+/* Global Image Safety & Performance */
 img, video, iframe {
-    max-width: 100%;
+  max-width: 100%;
+  display: block;
 }
 
-/* ===========================================================
-   REDUCED MOTION — Accessibility & Battery Saver
-=========================================================== */
+img {
+  image-rendering: auto;
+}
+
+/* Mobile Performance & Touch Handling */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  html, body {
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Reduced Motion Accessibility */
 @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
-

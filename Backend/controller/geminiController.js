@@ -1,27 +1,60 @@
 const axios = require("axios");
 const User = require("../model/User");
 
+/**
+ * Validates whether the user has sufficient AI tokens.
+ * Returns { user, currentTokens, allowed }
+ */
+async function checkUserTokens(userId) {
+  if (!userId) {
+    return { user: null, currentTokens: 5, allowed: true };
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return { user: null, currentTokens: 5, allowed: true };
+  }
+
+  const currentTokens =
+    user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
+
+  if (user.subscription !== "ultimate" && currentTokens <= 0) {
+    return { user, currentTokens, allowed: false };
+  }
+
+  return { user, currentTokens, allowed: true };
+}
+
+/**
+ * Deducts 1 token from user if not on ultimate plan.
+ */
+async function deductUserToken(user, currentTokens) {
+  if (user && user.subscription !== "ultimate") {
+    const updated = Math.max(0, currentTokens - 1);
+    user.aiTokens = updated;
+    await user.save();
+    return updated;
+  }
+  return currentTokens;
+}
+
 const chatWithGemini = async (req, res) => {
   try {
     const { message, history } = req.body;
-    let user = null;
-    let currentTokens = 5;
+    const tokenCheck = await checkUserTokens(req.user?.id);
 
-    if (req.user?.id) {
-      user = await User.findById(req.user.id);
-      if (user) {
-        currentTokens = user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
-        if (user.subscription !== "ultimate" && currentTokens <= 0) {
-          return res.status(403).json({
-            success: false,
-            message: "You've reached your BeatFlix AI limit. Please upgrade your plan.",
-          });
-        }
-      }
+    if (!tokenCheck.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: "You've reached your BeatFlix AI limit. Please upgrade your plan.",
+      });
     }
 
+    const { user } = tokenCheck;
+    let { currentTokens } = tokenCheck;
+
     const previousConversation = (history || [])
-      .map(msg => `${msg.sender === "user" ? "User" : "BeatFlix AI"}: ${msg.text}`)
+      .map((msg) => `${msg.sender === "user" ? "User" : "BeatFlix AI"}: ${msg.text}`)
       .join("\n\n");
 
     const fullMessage = previousConversation
@@ -46,7 +79,7 @@ Rules for your reply:
 - Talk like a real person. Use casual language, show empathy, and actually connect with the user.
 - NEVER sound like a corporate bot or an AI. Never say "As an AI..." or "I am a virtual assistant".
 - CRITICAL: Determine if the user wants to watch a movie, listen to music, or just chat. Set the "domain" field appropriately ("movie", "music", or "unknown").
-- CRITICAL: If the user explicitly asks for songs, tracks, artists, albums, or a playlist, or if your recommendations are musical tracks (like the user provided in the screenshot), you MUST set "domain" to "music".
+- CRITICAL: If the user explicitly asks for songs, tracks, artists, albums, or a playlist, or if your recommendations are musical tracks, you MUST set "domain" to "music".
 - If the user asks for music, extract up to 2 artists or genres and populate the "artists" and "genres" arrays.
 - Keep it engaging. Ask them a short follow-up question sometimes to keep the conversation going.
 - Match their energy. If they are hyped, be hyped. If they are sad, be gentle and comforting.
@@ -78,53 +111,54 @@ Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy
             ],
           }
         );
-        break; // Success, exit retry loop
+        break;
       } catch (err) {
-        if (retries === 0 || (err.response && err.response.status !== 503 && err.response.status !== 429)) {
-          throw err; // Out of retries or not a rate limit / overloaded error
+        if (
+          retries === 0 ||
+          (err.response && err.response.status !== 503 && err.response.status !== 429)
+        ) {
+          throw err;
         }
         retries--;
-        await new Promise(res => setTimeout(res, 1000)); // Wait 1s before retrying
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
 
-    const text =
-      response.data.candidates[0].content.parts[0].text
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim();
+    const text = response.data.candidates[0].content.parts[0].text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
-    if (user && user.subscription !== "ultimate") {
-      currentTokens -= 1;
-      user.aiTokens = currentTokens;
-      await user.save();
-    }
+    currentTokens = await deductUserToken(user, currentTokens);
 
     let responseData;
     try {
       responseData = JSON.parse(text);
-    } catch (parseError) {
-      console.warn("Gemini did not return JSON:", text);
+    } catch {
       responseData = {
         reply: text,
         domain: "unknown",
         genres: [],
-        artists: []
+        artists: [],
       };
     }
-    
-    responseData.tokensLeft = user ? (user.subscription === "ultimate" ? "Unlimited" : currentTokens) : "Guest";
+
+    responseData.tokensLeft = user
+      ? user.subscription === "ultimate"
+        ? "Unlimited"
+        : currentTokens
+      : "Guest";
 
     res.json(responseData);
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    console.error("Gemini Chat Error:", err.response?.data || err.message);
 
-    const errorMessage = err.response?.data?.error?.message || err.message || "Gemini request failed";
+    const errorMessage =
+      err.response?.data?.error?.message || err.message || "Gemini request failed";
 
     res.status(500).json({
       success: false,
       message: errorMessage,
-      error: err.response?.data || err.message,
     });
   }
 };
@@ -132,21 +166,17 @@ Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy
 const generateVibePlaylist = async (req, res) => {
   try {
     const { movieTitle, moviePlot, movieGenres, excludeSongs } = req.body;
-    let user = null;
-    let currentTokens = 5;
+    const tokenCheck = await checkUserTokens(req.user?.id);
 
-    if (req.user?.id) {
-      user = await User.findById(req.user.id);
-      if (user) {
-        currentTokens = user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
-        if (user.subscription !== "ultimate" && currentTokens <= 0) {
-          return res.status(403).json({
-            success: false,
-            message: "You've reached your BeatFlix AI limit. Please upgrade your plan.",
-          });
-        }
-      }
+    if (!tokenCheck.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: "You've reached your BeatFlix AI limit. Please upgrade your plan.",
+      });
     }
+
+    const { user } = tokenCheck;
+    let { currentTokens } = tokenCheck;
 
     const prompt = `
 You are the BeatFlix Synesthesia Engine. Your job is to translate a movie into a musical playlist.
@@ -156,7 +186,11 @@ These should be real, popular songs (not necessarily the official soundtrack).
 Movie Title: ${movieTitle}
 Genres: ${movieGenres}
 Plot: ${moviePlot}
-${excludeSongs && excludeSongs.length > 0 ? `\nCRITICAL: DO NOT RECOMMEND ANY OF THE FOLLOWING SONGS: ${excludeSongs.join(", ")}` : ""}
+${
+  excludeSongs && excludeSongs.length > 0
+    ? `\nCRITICAL: DO NOT RECOMMEND ANY OF THE FOLLOWING SONGS: ${excludeSongs.join(", ")}`
+    : ""
+}
 
 Return ONLY valid JSON in this exact format:
 {
@@ -176,11 +210,14 @@ Return ONLY valid JSON in this exact format:
         );
         break;
       } catch (err) {
-        if (retries === 0 || (err.response && err.response.status !== 503 && err.response.status !== 429)) {
+        if (
+          retries === 0 ||
+          (err.response && err.response.status !== 503 && err.response.status !== 429)
+        ) {
           throw err;
         }
         retries--;
-        await new Promise(res => setTimeout(res, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
 
@@ -189,25 +226,24 @@ Return ONLY valid JSON in this exact format:
       .replace(/```/g, "")
       .trim();
 
-    if (user && user.subscription !== "ultimate") {
-      currentTokens -= 1;
-      user.aiTokens = currentTokens;
-      await user.save();
-    }
+    currentTokens = await deductUserToken(user, currentTokens);
 
     let responseData;
     try {
       responseData = JSON.parse(text);
-    } catch (parseError) {
-      console.warn("Gemini did not return JSON:", text);
+    } catch {
       responseData = { songs: [] };
     }
-    
-    responseData.tokensLeft = user ? (user.subscription === "ultimate" ? "Unlimited" : currentTokens) : "Guest";
+
+    responseData.tokensLeft = user
+      ? user.subscription === "ultimate"
+        ? "Unlimited"
+        : currentTokens
+      : "Guest";
 
     res.json(responseData);
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    console.error("Gemini Vibe Error:", err.response?.data || err.message);
     res.status(500).json({ success: false, message: "Failed to generate playlist" });
   }
 };

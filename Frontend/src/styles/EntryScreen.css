@@ -1359,3 +1359,107 @@ html { scrollbar-width: none; }
   animation: logoBoxPulseGlow 3s ease-in-out infinite !important;
 }
 
+/* Styles moved from inline to CSS */
+.scanner-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.video-wrapper {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 10px;
+}
+
+.video-wrapper video {
+  width: 100%;
+  height: auto;
+  transform: scaleX(-1);
+}
+
+.scan-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(56, 189, 248, 0.2) 0%, transparent 50%, rgba(56, 189, 248, 0.2) 100%);
+  pointer-events: none;
+  animation: scanLine 2s linear infinite;
+}
+
+.scan-phase {
+  color: #38bdf8;
+  font-weight: bold;
+}
+
+.scan-face-btn {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.forgot-email-input {
+  letter-spacing: normal;
+  font-size: 16px;
+  text-align: left;
+}
+
+.forgot-password-input {
+  letter-spacing: normal;
+  font-size: 16px;
+  text-align: left;
+  margin-top: 10px;
+}
+
+.forgot-reset-btn {
+  margin-top: 15px;
+}
+
+.mobile-who-title {
+  position: relative;
+  top: 0;
+  left: 0;
+  transform: none;
+  margin: 0 auto 40px;
+  width: 100%;
+  z-index: 20;
+}
+
+.mobile-who-heading {
+  font-size: clamp(36px, 9vw, 52px);
+  text-align: center;
+  width: 100%;
+  margin: 15px 0 0;
+}
+
+.mood-transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.mood-transition-emoji {
+  font-size: clamp(60px, 15vw, 100px);
+}
+
+.mood-transition-text {
+  margin-top: 20px;
+  color: #fff;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  padding: 0 16px;
+  line-height: 1.4;
+}
+

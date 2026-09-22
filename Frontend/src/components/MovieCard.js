@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useCallback } from "react";
 import { FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "../styles/MovieCard.css";
@@ -7,7 +7,7 @@ const MovieCard = ({ id, title, poster, rating, year, genre, index = 0 }) => {
   const navigate = useNavigate();
   const cardRef = useRef(null);
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     const card = cardRef.current;
     if (!card) return;
 
@@ -15,20 +15,20 @@ const MovieCard = ({ id, title, poster, rating, year, genre, index = 0 }) => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const rotateY = ((x / rect.width) - 0.5) * 17;
+    const rotateY = (x / rect.width - 0.5) * 17;
     const rotateX = ((rect.height / 2 - y) / rect.height) * 17;
 
     card.style.setProperty("--rotateX", `${rotateX}deg`);
     card.style.setProperty("--rotateY", `${rotateY}deg`);
-  };
+  }, []);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     const card = cardRef.current;
     if (!card) return;
 
     card.style.setProperty("--rotateX", "0deg");
     card.style.setProperty("--rotateY", "0deg");
-  };
+  }, []);
 
   const genreDisplay = Array.isArray(genre)
     ? genre.slice(0, 2).join(" • ")
@@ -47,12 +47,17 @@ const MovieCard = ({ id, title, poster, rating, year, genre, index = 0 }) => {
         onClick={() => navigate(`/movie/${id}`)}
       >
         <div className="card-image-container">
-          <img src={poster} alt={title} className="card-poster-img" />
+          <img
+            src={poster}
+            alt={title}
+            className="card-poster-img"
+            loading="lazy"
+            decoding="async"
+          />
 
-          {/* BADGES */}
           <div className="badge-system">
             <span className="rating-badge">
-              <FaStar className="star-icon" style={{ color: "#f5c518", marginRight: "4px" }} />
+              <FaStar className="star-icon star-gold" />
               {rating}
             </span>
             <span className="year-badge">{year}</span>
@@ -68,4 +73,4 @@ const MovieCard = ({ id, title, poster, rating, year, genre, index = 0 }) => {
   );
 };
 
-export default MovieCard;
+export default React.memo(MovieCard);

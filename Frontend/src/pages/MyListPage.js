@@ -1,7 +1,14 @@
-/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaTrash, FaStar, FaFilm, FaMusic, FaCheck, FaHeart, FaRegHeart } from "react-icons/fa";
+import {
+  FaTrash,
+  FaStar,
+  FaFilm,
+  FaMusic,
+  FaCheck,
+  FaHeart,
+  FaRegHeart,
+} from "react-icons/fa";
 import "../styles/MyListPage.css";
 
 const POSTER_URL = "https://image.tmdb.org/t/p/w500";
@@ -11,7 +18,6 @@ const MyListPage = () => {
   const [activeTab, setActiveTab] = useState("movies");
   const [savedMovies, setSavedMovies] = useState([]);
   const [savedMusic, setSavedMusic] = useState([]);
-  const [editingMovie, setEditingMovie] = useState(null);
 
   useEffect(() => {
     const loadLists = () => {
@@ -51,7 +57,7 @@ const MyListPage = () => {
   };
 
   const updateMovieField = (id, field, value) => {
-    const updated = savedMovies.map(movie => 
+    const updated = savedMovies.map((movie) =>
       movie.id === id ? { ...movie, [field]: value } : movie
     );
     saveMovies(updated);
@@ -81,15 +87,15 @@ const MyListPage = () => {
       <div className="mylist-page-header">
         <h1>My Vault</h1>
         <div className="mylist-tabs">
-          <button 
-            className={`mylist-tab ${activeTab === 'movies' ? 'active' : ''}`}
-            onClick={() => setActiveTab('movies')}
+          <button
+            className={`mylist-tab ${activeTab === "movies" ? "active" : ""}`}
+            onClick={() => setActiveTab("movies")}
           >
             <FaFilm /> Movies
           </button>
-          <button 
-            className={`mylist-tab ${activeTab === 'music' ? 'active' : ''}`}
-            onClick={() => setActiveTab('music')}
+          <button
+            className={`mylist-tab ${activeTab === "music" ? "active" : ""}`}
+            onClick={() => setActiveTab("music")}
           >
             <FaMusic /> Music
           </button>
@@ -108,52 +114,67 @@ const MyListPage = () => {
             <div className="mylist-page-grid">
               {savedMovies.map((movie) => (
                 <div key={movie.id} className="mylist-page-card-wrapper">
-                  <div className="mylist-page-card" onClick={() => navigate(`/movie/${movie.id}`)}>
-                    <img 
-                      src={`${POSTER_URL}${movie.poster_path}`} 
-                      alt={movie.title} 
-                      className="mylist-page-poster" 
+                  <div
+                    className="mylist-page-card"
+                    onClick={() => navigate(`/movie/${movie.id}`)}
+                  >
+                    <img
+                      src={`${POSTER_URL}${movie.poster_path}`}
+                      alt={movie.title}
+                      className="mylist-page-poster"
+                      loading="lazy"
                     />
                     <div className="mylist-page-info">
                       <h3>{movie.title}</h3>
-                      <button className="remove-btn-abs" onClick={(e) => removeMovie(e, movie.id)}>
+                      <button
+                        className="remove-btn-abs"
+                        onClick={(e) => removeMovie(e, movie.id)}
+                        aria-label="Remove movie"
+                      >
                         <FaTrash />
                       </button>
                     </div>
                   </div>
 
-                  {/* Interactive Controls outside the link */}
                   <div className="mylist-controls">
                     <div className="mylist-actions">
-                      <button 
-                        className={`action-btn ${movie.liked ? 'active-heart' : ''}`} 
+                      <button
+                        className={`action-btn ${
+                          movie.liked ? "active-heart" : ""
+                        }`}
                         onClick={(e) => toggleLiked(e, movie)}
                         title="Like"
+                        aria-label="Like movie"
                       >
                         {movie.liked ? <FaHeart /> : <FaRegHeart />}
                       </button>
-                      <button 
-                        className={`action-btn ${movie.watched ? 'active-check' : ''}`} 
+                      <button
+                        className={`action-btn ${
+                          movie.watched ? "active-check" : ""
+                        }`}
                         onClick={(e) => toggleWatched(e, movie)}
                         title="Mark as Watched"
+                        aria-label="Mark as watched"
                       >
-                        <FaCheck /> {movie.watched ? 'Watched' : 'Unwatched'}
+                        <FaCheck /> {movie.watched ? "Watched" : "Unwatched"}
                       </button>
                     </div>
-                    
+
                     <div className="mylist-rating">
                       <span className="rating-label">Rate:</span>
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <FaStar 
-                          key={star} 
-                          className={`star-icon ${movie.userRating >= star ? 'filled' : ''}`}
+                        <FaStar
+                          key={star}
+                          className={`star-icon ${
+                            movie.userRating >= star ? "filled" : ""
+                          }`}
                           onClick={(e) => handleRating(e, movie, star)}
                         />
                       ))}
                     </div>
 
                     <div className="mylist-review">
-                      <textarea 
+                      <textarea
                         placeholder="Write a personal review..."
                         value={movie.review || ""}
                         onChange={(e) => handleReviewChange(e, movie.id)}
@@ -179,20 +200,35 @@ const MyListPage = () => {
           ) : (
             <div className="mylist-page-grid">
               {savedMusic.map((song) => (
-                <div key={song.videoId} className="mylist-page-card-wrapper music-card-wrapper">
-                  <div 
-                    className="mylist-page-card" 
-                    onClick={() => navigate(`/music/${song.videoId}`, { state: { song } })}
+                <div
+                  key={song.videoId}
+                  className="mylist-page-card-wrapper music-card-wrapper"
+                >
+                  <div
+                    className="mylist-page-card"
+                    onClick={() =>
+                      navigate(`/music/${song.videoId}`, { state: { song } })
+                    }
                   >
-                    <img 
-                      src={song.thumbnail || `https://i.ytimg.com/vi/${song.videoId}/hqdefault.jpg`} 
-                      alt={song.title} 
-                      className="mylist-page-poster music-poster" 
+                    <img
+                      src={
+                        song.thumbnail ||
+                        `https://i.ytimg.com/vi/${song.videoId}/hqdefault.jpg`
+                      }
+                      alt={song.title}
+                      className="mylist-page-poster music-poster"
+                      loading="lazy"
                     />
                     <div className="mylist-page-info">
                       <h3>{song.title}</h3>
-                      <p className="song-artist">{song.channelTitle || "Unknown Artist"}</p>
-                      <button className="remove-btn-abs" onClick={(e) => removeMusic(e, song.videoId)}>
+                      <p className="song-artist">
+                        {song.channelTitle || "Unknown Artist"}
+                      </p>
+                      <button
+                        className="remove-btn-abs"
+                        onClick={(e) => removeMusic(e, song.videoId)}
+                        aria-label="Remove song"
+                      >
                         <FaTrash />
                       </button>
                     </div>

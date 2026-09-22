@@ -1561,3 +1561,42 @@ span:nth-child(5) {
 
 .music-card-cover::before { content: ""; position: absolute; inset: 0; background: var(--theme-image-tint, rgba(56, 189, 248, 0.15)); mix-blend-mode: overlay; z-index: 2; pointer-events: none; }
 .premium-player-media::before { content: ""; position: absolute; inset: 0; background: var(--theme-image-tint, rgba(56, 189, 248, 0.15)); mix-blend-mode: overlay; z-index: 2; pointer-events: none; }
+
+.playlist-heading-clickable {
+  cursor: pointer;
+}
+
+.playlist-link-icon {
+  font-size: 0.8rem;
+  margin-left: 8px;
+  opacity: 0.7;
+}
+
+.music-playlist-empty {
+  min-height: 150px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  padding: 30px;
+}
+
+.music-playlist-empty svg {
+  opacity: 0.5;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.music-playlist-empty h3 {
+  font-size: 1.2rem;
+  margin: 0 0 5px;
+}
+
+.music-playlist-empty p {
+  opacity: 0.7;
+  margin: 0;
+  font-size: 0.9rem;
+}

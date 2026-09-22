@@ -1,4 +1,3 @@
-/* eslint-disable */
 import {
   useState,
   useRef,
@@ -15,6 +14,12 @@ import {
   FaEye,
   FaMicrophone,
 } from "react-icons/fa";
+import { toast } from "react-toastify";
+import ChatSidebar from "../components/ChatSidebar";
+import { useMood } from "../context/MoodContext";
+import { GENRE_MAP, API_BASE } from "../utils/constants";
+import "../styles/Moods.css";
+
 let faceapiModule = null;
 const getFaceApi = async () => {
   if (!faceapiModule) {
@@ -22,16 +27,73 @@ const getFaceApi = async () => {
   }
   return faceapiModule;
 };
-import ChatSidebar from "../components/ChatSidebar";
-import "../styles/Moods.css";
-import { useMood } from "../context/MoodContext";
 
-const genreMap = {
-  28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime",
-  99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History",
-  27: "Horror", 10402: "Music", 9648: "Mystery", 10749: "Romance", 878: "Sci-Fi",
-  10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western",
-};
+const welcomeMessages = [
+  {
+    sender: "ai",
+    text:
+      "Welcome to BeatFlix! 👋\n\nHow are you feeling today? Tell me what's on your mind, or let's use the camera to find the perfect movies for you.",
+  },
+];
+
+function formatMessage(text) {
+  return text.split("\n").map((line, index) => {
+    let trimmed = line.trim();
+
+    if (!trimmed) {
+      return <br key={index} />;
+    }
+
+    const renderBold = (str) => {
+      const parts = str.split(/(\*\*.*?\*\*)/g);
+      return parts.map((part, i) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return (
+            <strong key={i} className="message-bold-accent">
+              {part.slice(2, -2)}
+            </strong>
+          );
+        }
+        return part;
+      });
+    };
+
+    if (/^\d+\./.test(trimmed)) {
+      return (
+        <div key={index} className="message-list-item">
+          {renderBold(trimmed)}
+        </div>
+      );
+    }
+
+    if (trimmed.startsWith("•") || trimmed.startsWith("-") || trimmed.startsWith("*")) {
+      trimmed = trimmed.replace(/^[-•*]\s*/, "");
+
+      if (!trimmed.includes("**") && trimmed.includes(":")) {
+        const parts = trimmed.split(":");
+        trimmed = `**${parts[0]}**:${parts.slice(1).join(":")}`;
+      } else if (!trimmed.includes("**") && /^'[^']+'/.test(trimmed)) {
+        trimmed = trimmed.replace(/^'([^']+)'/, "**$1**");
+      }
+
+      return (
+        <div key={index} className="message-list-item">
+          {renderBold(trimmed)}
+        </div>
+      );
+    }
+
+    if (trimmed.endsWith(":")) {
+      return (
+        <div key={index} className="message-heading">
+          {renderBold(trimmed)}
+        </div>
+      );
+    }
+
+    return <div key={index}>{renderBold(trimmed)}</div>;
+  });
+}
 
 function Moods() {
   const navigate = useNavigate();
@@ -41,219 +103,13 @@ function Moods() {
   const [recommendedMovies, setRecommendedMovies] = useState([]);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [input, setInput] = useState("");
-  const BASE_URL = `${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/chat`;
+  const CHAT_API_BASE = `${API_BASE}/api/chat`;
 
-  const welcomeMessages = [
-  {
-    sender: "ai",
-    text:
-      "Welcome to BeatFlix! 👋\n\nHow are you feeling today? Tell me what's on your mind, or let's use the camera to find the perfect movies for you.",
-  },
-];
+  const [chats, setChats] = useState([]);
+  const [activeChatId, setActiveChatId] = useState(null);
 
-const [chats, setChats] = useState([]);
-
-const [activeChatId, setActiveChatId] = useState(null);
-
-const activeChat =
-  chats.find((chat) => chat._id === activeChatId) || chats[0];
-
-  const createNewChat = async () => {
-    if (creatingChatRef.current) return;
-    creatingChatRef.current = true;
-  
-    try {
-      const token = localStorage.getItem("token");
-      
-      // Guest mode - create local chat
-      if (!token) {
-        const localChatId = "guest_" + Date.now();
-        setChats((prev) => [
-          { _id: localChatId, messages: [...welcomeMessages] },
-          ...prev,
-        ]);
-        setActiveChatId(localChatId);
-        setRecommendedMovies([]);
-        creatingChatRef.current = false;
-        return;
-      }
-  
-      const response = await fetch(BASE_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      const data = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(data.message);
-      }
-  
-      setChats((prev) => {
-        if (prev.find((chat) => chat._id === data.chat._id)) {
-          return prev;
-        }
-  
-        return [
-          {
-            ...data.chat,
-            messages: [...welcomeMessages],
-          },
-          ...prev,
-        ];
-      });
-  
-      setActiveChatId(data.chat._id);
-      setRecommendedMovies([]);
-    } catch (error) {
-      console.error("Error creating chat:", error);
-    } finally {
-      creatingChatRef.current = false;
-    }
-  };
-
-const loadChats = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        // Guest mode fallback
-        createNewChat();
-        return;
-      }
-      const response = await fetch(BASE_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-      console.log("Mongo Chats:", data.chats);
-      console.log("Mongo Count:", data.chats.length);
-
-      if (data.chats.length === 0) {
-        setChats([]);
-        setActiveChatId(null);
-        createNewChat();
-      } else {
-        setChats(data.chats);
-        setActiveChatId(data.chats[0]._id);
-      }
-    } catch (error) {
-      console.error("Error loading chats:", error);
-    }
-  };
-
-const saveMessage = async (chatId, message) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return; // Skip saving for guests
-
-      const response = await fetch(`${BASE_URL}/${chatId}/message`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(message),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
-
-    return data;
-  } catch (err) {
-    console.error("Save Message:", err);
-  }
-};
-
-const selectChat = (id) => {
-  setActiveChatId(id);
-};
-
-const deleteChat = async (id) => {
-  try {
-    const token = localStorage.getItem("token");
-
-    await fetch(`${BASE_URL}/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    setChats((prev) => prev.filter((chat) => chat._id !== id));
-
-    if (activeChatId === id) {
-      setActiveChatId(null);
-    }
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-const renameChat = (id, newTitle) => {
-  if (!newTitle.trim()) return;
-
-  setChats((prev) =>
-    prev.map((chat) =>
-      chat._id === id
-        ? {
-            ...chat,
-            title: newTitle.trim(),
-          }
-        : chat
-    )
-  );
-};
-
-const getChatTitle = (text) => {
-  if (!text) return "New Chat";
-
-  const cleaned = text
-    .replace(/\[.*?\]/g, "")
-    .replace(/[^\w\s]/g, "")
-    .trim();
-
-  if (!cleaned) return "New Chat";
-
-  const words = cleaned.split(" ").slice(0, 4);
-
-  return words.join(" ");
-};
-
-const updateMessages = (newMessages) => {
-  setChats((prev) =>
-    prev.map((chat) => {
-      if (chat._id !== activeChatId) return chat;
-
-      let title = chat.title || "New Chat";
-
-      if (
-        title === "New Chat" &&
-        newMessages.length > 1
-      ) {
-        const firstUser = newMessages.find(
-          (msg) => msg.sender === "user"
-        );
-
-        if (firstUser) {
-          title = getChatTitle(firstUser.text);
-        }
-      }
-      return {
-        ...chat,
-        title,
-        messages: newMessages,
-      };
-    })
-  );
-};
+  const activeChat =
+    chats.find((chat) => chat._id === activeChatId) || chats[0];
 
   const messages = activeChat?.messages || [];
   const [isThinking, setIsThinking] = useState(false);
@@ -276,12 +132,198 @@ const updateMessages = (newMessages) => {
   const hasLoadedChats = useRef(false);
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
   const [tokensLeft, setTokensLeft] = useState(null);
 
   const [isListening, setIsListening] = useState(false);
   const [envContext, setEnvContext] = useState("");
   const recognitionRef = useRef(null);
+
+  const createNewChat = useCallback(async () => {
+    if (creatingChatRef.current) return;
+    creatingChatRef.current = true;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        const localChatId = "guest_" + Date.now();
+        setChats((prev) => [
+          { _id: localChatId, messages: [...welcomeMessages] },
+          ...prev,
+        ]);
+        setActiveChatId(localChatId);
+        setRecommendedMovies([]);
+        creatingChatRef.current = false;
+        return;
+      }
+
+      const response = await fetch(CHAT_API_BASE, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      setChats((prev) => {
+        if (prev.find((chat) => chat._id === data.chat._id)) {
+          return prev;
+        }
+
+        return [
+          {
+            ...data.chat,
+            messages: [...welcomeMessages],
+          },
+          ...prev,
+        ];
+      });
+
+      setActiveChatId(data.chat._id);
+      setRecommendedMovies([]);
+    } catch (error) {
+      console.error("Error creating chat:", error);
+    } finally {
+      creatingChatRef.current = false;
+    }
+  }, [CHAT_API_BASE]);
+
+  const loadChats = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        createNewChat();
+        return;
+      }
+      const response = await fetch(CHAT_API_BASE, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!data.chats || data.chats.length === 0) {
+        setChats([]);
+        setActiveChatId(null);
+        createNewChat();
+      } else {
+        setChats(data.chats);
+        setActiveChatId(data.chats[0]._id);
+      }
+    } catch (error) {
+      console.error("Error loading chats:", error);
+    }
+  }, [CHAT_API_BASE, createNewChat]);
+
+  const saveMessage = async (chatId, message) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await fetch(`${CHAT_API_BASE}/${chatId}/message`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(message),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      return data;
+    } catch (err) {
+      console.error("Save Message error:", err);
+    }
+  };
+
+  const selectChat = (id) => {
+    setActiveChatId(id);
+  };
+
+  const deleteChat = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await fetch(`${CHAT_API_BASE}/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setChats((prev) => prev.filter((chat) => chat._id !== id));
+
+      if (activeChatId === id) {
+        setActiveChatId(null);
+      }
+    } catch (err) {
+      console.error("Delete Chat error:", err);
+    }
+  };
+
+  const renameChat = (id, newTitle) => {
+    if (!newTitle.trim()) return;
+
+    setChats((prev) =>
+      prev.map((chat) =>
+        chat._id === id
+          ? {
+              ...chat,
+              title: newTitle.trim(),
+            }
+          : chat
+      )
+    );
+  };
+
+  const getChatTitle = (text) => {
+    if (!text) return "New Chat";
+
+    const cleaned = text
+      .replace(/\[.*?\]/g, "")
+      .replace(/[^\w\s]/g, "")
+      .trim();
+
+    if (!cleaned) return "New Chat";
+
+    const words = cleaned.split(" ").slice(0, 4);
+    return words.join(" ");
+  };
+
+  const updateMessages = (newMessages) => {
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat._id !== activeChatId) return chat;
+
+        let title = chat.title || "New Chat";
+
+        if (title === "New Chat" && newMessages.length > 1) {
+          const firstUser = newMessages.find((msg) => msg.sender === "user");
+
+          if (firstUser) {
+            title = getChatTitle(firstUser.text);
+          }
+        }
+        return {
+          ...chat,
+          title,
+          messages: newMessages,
+        };
+      })
+    );
+  };
 
   // Initialize Speech Recognition
   useEffect(() => {
@@ -290,7 +332,7 @@ const updateMessages = (newMessages) => {
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.lang = "en-US";
 
       recognitionRef.current.onstart = () => {
         setIsListening(true);
@@ -298,7 +340,7 @@ const updateMessages = (newMessages) => {
 
       recognitionRef.current.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        setInput((prev) => (prev ? prev + ' ' + transcript : transcript));
+        setInput((prev) => (prev ? prev + " " + transcript : transcript));
       };
 
       recognitionRef.current.onerror = (event) => {
@@ -316,30 +358,31 @@ const updateMessages = (newMessages) => {
     if (recognitionRef.current) {
       recognitionRef.current.start();
     } else {
-      alert("Voice recognition is not supported in this browser.");
+      toast.info("Voice recognition is not supported in this browser.");
     }
   };
 
   useEffect(() => {
-    // Try to get weather context in background
     const getContext = async () => {
       try {
         const position = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
         });
         const { latitude, longitude } = position.coords;
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+        const res = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
+        );
         const data = await res.json();
-        const code = data.current_weather.weathercode;
+        const code = data.current_weather?.weathercode;
         let weatherContext = "mild";
         if (code === 0) weatherContext = "clear and sunny";
         else if (code >= 1 && code <= 3) weatherContext = "a bit cloudy";
         else if (code >= 51 && code <= 67) weatherContext = "raining";
         else if (code >= 71 && code <= 77) weatherContext = "snowing";
-        
+
         setEnvContext(weatherContext);
-      } catch (e) {
-        console.log("Could not get location for environment context.");
+      } catch {
+        // Silent catch for optional geolocation
       }
     };
     getContext();
@@ -349,56 +392,34 @@ const updateMessages = (newMessages) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/users/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await fetch(`${API_BASE}/api/users/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (data.success && data.user) {
         const t = data.user.aiTokens !== undefined ? data.user.aiTokens : 5;
         setTokensLeft(data.user.subscription === "ultimate" ? "Unlimited" : t);
       }
-    } catch (err) {}
-  };
-
-useEffect(() => {
-  fetchMovies();
-  loadModels();
-  fetchTokens();
-
-  if (!hasLoadedChats.current) {
-    hasLoadedChats.current = true;
-    loadChats();
-  }
-
-  return () => {
-    stopScanner();
-
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+    } catch (err) {
+      console.error("Failed to fetch tokens:", err);
     }
   };
-}, []);
-
-useEffect(() => {
-  if (chatEndRef.current) {
-    chatEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-  }
-}, [messages, streamingText, isThinking]);
 
   const fetchMovies = async () => {
     try {
-      const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
       const endpoints = [
         `${API_BASE}/api/movies/trending`,
         `${API_BASE}/api/movies/top-rated`,
         `${API_BASE}/api/movies/top-india`,
         `${API_BASE}/api/movies/top-global`,
-        `${API_BASE}/api/movies/new-releases`
+        `${API_BASE}/api/movies/new-releases`,
       ];
 
       const responses = await Promise.all(
         endpoints.map((url) =>
-          fetch(url).then((res) => (res.ok ? res.json() : { results: [] })).catch(() => ({ results: [] }))
+          fetch(url)
+            .then((res) => (res.ok ? res.json() : { results: [] }))
+            .catch(() => ({ results: [] }))
         )
       );
 
@@ -410,8 +431,13 @@ useEffect(() => {
               movieMap.set(movie.id, {
                 id: movie.id,
                 title: movie.title,
-                poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "https://placehold.co/500x750/1a1a1a/ffffff?text=No+Poster",
-                genre: (movie.genre_ids || []).map((id) => genreMap[id]).filter(Boolean).slice(0, 2),
+                poster: movie.poster_path
+                  ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                  : "https://placehold.co/500x750/1a1a1a/ffffff?text=No+Poster",
+                genre: (movie.genre_ids || [])
+                  .map((id) => GENRE_MAP[id])
+                  .filter(Boolean)
+                  .slice(0, 2),
                 rating: Number(movie.vote_average || 0).toFixed(1),
                 year: movie.release_date?.split("-")[0] || "N/A",
               });
@@ -422,37 +448,46 @@ useEffect(() => {
 
       setAllMovies(Array.from(movieMap.values()));
     } catch (err) {
-      console.error("Error building master movie list:", err);
+      console.error("Error building movie list:", err);
     }
   };
 
-  const filterMovies = (genres) => {
-    if (!genres || genres.length === 0) {
-      setRecommendedMovies([]);
-      return;
+  const stopScanner = () => {
+    if (scanIntervalRef.current) clearInterval(scanIntervalRef.current);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
     }
-
-    let primaryMatches = allMovies.filter((movie) => {
-      if (!movie.genre || movie.genre.length === 0) return false;
-      return movie.genre.some((g) => genres.includes(g));
-    });
-
-    primaryMatches.sort((a, b) => b.rating - a.rating);
-    let finalRecommendations = [...primaryMatches];
-
-    if (finalRecommendations.length < 50) {
-      const primaryIds = new Set(finalRecommendations.map((m) => m.id));
-      const remainingMovies = allMovies.filter((m) => !primaryIds.has(m.id)).sort((a, b) => b.rating - a.rating);
-      finalRecommendations = [...finalRecommendations, ...remainingMovies];
-    }
-
-    setRecommendedMovies(finalRecommendations.slice(0, 50));
-    setTimeout(() => {
-      recommendationRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 400);
+    emotionHistoryRef.current = [];
+    setIsScanning(false);
   };
+
+  useEffect(() => {
+    fetchMovies();
+    fetchTokens();
+
+    if (!hasLoadedChats.current) {
+      hasLoadedChats.current = true;
+      loadChats();
+    }
+
+    return () => {
+      stopScanner();
+
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [loadChats]);
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [messages, streamingText, isThinking]);
 
   const loadModels = async () => {
+    if (modelsLoaded) return true;
     const MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
     try {
       const faceapi = await getFaceApi();
@@ -461,7 +496,11 @@ useEffect(() => {
         faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
       ]);
       setModelsLoaded(true);
-    } catch (err) { console.error(err); }
+      return true;
+    } catch (err) {
+      console.error("Face API model load error:", err);
+      return false;
+    }
   };
 
   const handleCardMove = useCallback((e) => {
@@ -470,7 +509,7 @@ useEffect(() => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 8;
-    const rotateX = (((rect.height / 2) - y) / (rect.height / 2)) * 8;
+    const rotateX = ((rect.height / 2 - y) / (rect.height / 2)) * 8;
     card.style.setProperty("--rotateX", `${rotateX}deg`);
     card.style.setProperty("--rotateY", `${rotateY}deg`);
   }, []);
@@ -482,12 +521,12 @@ useEffect(() => {
 
   const askGemini = async (userMessage, history) => {
     const token = localStorage.getItem("token");
-    
+
     if (!token) {
-      throw new Error("Guest mode does not support AI Chat. Please log in or sign up to talk to BeatFlix AI!");
+      throw new Error("Guest mode does not support AI Chat. Please log in to talk to BeatFlix AI!");
     }
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/gemini/chat`, {
+    const response = await fetch(`${API_BASE}/api/gemini/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -502,12 +541,13 @@ useEffect(() => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.log(data);
       if (response.status === 401) {
-        throw new Error("Your session has expired. Please log in again to continue chatting.");
+        throw new Error("Your session has expired. Please log in again.");
       }
       if (response.status === 403) {
-        throw new Error(data.message || "You've reached your BeatFlix AI limit. Upgrade to Pro or Ultimate for more tokens!");
+        throw new Error(
+          data.message || "You've reached your BeatFlix AI limit. Upgrade to Pro or Ultimate for more tokens!"
+        );
       }
       throw new Error(data.message || "Server Error");
     }
@@ -515,19 +555,19 @@ useEffect(() => {
     return data;
   };
 
-const streamReply = async (reply) => {
-  setStreamingText("");
+  const streamReply = async (reply) => {
+    setStreamingText("");
 
-  for (let i = 0; i < reply.length; i++) {
-    if (abortControllerRef.current?.signal.aborted) {
-      break;
+    for (let i = 0; i < reply.length; i++) {
+      if (abortControllerRef.current?.signal.aborted) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 12));
+      setStreamingText(reply.slice(0, i + 1));
     }
-    await new Promise((resolve) => setTimeout(resolve, 12));
-    setStreamingText(reply.slice(0, i + 1));
-  }
 
-  return reply;
-};
+    return reply;
+  };
 
   const askBeatFlix = async (message, currentMessages) => {
     setIsThinking(true);
@@ -538,182 +578,219 @@ const streamReply = async (reply) => {
         setTokensLeft(result.tokensLeft);
       }
 
-      console.log(result);
+      const finalReply = await streamReply(
+        result.reply || "No recommendation available."
+      );
 
-const finalReply = await streamReply(
-  result.reply || "No recommendation available."
-);
+      let matchedItems = [];
+      let matchedMusic = [];
 
-let matchedItems = [];
-let matchedMusic = [];
+      if (result.domain === "music") {
+        if (result.songs && Array.isArray(result.songs) && result.songs.length > 0) {
+          const fetchPromises = result.songs.map(async (songName) => {
+            try {
+              const res = await fetch(
+                `${API_BASE}/api/music/search?q=${encodeURIComponent(songName)}`
+              );
+              const data = await res.json();
+              if (data && data.success && data.songs && data.songs.length > 0) {
+                return data.songs[0];
+              }
+            } catch (e) {
+              console.error("Music search error", e);
+            }
+            return null;
+          });
 
-if (result.domain === "music") {
-  if (result.songs && Array.isArray(result.songs) && result.songs.length > 0) {
-    const fetchPromises = result.songs.map(async (songName) => {
-      try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music/search?q=${encodeURIComponent(songName)}`);
-        const data = await res.json();
-        if (data && data.success && data.songs && data.songs.length > 0) {
-            return data.songs[0];
+          const fetchedSongs = (await Promise.all(fetchPromises)).filter(
+            (m) => m !== null
+          );
+          if (fetchedSongs.length > 0) {
+            matchedMusic = fetchedSongs;
+          }
+        } else {
+          try {
+            const q =
+              result.artists && result.artists.length > 0
+                ? result.artists[0]
+                : result.genres && result.genres.length > 0
+                ? result.genres[0]
+                : "pop";
+            const res = await fetch(
+              `${API_BASE}/api/music/search?q=${encodeURIComponent(q)}`
+            );
+            const data = await res.json();
+            if (data.success && data.songs) {
+              matchedMusic = data.songs.slice(0, 6);
+            }
+          } catch (e) {
+            console.error("Music fetch error", e);
+          }
         }
-      } catch (e) {
-        console.error("Music search error", e);
-      }
-      return null;
-    });
+      } else if (
+        result.domain === "movie" ||
+        result.domain === "mixed" ||
+        result.domain === "unknown"
+      ) {
+        if (result.movies && Array.isArray(result.movies) && result.movies.length > 0) {
+          const fetchPromises = result.movies.map(async (movieName) => {
+            try {
+              const res = await fetch(
+                `${API_BASE}/api/movies?search=${encodeURIComponent(movieName)}`
+              );
+              const data = await res.json();
+              if (data && data.success && data.results && data.results.length > 0) {
+                const movie = data.results[0];
+                return {
+                  id: movie.id,
+                  title: movie.title,
+                  poster: movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                    : "https://placehold.co/500x750/1a1a1a/ffffff?text=No+Poster",
+                  genre: (movie.genre_ids || [])
+                    .map((id) => GENRE_MAP[id])
+                    .filter(Boolean)
+                    .slice(0, 2),
+                  rating: Number(movie.vote_average || 0).toFixed(1),
+                  year: movie.release_date?.split("-")[0] || "N/A",
+                  reason: "BeatFlix AI recommended this.",
+                };
+              }
+            } catch (e) {
+              console.error("Movie search error", e);
+            }
+            return null;
+          });
 
-    const fetchedSongs = (await Promise.all(fetchPromises)).filter(m => m !== null);
-    if (fetchedSongs.length > 0) {
-      matchedMusic = fetchedSongs;
-    }
-  } else {
-    try {
-      const q = (result.artists && result.artists.length > 0) ? result.artists[0] : (result.genres && result.genres.length > 0 ? result.genres[0] : "pop");
-      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music/search?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
-      if (data.success && data.songs) {
-        matchedMusic = data.songs.slice(0, 6);
-      }
-    } catch(e) {
-      console.error("Music fetch error", e);
-    }
-  }
-} else if (result.domain === "movie" || result.domain === "mixed" || result.domain === "unknown") {
-  if (result.movies && Array.isArray(result.movies) && result.movies.length > 0) {
-    const fetchPromises = result.movies.map(async (movieName) => {
-      try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/movies?search=${encodeURIComponent(movieName)}`);
-        const data = await res.json();
-        if (data && data.success && data.results && data.results.length > 0) {
-            const movie = data.results[0]; // Take the top search result
-            return {
-                id: movie.id,
-                title: movie.title,
-                poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "https://placehold.co/500x750/1a1a1a/ffffff?text=No+Poster",
-                genre: (movie.genre_ids || []).map((id) => genreMap[id]).filter(Boolean).slice(0, 2),
-                rating: Number(movie.vote_average || 0).toFixed(1),
-                year: movie.release_date?.split("-")[0] || "N/A",
-                reason: `BeatFlix AI recommended this.`
-            };
+          const fetchedMovies = (await Promise.all(fetchPromises)).filter(
+            (m) => m !== null
+          );
+          if (fetchedMovies.length > 0) {
+            matchedItems = fetchedMovies;
+          }
         }
-      } catch (e) {
-        console.error("Movie search error", e);
+
+        if (matchedItems.length === 0) {
+          matchedItems = allMovies
+            .filter((movie) =>
+              movie.genre.some((genre) => result.genres?.includes(genre))
+            )
+            .sort((a, b) => Number(b.rating) - Number(a.rating))
+            .slice(0, 6)
+            .map((movie) => ({
+              ...movie,
+              reason: `Recommended because it matches your ${movie.genre[0]} preference.`,
+            }));
+        }
       }
-      return null;
-    });
 
-    const fetchedMovies = (await Promise.all(fetchPromises)).filter(m => m !== null);
-    if (fetchedMovies.length > 0) {
-      matchedItems = fetchedMovies;
-    }
-  }
-
-  // Fallback if specific search failed or AI didn't return movies array
-  if (matchedItems.length === 0) {
-    matchedItems = allMovies
-      .filter((movie) =>
-        movie.genre.some((genre) => result.genres?.includes(genre))
-      )
-      .sort((a, b) => Number(b.rating) - Number(a.rating))
-      .slice(0, 6)
-      .map((movie) => ({
-        ...movie,
-        reason: `Recommended because it matches your ${movie.genre[0]} preference.`,
-      }));
-  }
-}
-
-const aiMessage = {
-  sender: "ai",
-  text: finalReply,
-  movies: matchedItems,
-  music: matchedMusic
-};
-
-updateMessages([
-  ...currentMessages,
-  aiMessage,
-]);
-
-await saveMessage(activeChatId, aiMessage);
-
-setStreamingText("");
-
-// Optional: Text to speech if you want the AI to read the message out loud
-const elevenLabsKey = process.env.REACT_APP_ELEVENLABS_API_KEY;
-let playedElevenLabs = false;
-
-if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
-  try {
-    // Stop any existing audio
-    if (window.currentAudio) {
-      window.currentAudio.pause();
-    }
-    
-    // User must provide their own Voice ID if they are on the Free Tier
-    const voiceId = (process.env.REACT_APP_ELEVENLABS_VOICE_ID || "Ah9BYzLpolyTAW6DAm7L").trim(); 
-    
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "xi-api-key": elevenLabsKey.trim()
-      },
-      body: JSON.stringify({
+      const aiMessage = {
+        sender: "ai",
         text: finalReply,
-        model_id: "eleven_multilingual_v2",
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75
+        movies: matchedItems,
+        music: matchedMusic,
+      };
+
+      updateMessages([...currentMessages, aiMessage]);
+      await saveMessage(activeChatId, aiMessage);
+      setStreamingText("");
+
+      // Text to speech
+      const elevenLabsKey = process.env.REACT_APP_ELEVENLABS_API_KEY;
+      let playedElevenLabs = false;
+
+      if (elevenLabsKey && !abortControllerRef.current?.signal.aborted) {
+        try {
+          if (window.currentAudio) {
+            window.currentAudio.pause();
+          }
+
+          const voiceId = (
+            process.env.REACT_APP_ELEVENLABS_VOICE_ID || "Ah9BYzLpolyTAW6DAm7L"
+          ).trim();
+
+          const response = await fetch(
+            `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "xi-api-key": elevenLabsKey.trim(),
+              },
+              body: JSON.stringify({
+                text: finalReply,
+                model_id: "eleven_multilingual_v2",
+                voice_settings: {
+                  stability: 0.5,
+                  similarity_boost: 0.75,
+                },
+              }),
+            }
+          );
+
+          if (response.ok && !abortControllerRef.current?.signal.aborted) {
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            window.currentAudio = audio;
+            audio.onplay = () => setIsPlayingAudio(true);
+            audio.onended = () => setIsPlayingAudio(false);
+            audio.onerror = () => setIsPlayingAudio(false);
+            audio.play();
+            playedElevenLabs = true;
+          } else {
+            const errText = await response.text();
+            console.error("ElevenLabs error:", errText);
+          }
+        } catch (error) {
+          console.error("ElevenLabs TTS Error:", error);
         }
-      })
-    });
-    
-    if (response.ok && !abortControllerRef.current?.signal.aborted) {
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      window.currentAudio = audio;
-      audio.onplay = () => setIsPlayingAudio(true);
-      audio.onended = () => setIsPlayingAudio(false);
-      audio.onerror = () => setIsPlayingAudio(false);
-      audio.play();
-      playedElevenLabs = true;
-    } else {
-      const errText = await response.text();
-      console.error("ElevenLabs Failed:", errText);
-      alert("ElevenLabs Error: " + errText);
-    }
-  } catch (error) {
-    console.error("ElevenLabs TTS Error:", error);
-    alert("ElevenLabs Connection Error: " + error.message);
-  }
-} 
+      }
 
-if (!playedElevenLabs && window.speechSynthesis && !abortControllerRef.current?.signal.aborted) {
-  // Fallback to local TTS if ElevenLabs key is missing or fails
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(finalReply);
-  utterance.onstart = () => setIsPlayingAudio(true);
-  utterance.onend = () => setIsPlayingAudio(false);
-  utterance.onerror = () => setIsPlayingAudio(false);
-  utterance.pitch = 0.95;
-  utterance.rate = 0.95;
-  
-  let voices = window.speechSynthesis.getVoices();
-  const preferredVoices = ["Microsoft Jenny Online", "Microsoft Aria Online", "Google UK English Female", "Google US English", "Samantha", "Karen"];
-  let selectedVoice = null;
-  for (const name of preferredVoices) {
-    const match = voices.find(v => v.name.includes(name));
-    if (match) { selectedVoice = match; break; }
-  }
-  if (!selectedVoice) selectedVoice = voices.find(v => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("woman"));
-  if (selectedVoice) utterance.voice = selectedVoice;
-  
-  window.speechSynthesis.speak(utterance);
-}
+      if (
+        !playedElevenLabs &&
+        window.speechSynthesis &&
+        !abortControllerRef.current?.signal.aborted
+      ) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(finalReply);
+        utterance.onstart = () => setIsPlayingAudio(true);
+        utterance.onend = () => setIsPlayingAudio(false);
+        utterance.onerror = () => setIsPlayingAudio(false);
+        utterance.pitch = 0.95;
+        utterance.rate = 0.95;
 
-setRecommendedMovies(matchedItems);    } catch (err) {
+        let voices = window.speechSynthesis.getVoices();
+        const preferredVoices = [
+          "Microsoft Jenny Online",
+          "Microsoft Aria Online",
+          "Google UK English Female",
+          "Google US English",
+          "Samantha",
+          "Karen",
+        ];
+        let selectedVoice = null;
+        for (const name of preferredVoices) {
+          const match = voices.find((v) => v.name.includes(name));
+          if (match) {
+            selectedVoice = match;
+            break;
+          }
+        }
+        if (!selectedVoice) {
+          selectedVoice = voices.find(
+            (v) =>
+              v.name.toLowerCase().includes("female") ||
+              v.name.toLowerCase().includes("woman")
+          );
+        }
+        if (selectedVoice) utterance.voice = selectedVoice;
+
+        window.speechSynthesis.speak(utterance);
+      }
+
+      setRecommendedMovies(matchedItems);
+    } catch (err) {
       updateMessages([
         ...currentMessages,
         {
@@ -741,22 +818,18 @@ setRecommendedMovies(matchedItems);    } catch (err) {
 
   const handleChatSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
-    if (isThinking) return; // Prevent concurrent sends
-    
+    if (!input.trim() || isThinking) return;
+
     abortControllerRef.current = new AbortController();
     const userMessage = { sender: "user", text: input };
     setMood(input);
-const updatedMessages = [
-  ...messages,
-  userMessage,
-];
+    const updatedMessages = [...messages, userMessage];
 
-updateMessages(updatedMessages);
+    updateMessages(updatedMessages);
 
-await saveMessage(activeChatId, userMessage);
+    await saveMessage(activeChatId, userMessage);
     setInput("");
-    setIsThinking(true); 
+    setIsThinking(true);
 
     let timeContext = "daytime";
     const hour = new Date().getHours();
@@ -765,202 +838,141 @@ await saveMessage(activeChatId, userMessage);
     else if (hour < 22) timeContext = "evening";
     else timeContext = "late night";
 
-    let contextString = "";
-    if (envContext) {
-      contextString = ` (System Note: The user's current environment is ${envContext} and it is ${timeContext}. Please tailor your recommendation to this environmental vibe if appropriate.)`;
-    } else {
-      contextString = ` (System Note: It is currently ${timeContext}.)`;
-    }
+    const contextString = envContext
+      ? ` (System Note: The user's current environment is ${envContext} and it is ${timeContext}. Please tailor your recommendation to this environmental vibe if appropriate.)`
+      : ` (System Note: It is currently ${timeContext}.)`;
 
     askBeatFlix(userMessage.text + contextString, updatedMessages);
   };
 
   const startScanner = async () => {
-    if (!modelsLoaded) return alert("Initializing lenses...");
     try {
-      scanLockedRef.current = false;
       setIsScanning(true);
+      setScanPhase("Initializing neural lenses...");
+
+      const loaded = await loadModels();
+      if (!loaded) {
+        toast.error("Failed to load face detection models.");
+        stopScanner();
+        return;
+      }
+
+      scanLockedRef.current = false;
       setScanPhase("Reading your vibe...");
+
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       streamRef.current = stream;
       if (videoRef.current) videoRef.current.srcObject = stream;
     } catch (err) {
-      alert("Camera access denied.");
+      toast.error("Camera access denied or unavailable.");
       stopScanner();
     }
   };
 
   const handleVideoPlay = () => {
-  setScanPhase("Analyzing micro-expressions...");
-  emotionHistoryRef.current = [];
-
-  if (scanIntervalRef.current) {
-    clearInterval(scanIntervalRef.current);
-  }
-
-  scanIntervalRef.current = setInterval(async () => {
-    if (!videoRef.current) return;
-    if (isDetectingRef.current) return;
-
-    isDetectingRef.current = true;
-
-    try {
-      const faceapi = await getFaceApi();
-      const detection = await faceapi
-        .detectSingleFace(
-          videoRef.current,
-          new faceapi.TinyFaceDetectorOptions({
-            inputSize: 160,
-            scoreThreshold: 0.5,
-          })
-        )
-        .withFaceExpressions();
-
-      if (!detection) {
-        setScanPhase("Searching for face...");
-        emotionHistoryRef.current = [];
-        return;
-      }
-
-      const expressions = detection.expressions;
-
-      const strongestEmotion = Object.keys(expressions).reduce((a, b) =>
-        expressions[a] > expressions[b] ? a : b
-      );
-
-      if (expressions[strongestEmotion] < 0.70 || strongestEmotion === "neutral") return;
-
-      emotionHistoryRef.current.push(strongestEmotion);
-
-      if (emotionHistoryRef.current.length > 5) {
-        emotionHistoryRef.current.shift();
-      }
-
-      const counts = {};
-
-      emotionHistoryRef.current.forEach((e) => {
-        counts[e] = (counts[e] || 0) + 1;
-      });
-
-      const stableEmotion = Object.keys(counts).reduce((a, b) =>
-        counts[a] > counts[b] ? a : b
-      );
-
-      if (counts[stableEmotion] >= 4 && !scanLockedRef.current) {
-        scanLockedRef.current = true;
-        clearInterval(scanIntervalRef.current);
-        stopScanner();
-
-        const detectedEmotion = stableEmotion;
-        setMood(detectedEmotion);
-
-        const updatedMessages = [
-          ...messages,
-          {
-            sender: "user",
-            text: `[Biometric Scan: ${detectedEmotion.toUpperCase()}]`,
-          },
-        ];
-
-        updateMessages(updatedMessages);
-
-        askBeatFlix(
-          `I am feeling ${detectedEmotion}. Ask me if I want to watch a movie or listen to music.`,
-          updatedMessages
-        );
-      }  
-    } catch (err) {
-      console.error(err);
-    } finally {
-      isDetectingRef.current = false;
-    }
-  }, 300);
-};
-
-  const stopScanner = () => {
-    if (scanIntervalRef.current) clearInterval(scanIntervalRef.current);
-    if (streamRef.current) { streamRef.current.getTracks().forEach((track) => track.stop()); streamRef.current = null; }
+    setScanPhase("Analyzing micro-expressions...");
     emotionHistoryRef.current = [];
-    setIsScanning(false);
-  };
 
-  const formatMessage = (text) => {
-  return text.split("\n").map((line, index) => {
-    let trimmed = line.trim();
-
-    if (!trimmed) {
-      return <br key={index} />;
+    if (scanIntervalRef.current) {
+      clearInterval(scanIntervalRef.current);
     }
-    
-    // Parse bold text
-    const renderBold = (str) => {
-      const parts = str.split(/(\*\*.*?\*\*)/g);
-      return parts.map((part, i) => {
-        if (part.startsWith("**") && part.endsWith("**")) {
-          return <strong key={i} style={{color: '#38bdf8'}}>{part.slice(2, -2)}</strong>;
+
+    scanIntervalRef.current = setInterval(async () => {
+      if (!videoRef.current || isDetectingRef.current) return;
+
+      isDetectingRef.current = true;
+
+      try {
+        const faceapi = await getFaceApi();
+        const detection = await faceapi
+          .detectSingleFace(
+            videoRef.current,
+            new faceapi.TinyFaceDetectorOptions({
+              inputSize: 160,
+              scoreThreshold: 0.5,
+            })
+          )
+          .withFaceExpressions();
+
+        if (!detection) {
+          setScanPhase("Searching for face...");
+          emotionHistoryRef.current = [];
+          return;
         }
-        return part;
-      });
-    };
 
-    if (/^\d+\./.test(trimmed)) {
-      return (
-        <div key={index} className="message-list-item">
-          {renderBold(trimmed)}
-        </div>
-      );
-    }
+        const expressions = detection.expressions;
+        const strongestEmotion = Object.keys(expressions).reduce((a, b) =>
+          expressions[a] > expressions[b] ? a : b
+        );
 
-    if (trimmed.startsWith("•") || trimmed.startsWith("-") || trimmed.startsWith("*")) {
-      // Remove bullet char
-      trimmed = trimmed.replace(/^[-•*]\s*/, "");
-      
-      // Auto-bold the title if there's a colon but no existing bold
-      if (!trimmed.includes("**") && trimmed.includes(":")) {
-          const parts = trimmed.split(":");
-          trimmed = `**${parts[0]}**:${parts.slice(1).join(":")}`;
+        if (
+          expressions[strongestEmotion] < 0.7 ||
+          strongestEmotion === "neutral"
+        )
+          return;
+
+        emotionHistoryRef.current.push(strongestEmotion);
+
+        if (emotionHistoryRef.current.length > 5) {
+          emotionHistoryRef.current.shift();
+        }
+
+        const counts = {};
+        emotionHistoryRef.current.forEach((e) => {
+          counts[e] = (counts[e] || 0) + 1;
+        });
+
+        const stableEmotion = Object.keys(counts).reduce((a, b) =>
+          counts[a] > counts[b] ? a : b
+        );
+
+        if (counts[stableEmotion] >= 4 && !scanLockedRef.current) {
+          scanLockedRef.current = true;
+          clearInterval(scanIntervalRef.current);
+          stopScanner();
+
+          const detectedEmotion = stableEmotion;
+          setMood(detectedEmotion);
+
+          const updatedMessages = [
+            ...messages,
+            {
+              sender: "user",
+              text: `[Biometric Scan: ${detectedEmotion.toUpperCase()}]`,
+            },
+          ];
+
+          updateMessages(updatedMessages);
+
+          askBeatFlix(
+            `I am feeling ${detectedEmotion}. Ask me if I want to watch a movie or listen to music.`,
+            updatedMessages
+          );
+        }
+      } catch (err) {
+        console.error("Face detection error:", err);
+      } finally {
+        isDetectingRef.current = false;
       }
-      // Or if they used single quotes like 'Movie Name'
-      else if (!trimmed.includes("**") && /^'[^']+'/.test(trimmed)) {
-          trimmed = trimmed.replace(/^'([^']+)'/, "**$1**");
-      }
-
-      return (
-        <div key={index} className="message-list-item">
-          {renderBold(trimmed)}
-        </div>
-      );
-    }
-
-    if (trimmed.endsWith(":")) {
-      return (
-        <div key={index} className="message-heading">
-          {renderBold(trimmed)}
-        </div>
-      );
-    }
-
-    return <div key={index}>{renderBold(trimmed)}</div>;
-  });
-};
+    }, 300);
+  };
 
   return (
     <div className="beatflix-moods">
-      <div
-        className="mood-container"
-      >
+      <div className="mood-container">
         <section className="moods-hero">
-          {/* 🚀 RESTORED PULSING BADGE */}
           <span className="hero-label">
             <span className="badge-dot"></span> BEATFLIX ASSISTANT
           </span>
-          <h1 className="hero-movie-title"><span>What are you in the mood for?</span></h1>
-          <p className="mood-subtitle">Tell us how you're feeling, or let the camera find the perfect movies and music for your mood.</p>
+          <h1 className="hero-movie-title">
+            <span>What are you in the mood for?</span>
+          </h1>
+          <p className="mood-subtitle">
+            Tell us how you&apos;re feeling, or let the camera find the perfect movies and music for your mood.
+          </p>
         </section>
 
         <div className={`chat-layout${mobileSidebarOpen ? " mobile-sidebar-open" : ""}`}>
-
-          {/* Mobile sidebar toggle button */}
           <button
             className="mobile-sidebar-toggle"
             onClick={() => setMobileSidebarOpen((prev) => !prev)}
@@ -969,220 +981,196 @@ await saveMessage(activeChatId, userMessage);
             {mobileSidebarOpen ? "✕ Close History" : "☰ Chat History"}
           </button>
 
-        <ChatSidebar
-          chats={chats}
-          activeChatId={activeChatId}
-          onNewChat={createNewChat}
-          onSelectChat={selectChat}
-          onDeleteChat={deleteChat}
-          onRenameChat={renameChat}
-        />
+          <ChatSidebar
+            chats={chats}
+            activeChatId={activeChatId}
+            onNewChat={createNewChat}
+            onSelectChat={selectChat}
+            onDeleteChat={deleteChat}
+            onRenameChat={renameChat}
+          />
 
           <div className="chat-section">
-              <section className="ai-control-center">
-            <div className="chat-window">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`chat-message ${msg.sender} message-enter`}
-                >
-                  <div className={`chat-avatar ${msg.sender}`}>
-                    {msg.sender === "ai" ? "B" : "Y"}
-                  </div>
-                                <div className="chat-bubble">
-
-                                <div className="message-text">
-                                  {formatMessage(msg.text)}
-                                </div>
-
-                                {msg.movies?.length > 0 && (
-                                  <div className="chat-movie-carousel">
-                                    {msg.movies.map((movie) => (
-                                      <div
-                                        key={movie.id}
-                                        className="chat-movie-card"
-                                        onClick={() => navigate(`/movie/${movie.id}`)}
-                                      >
-                                        <img
-                                          src={movie.poster}
-                                          alt={movie.title}
-                                          className="chat-movie-poster"
-                                        />
-
-                                        <div className="chat-movie-info">
-                                          <h4>{movie.title}</h4>
-
-                                          <div className="chat-movie-meta">
-                                            <span>{movie.year}</span>
-                                            <span>⭐ {movie.rating}</span>
-                                          </div>
-
-                                          <div className="chat-movie-genres">
-                                            {movie.genre?.join(" • ") || "Unknown"}
-                                          </div>
-                                          <p className="chat-movie-reason">
-                                            {movie.reason ||
-                                              `Recommended because it matches your ${
-                                                movie.genre[0]
-                                              } preference.`}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                                {msg.music?.length > 0 && (
-                                  <div className="chat-movie-carousel">
-                                    {msg.music.map((song) => (
-                                      <div
-                                        key={song.videoId}
-                                        className="chat-movie-card"
-                                        onClick={() => navigate(`/music/${song.videoId}`, { state: { song } })}
-                                      >
-                                        <img
-                                          src={song.thumbnail || `https://i.ytimg.com/vi/${song.videoId}/hqdefault.jpg`}
-                                          alt={song.title}
-                                          className="chat-movie-poster"
-                                        />
-                                        <div className="chat-movie-info">
-                                          <h4>{song.title}</h4>
-                                          <div className="chat-movie-genres">
-                                            {song.channelTitle || "Artist"}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-
-                                  <div className="message-footer">
-
-                                    <span className="sender-name">
-                                      {msg.sender === "ai" ? "BeatFlix AI" : "You"}
-                                    </span>
-
-                                    <span className="message-time">
-                                      {new Date().toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
-                                    </span>
-
-                                  </div>
-
-                                  </div>
-                                  </div>
-              ))}
-              {isThinking && (
-
-                <div className="chat-message ai">
-
-                <div className="chat-avatar ai">
-                  B
-                </div>
-
-                  <div className="chat-bubble">
-
-                    {streamingText.length > 0 ? (
-
-                    <div className="message-text">
-                      {formatMessage(streamingText)}
+            <section className="ai-control-center">
+              <div className="chat-window">
+                {messages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`chat-message ${msg.sender} message-enter`}
+                  >
+                    <div className={`chat-avatar ${msg.sender}`}>
+                      {msg.sender === "ai" ? "B" : "Y"}
                     </div>
-
-                    ) : (
-
-                      <div className="typing">
-
-                        <span></span>
-                        <span></span>
-                        <span></span>
-
+                    <div className="chat-bubble">
+                      <div className="message-text">
+                        {formatMessage(msg.text)}
                       </div>
 
-                    )}
+                      {msg.movies?.length > 0 && (
+                        <div className="chat-movie-carousel">
+                          {msg.movies.map((movie) => (
+                            <div
+                              key={movie.id}
+                              className="chat-movie-card"
+                              onClick={() => navigate(`/movie/${movie.id}`)}
+                            >
+                              <img
+                                src={movie.poster}
+                                alt={movie.title}
+                                className="chat-movie-poster"
+                                loading="lazy"
+                              />
 
+                              <div className="chat-movie-info">
+                                <h4>{movie.title}</h4>
+
+                                <div className="chat-movie-meta">
+                                  <span>{movie.year}</span>
+                                  <span>⭐ {movie.rating}</span>
+                                </div>
+
+                                <div className="chat-movie-genres">
+                                  {movie.genre?.join(" • ") || "Unknown"}
+                                </div>
+                                <p className="chat-movie-reason">
+                                  {movie.reason ||
+                                    `Recommended because it matches your ${movie.genre[0]} preference.`}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {msg.music?.length > 0 && (
+                        <div className="chat-movie-carousel">
+                          {msg.music.map((song) => (
+                            <div
+                              key={song.videoId}
+                              className="chat-movie-card"
+                              onClick={() =>
+                                navigate(`/music/${song.videoId}`, {
+                                  state: { song },
+                                })
+                              }
+                            >
+                              <img
+                                src={
+                                  song.thumbnail ||
+                                  `https://i.ytimg.com/vi/${song.videoId}/hqdefault.jpg`
+                                }
+                                alt={song.title}
+                                className="chat-movie-poster"
+                                loading="lazy"
+                              />
+                              <div className="chat-movie-info">
+                                <h4>{song.title}</h4>
+                                <div className="chat-movie-genres">
+                                  {song.channelTitle || "Artist"}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="message-footer">
+                        <span className="sender-name">
+                          {msg.sender === "ai" ? "BeatFlix AI" : "You"}
+                        </span>
+
+                        <span className="message-time">
+                          {new Date().toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </div>
                   </div>
+                ))}
+                {isThinking && (
+                  <div className="chat-message ai">
+                    <div className="chat-avatar ai">B</div>
+                    <div className="chat-bubble">
+                      {streamingText.length > 0 ? (
+                        <div className="message-text">
+                          {formatMessage(streamingText)}
+                        </div>
+                      ) : (
+                        <div className="typing">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef}></div>
+              </div>
 
-                </div>
+              <form className="search-box mood-search-box" onSubmit={handleChatSubmit}>
+                <FaMagic className="search-icon" />
+                <input
+                  placeholder="Tell BeatFlix AI... (Try the mic! 🎤)"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  disabled={isThinking}
+                />
 
-              )}
-              <div ref={chatEndRef}></div>
-            </div>
-
-            <form className="search-box mood-search-box" onSubmit={handleChatSubmit}>
-              <FaMagic className="search-icon" />
-              <input 
-                placeholder="Tell BeatFlix AI... (Try the mic! 🎤)" 
-                value={input} 
-                onChange={(e) => setInput(e.target.value)} 
-                disabled={isThinking}
-                style={{ opacity: isThinking ? 0.5 : 1 }}
-              />
-              
-              <button
-                type="button"
-                className={`voice-btn ${isListening ? 'listening' : ''}`}
-                onClick={startListening}
-                title="Speak your mood"
-                disabled={isThinking}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  minWidth: '50px', height: '50px',
-                  background: 'rgba(255, 62, 165, 0.2)', border: '1px solid #ff3ea5', 
-                  borderRadius: '50%', color: isListening ? '#ff416c' : '#fff', 
-                  fontSize: '1.5rem', cursor: isThinking ? 'not-allowed' : 'pointer', margin: '0 15px', transition: 'all 0.2s',
-                  zIndex: 9999,
-                  opacity: isThinking ? 0.5 : 1
-                }}
-              >
-                <FaMicrophone />
-              </button>
-
-              {tokensLeft !== null && (
-                <div className="input-token-counter" title={`${tokensLeft} Tokens Left`}>
-                  <span className="token-icon">⚡</span> 
-                  <span className="token-text">{tokensLeft}</span>
-                </div>
-              )}
-              {isThinking || streamingText || isPlayingAudio ? (
-                <button 
-                  className="watch-btn mood-send-btn" 
-                  type="button" 
-                  onClick={handleStopReply}
-                  style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)', boxShadow: '0 15px 35px rgba(239, 68, 68, 0.35)' }}
+                <button
+                  type="button"
+                  className={`voice-btn ${isListening ? "listening" : ""}`}
+                  onClick={startListening}
+                  title="Speak your mood"
+                  disabled={isThinking}
                 >
-                  <FaTimes style={{ marginRight: '8px' }} /> Stop
+                  <FaMicrophone />
                 </button>
-              ) : (
-                <button className="watch-btn mood-send-btn" type="submit">Send</button>
-              )}
-            </form>
 
-            <div className="fancy-divider">
-              <span className="line"></span>
-              <span>OR</span>
-              <span className="line"></span>
-            </div>
-
-            {/* 🚀 ADDED GLOW WRAPPER */}
-            <div className="premium-scan-wrapper">
-              <button className="premium-scan-btn" onClick={startScanner} type="button">
-                <div className="btn-content">
-                  <div className="cam-icon-box">
-                    <FaCamera />
+                {tokensLeft !== null && (
+                  <div className="input-token-counter" title={`${tokensLeft} Tokens Left`}>
+                    <span className="token-icon">⚡</span>
+                    <span className="token-text">{tokensLeft}</span>
                   </div>
-                  <div className="btn-text-group">
-                    <strong>FaceID Emotion Scan</strong>
-                    <span>Enable neural optics for real-time mood analysis</span>
-                  </div>
-                </div>
-              </button>
-            </div>
-          </section>
+                )}
+                {isThinking || streamingText || isPlayingAudio ? (
+                  <button
+                    className="watch-btn mood-send-btn mood-stop-btn"
+                    type="button"
+                    onClick={handleStopReply}
+                  >
+                    <FaTimes /> Stop
+                  </button>
+                ) : (
+                  <button className="watch-btn mood-send-btn" type="submit">
+                    Send
+                  </button>
+                )}
+              </form>
 
+              <div className="fancy-divider">
+                <span className="line"></span>
+                <span>OR</span>
+                <span className="line"></span>
+              </div>
+
+              <div className="premium-scan-wrapper">
+                <button className="premium-scan-btn" onClick={startScanner} type="button">
+                  <div className="btn-content">
+                    <div className="cam-icon-box">
+                      <FaCamera />
+                    </div>
+                    <div className="btn-text-group">
+                      <strong>FaceID Emotion Scan</strong>
+                      <span>Enable neural optics for real-time mood analysis</span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </section>
+          </div>
         </div>
-
-      </div>
 
         <section className="recommendations" ref={recommendationRef}>
           {recommendedMovies.length > 0 && (
@@ -1202,27 +1190,29 @@ await saveMessage(activeChatId, userMessage);
                     onClick={() => navigate(`/movie/${movie.id}`)}
                   >
                     <div className="movie-poster">
-                      <img src={movie.poster} alt={movie.title} />
-                      
-                      {/* 🚀 UPGRADED 3D OVERLAY WITH PLAY BUTTON */}
+                      <img src={movie.poster} alt={movie.title} loading="lazy" />
+
                       <div className="movie-view-overlay">
                         <div className="movie-play-btn">
                           <FaPlay />
                         </div>
                         <div className="movie-view-action">
-                          <FaEye /><span>View Details</span>
+                          <FaEye />
+                          <span>View Details</span>
                         </div>
                       </div>
-                      
                     </div>
                     <div className="movie-details">
                       <h4>{movie.title}</h4>
-                      <span>{movie.genre?.length > 0
-  ? movie.genre.join(" • ")
-  : "Unknown"}</span>
+                      <span>
+                        {movie.genre?.length > 0 ? movie.genre.join(" • ") : "Unknown"}
+                      </span>
                       <div className="movie-meta">
                         <p>{movie.year}</p>
-                        <p><FaStar />{movie.rating}</p>
+                        <p>
+                          <FaStar />
+                          {movie.rating}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1233,16 +1223,25 @@ await saveMessage(activeChatId, userMessage);
         </section>
       </div>
 
-      {/* BIOMETRIC SCANNER MODAL */}
       {isScanning && (
         <div className="scanner-modal-overlay">
           <div className="scanner-bg"></div>
           <div className="scanner-content">
-            <button className="close-scanner" onClick={stopScanner}><FaTimes /></button>
+            <button className="close-scanner" onClick={stopScanner} aria-label="Close scanner">
+              <FaTimes />
+            </button>
             <div className="scanner-frame-wrapper">
               <div className="conic-glow-bg"></div>
               <div className="face-id-frame">
-                <video ref={videoRef} autoPlay playsInline muted disablePictureInPicture className="camera-feed" onPlay={handleVideoPlay} />
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  disablePictureInPicture
+                  className="camera-feed"
+                  onPlay={handleVideoPlay}
+                />
                 <div className="face-id-sweep"></div>
               </div>
             </div>

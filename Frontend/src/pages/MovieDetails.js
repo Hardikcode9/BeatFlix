@@ -1,6 +1,5 @@
-/* eslint-disable */
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   FaArrowLeft,
   FaStar,
@@ -12,29 +11,13 @@ import {
   FaRegBookmark,
   FaMagic,
 } from "react-icons/fa";
-import "../styles/MovieDetails.css";
+import { toast } from "react-toastify";
+import { API_BASE } from "../utils/constants";
 import { useMusic } from "../context/MusicContext";
+import "../styles/MovieDetails.css";
 
 const IMAGE_URL = "https://image.tmdb.org/t/p/original";
 const POSTER_URL = "https://image.tmdb.org/t/p/w500";
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
-
-// 3D Tilt Logic for the Poster
-const handlePosterMove = (e) => {
-  const card = e.currentTarget;
-  const rect = card.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 12; // 12deg tilt
-  const rotateX = (((rect.height / 2) - y) / (rect.height / 2)) * 12;
-  card.style.setProperty("--rotateX", `${rotateX}deg`);
-  card.style.setProperty("--rotateY", `${rotateY}deg`);
-};
-
-const handlePosterLeave = (e) => {
-  e.currentTarget.style.setProperty("--rotateX", "0deg");
-  e.currentTarget.style.setProperty("--rotateY", "0deg");
-};
 
 function MovieDetails() {
   const { id } = useParams();
@@ -52,7 +35,22 @@ function MovieDetails() {
   const { playQueue } = useMusic();
   const [isGeneratingVibe, setIsGeneratingVibe] = useState(false);
 
-  // 1. Sync button state with LocalStorage on load and when the custom event fires
+  const handlePosterMove = useCallback((e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 12;
+    const rotateX = ((rect.height / 2 - y) / (rect.height / 2)) * 12;
+    card.style.setProperty("--rotateX", `${rotateX}deg`);
+    card.style.setProperty("--rotateY", `${rotateY}deg`);
+  }, []);
+
+  const handlePosterLeave = useCallback((e) => {
+    e.currentTarget.style.setProperty("--rotateX", "0deg");
+    e.currentTarget.style.setProperty("--rotateY", "0deg");
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
@@ -62,8 +60,8 @@ function MovieDetails() {
       setIsInList(isSaved);
     };
 
-    checkMyList(); // Check immediately on load
-    window.addEventListener("myListUpdated", checkMyList); // Keep in sync if removed from the panel
+    checkMyList();
+    window.addEventListener("myListUpdated", checkMyList);
 
     const fetchMovie = async () => {
       try {
@@ -78,7 +76,7 @@ function MovieDetails() {
           setWatchProviders(data.watchProviders || null);
         }
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch movie details:", err);
       } finally {
         setLoading(false);
       }
@@ -88,25 +86,22 @@ function MovieDetails() {
     return () => window.removeEventListener("myListUpdated", checkMyList);
   }, [id]);
 
-  // 2. Add or Remove from LocalStorage
   const toggleMyList = () => {
     setIsInList((prev) => {
       const newState = !prev;
       let savedList = JSON.parse(localStorage.getItem("myList")) || [];
 
       if (newState) {
-        // Add current movie to list
         if (!savedList.find((m) => m.id === movie.id)) {
           savedList.push(movie);
         }
       } else {
-        // Remove current movie from list
         savedList = savedList.filter((m) => m.id !== movie.id);
       }
 
       localStorage.setItem("myList", JSON.stringify(savedList));
-      window.dispatchEvent(new Event("myListUpdated")); // Tell Navbar/Panel to update
-      
+      window.dispatchEvent(new Event("myListUpdated"));
+
       return newState;
     });
   };
@@ -116,33 +111,39 @@ function MovieDetails() {
     setIsGeneratingVibe(true);
     try {
       const token = localStorage.getItem("token");
-      const genres = movie.genres.map(g => g.name).join(", ");
-      
+      const genres = movie.genres.map((g) => g.name).join(", ");
+
       const vibeRes = await fetch(`${API_BASE}/api/gemini/vibe-playlist`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           movieTitle: movie.title,
           moviePlot: movie.overview,
-          movieGenres: genres
-        })
+          movieGenres: genres,
+        }),
       });
       const vibeData = await vibeRes.json();
-      
+
       if (!vibeData.songs || vibeData.songs.length === 0) {
-        alert("Failed to generate vibe playlist. Try again.");
+        toast.error("Failed to generate vibe playlist. Try again.");
         setIsGeneratingVibe(false);
         return;
       }
 
       const songPromises = vibeData.songs.map(async (songQuery) => {
         try {
-          const res = await fetch(`${API_BASE}/api/music/search?q=${encodeURIComponent(songQuery)}`);
+          const res = await fetch(
+            `${API_BASE}/api/music/search?q=${encodeURIComponent(songQuery)}`
+          );
           const searchData = await res.json();
-          if (searchData.success && searchData.songs && searchData.songs.length > 0) {
+          if (
+            searchData.success &&
+            searchData.songs &&
+            searchData.songs.length > 0
+          ) {
             return searchData.songs[0];
           }
         } catch (e) {
@@ -151,17 +152,24 @@ function MovieDetails() {
         return null;
       });
 
-      const fetchedSongs = (await Promise.all(songPromises)).filter(s => s !== null);
-      
+      const fetchedSongs = (await Promise.all(songPromises)).filter(
+        (s) => s !== null
+      );
+
       if (fetchedSongs.length > 0) {
-        const vibeContext = { movieTitle: movie.title, moviePlot: movie.overview, movieGenres: genres };
+        const vibeContext = {
+          movieTitle: movie.title,
+          moviePlot: movie.overview,
+          movieGenres: genres,
+        };
         playQueue(fetchedSongs, 0, vibeContext);
+        toast.success(`Generated vibe soundtrack for ${movie.title}!`);
       } else {
-        alert("Could not find playable tracks for this vibe.");
+        toast.warn("Could not find playable tracks for this vibe.");
       }
     } catch (err) {
       console.error(err);
-      alert("Error generating playlist. Do you have AI tokens left?");
+      toast.error("Error generating playlist. Please check your AI tokens.");
     } finally {
       setIsGeneratingVibe(false);
     }
@@ -175,39 +183,35 @@ function MovieDetails() {
     );
   }
 
-  if (!movie)
+  if (!movie) {
     return (
-      <div className="loading-page">
-        <h1>Movie Not Found</h1>
+      <div className="error-page">
+        <h2>Movie not found</h2>
+        <Link to="/home" className="back-btn">
+          Go Back
+        </Link>
       </div>
     );
+  }
 
   return (
     <div className="movie-details-page">
-      {/* BACKGROUND WITH LIVE VIDEO OR BREATHING IMAGE */}
-      <div className="movie-backdrop">
-        {trailer ? (
-          <div className="live-bg-wrapper">
-            <iframe
-              className="live-bg-iframe"
-              src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${trailer.key}&modestbranding=1`}
-              title="Live Background"
-              allow="autoplay; encrypted-media"
-              tabIndex="-1"
-            />
-          </div>
-        ) : (
-          <div
-            className="backdrop-img"
-            style={{ backgroundImage: `url(${IMAGE_URL}${movie.backdrop_path})` }}
-          ></div>
-        )}
+      <div
+        className="details-backdrop"
+        style={{
+          backgroundImage: `url(${IMAGE_URL}${movie.backdrop_path})`,
+        }}
+      >
+        <div className="backdrop-gradient"></div>
+        <div className="backdrop-noise"></div>
+      </div>
 
-        {/* Animated Gradient Overlay */}
-        <div className="backdrop-overlay animated-gradient-overlay"></div>
+      <div className="details-container">
+        <button className="back-link" onClick={() => navigate(-1)}>
+          <FaArrowLeft /> Back
+        </button>
 
-        <div className="movie-hero">
-          {/* 3D INTERACTIVE POSTER */}
+        <div className="movie-header">
           <div className="poster-section animate-slide-right">
             <div className="poster-glow-orb"></div>
             <div
@@ -218,6 +222,8 @@ function MovieDetails() {
               <img
                 src={`${POSTER_URL}${movie.poster_path}`}
                 alt={movie.title}
+                loading="eager"
+                decoding="async"
               />
               <div className="poster-reflection"></div>
             </div>
@@ -226,7 +232,7 @@ function MovieDetails() {
           <div className="info-section animate-slide-up">
             <h1 className="title-gradient">{movie.title}</h1>
 
-            {movie.tagline && <p className="tagline">"{movie.tagline}"</p>}
+            {movie.tagline && <p className="tagline">&quot;{movie.tagline}&quot;</p>}
 
             <div className="movie-meta">
               <span className="premium-pill gold-pill">
@@ -248,94 +254,73 @@ function MovieDetails() {
               ))}
             </div>
 
-            {/* ACTION BUTTONS */}
-            <div className="button-group">
-              {/* Watch Trailer Button */}
-              <button
-                className="btn-primary"
-                onClick={() => setShowTrailer(true)}
-              >
-                <span className="play-circle">▶</span>
-                Watch Trailer
-              </button>
+            <p className="overview">{movie.overview}</p>
 
-              {/* My List Button */}
-              <button
-                type="button"
-                className={`btn-secondary btn-mylist ${isInList ? "in-list" : ""}`}
-                onClick={toggleMyList}
-                aria-label={isInList ? "Remove from My List" : "Add to My List"}
-              >
-                {isInList ? (
-                  <FaBookmark className="bookmark-icon" />
-                ) : (
-                  <FaRegBookmark className="bookmark-icon" />
-                )}
-                <span>{isInList ? "In My List" : "Add to My List"}</span>
-              </button>
+            <div className="action-buttons">
+              {trailer && (
+                <button
+                  className="glow-btn play-trailer"
+                  onClick={() => setShowTrailer(true)}
+                >
+                  <FaPlay /> Watch Trailer
+                </button>
+              )}
 
-              {/* Vibe Playlist Button */}
-              <button 
-                type="button" 
-                className="btn-secondary"
+              <button
+                className={`glow-btn vibe-music-btn ${
+                  isGeneratingVibe ? "generating" : ""
+                }`}
                 onClick={handleGenerateVibePlaylist}
                 disabled={isGeneratingVibe}
-                style={{ background: "linear-gradient(45deg, #ff00cc, #333399)", border: "none", color: "white" }}
+                title="Generate an AI-curated playlist reflecting this movie's exact mood & themes"
               >
-                <FaMagic style={{ marginRight: "6px" }} /> 
-                {isGeneratingVibe ? "Generating..." : "Generate Vibe Playlist"}
+                <FaMagic className={isGeneratingVibe ? "spin-icon" : ""} />
+                {isGeneratingVibe ? "Crafting Soundtrack..." : "Vibe Soundtrack"}
               </button>
 
-              {/* Back Button */}
-              <button className="btn-secondary" onClick={() => navigate(-1)}>
-                <FaArrowLeft style={{ marginRight: "6px" }} /> Back
+              <button
+                className={`glow-btn add-list ${isInList ? "saved" : ""}`}
+                onClick={toggleMyList}
+              >
+                {isInList ? (
+                  <>
+                    <FaBookmark className="accent-icon" /> In My List
+                  </>
+                ) : (
+                  <>
+                    <FaRegBookmark /> Add to List
+                  </>
+                )}
               </button>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="content-container">
-        {/* OVERVIEW */}
-        <section
-          className="overview-section animate-slide-up"
-          style={{ animationDelay: "0.2s" }}
-        >
-          <h2 className="section-title">Overview</h2>
-          <p className="overview-text">{movie.overview}</p>
-        </section>
+        {watchProviders && watchProviders.flatrate?.length > 0 && (
+          <section className="providers-section animate-slide-up">
+            <h3 className="section-title">Streaming On</h3>
+            <div className="providers-grid">
+              {watchProviders.flatrate.map((provider) => (
+                <a
+                  key={provider.provider_id}
+                  href={watchProviders.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="watch-card"
+                >
+                  <img
+                    src={`https://image.tmdb.org/t/p/w185${provider.logo_path}`}
+                    alt={provider.provider_name}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>{provider.provider_name}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
 
-        {watchProviders && (
-  <section className="watch-section animate-slide-up">
-    <h2 className="section-title">Where to Watch</h2>
-
-    <div className="watch-grid">
-                {(
-            watchProviders.flatrate ||
-            watchProviders.rent ||
-            watchProviders.buy ||
-            []
-          ).map((provider) => (
-                  <a
-          key={provider.provider_id}
-          href={watchProviders.link}
-          target="_blank"
-          rel="noreferrer"
-          className="watch-card"
-        >
-          <img
-            src={`https://image.tmdb.org/t/p/w185${provider.logo_path}`}
-            alt={provider.provider_name}
-          />
-
-          <span>{provider.provider_name}</span>
-        </a>
-      ))}
-    </div>
-  </section>
-)}
-
-        {/* DYNAMIC CAST GRID */}
         {cast.length > 0 && (
           <section
             className="cast-section animate-slide-up"
@@ -349,9 +334,11 @@ function MovieDetails() {
                     src={
                       actor.profile_path
                         ? `${POSTER_URL}${actor.profile_path}`
-                        : "https://via.placeholder.com/300x450?text=No+Image"
+                        : "https://placehold.co/300x450/1a1a1a/ffffff?text=No+Image"
                     }
                     alt={actor.name}
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="cast-color-overlay"></div>
                   <div className="cast-info-layer">
@@ -364,7 +351,6 @@ function MovieDetails() {
           </section>
         )}
 
-        {/* BENTO SIMILAR MOVIES */}
         {similarMovies.length > 0 && (
           <section
             className="similar-section animate-slide-up"
@@ -381,6 +367,8 @@ function MovieDetails() {
                   <img
                     src={`${POSTER_URL}${item.poster_path}`}
                     alt={item.title}
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="similar-hover-sweep"></div>
                   <div className="similar-content">
@@ -396,7 +384,6 @@ function MovieDetails() {
         )}
       </div>
 
-      {/* TRAILER MODAL */}
       {showTrailer && trailer && (
         <div
           className="trailer-overlay glass-bg"
@@ -409,6 +396,7 @@ function MovieDetails() {
             <button
               className="modal-close"
               onClick={() => setShowTrailer(false)}
+              aria-label="Close trailer"
             >
               <FaTimes />
             </button>

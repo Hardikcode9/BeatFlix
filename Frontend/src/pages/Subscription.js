@@ -9,6 +9,7 @@ export default function Subscription() {
 
   const [currentPlan, setCurrentPlan] = useState("starter");
   const [loading, setLoading] = useState(true);
+  const [isPaying, setIsPaying] = useState(false);
 
 useEffect(() => {
   window.scrollTo(0, 0);
@@ -44,28 +45,34 @@ const changePlan = async (plan) => {
   try {
     const token = localStorage.getItem("token");
 
+    if (!token) {
+      alert("Please log in to update your plan.");
+      navigate("/account");
+      return;
+    }
+
     const response = await fetch(
-  `${API_BASE}/api/subscription/update`,
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ plan }),
-  }
-);
+      `${API_BASE}/api/subscription/update`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ plan }),
+      }
+    );
 
     const data = await response.json();
 
     if (data.success) {
       await fetchSubscription();
     } else {
-      alert(data.message);
+      alert(data.message || "Failed to update subscription.");
     }
   } catch (error) {
     console.error(error);
-    alert("Something went wrong.");
+    alert("Something went wrong updating your plan.");
   }
 };
 
@@ -111,41 +118,127 @@ const changePlan = async (plan) => {
     }
   ];
 
-  const openRazorpay = async (plan, amount) => {
-  const response = await fetch(
-  `${API_BASE}/api/payment/create-order`,
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ amount }),
-  }
-);
-
-  const data = await response.json();
-
-  const options = {
-    key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-    amount: data.order.amount,
-    currency: data.order.currency,
-    name: "BeatFlix",
-    description: `${plan} Subscription`,
-    order_id: data.order.id,
-
-    handler: async function () {
-      await changePlan(plan);
-      alert("Payment Successful!");
-    },
-
-    theme: {
-      color: "#e50914",
-    },
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
   };
 
-  const razor = new window.Razorpay(options);
-  razor.open();
-};
+  const openRazorpay = async (plan, amount) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in or register before subscribing to a plan.");
+      navigate("/account");
+      return;
+    }
+
+    try {
+      setIsPaying(true);
+
+      const isScriptLoaded = await loadRazorpayScript();
+      if (!isScriptLoaded || !window.Razorpay) {
+        alert("Unable to load Razorpay payment gateway. Please check your internet connection.");
+        setIsPaying(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${API_BASE}/api/payment/create-order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ amount }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!data.success || !data.order) {
+        alert(data.message || "Failed to initialize payment order.");
+        setIsPaying(false);
+        return;
+      }
+
+      const razorpayKey =
+        data.key_id ||
+        process.env.REACT_APP_RAZORPAY_KEY_ID ||
+        "rzp_test_THN6lHM5kstDgA";
+
+      const options = {
+        key: razorpayKey,
+        amount: data.order.amount,
+        currency: data.order.currency || "INR",
+        name: "BeatFlix",
+        description: `${plan.toUpperCase()} Subscription`,
+        order_id: data.order.id,
+
+        handler: async function (paymentResponse) {
+          try {
+            await fetch(`${API_BASE}/api/payment/verify`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+              }),
+            });
+          } catch (e) {
+            console.warn("Payment verification notice:", e);
+          }
+
+          await changePlan(plan);
+          alert(`🎉 Payment Successful! Welcome to BeatFlix ${plan.toUpperCase()}!`);
+        },
+
+        prefill: {
+          email: localStorage.getItem("userEmail") || "",
+          name: localStorage.getItem("beatflixViewer") || "BeatFlix Member",
+        },
+
+        theme: {
+          color: "#e50914",
+        },
+
+        modal: {
+          ondismiss: function () {
+            setIsPaying(false);
+          },
+        },
+      };
+
+      const razor = new window.Razorpay(options);
+
+      razor.on("payment.failed", function (failResponse) {
+        console.error("Payment failed:", failResponse.error);
+        alert(
+          `Payment Failed: ${
+            failResponse.error?.description ||
+            failResponse.error?.reason ||
+            "Transaction declined."
+          }`
+        );
+        setIsPaying(false);
+      });
+
+      razor.open();
+    } catch (err) {
+      console.error("Payment checkout error:", err);
+      alert("Payment processing error. Please try again.");
+    } finally {
+      setIsPaying(false);
+    }
+  };
 
   return (
     <div className="subscription-page">
@@ -197,7 +290,7 @@ const changePlan = async (plan) => {
               <button
                 type="button"
                 className={`plan-btn ${plan.isPro ? "btn-pro" : "btn-standard"}`}
-                disabled={currentPlan === plan.id || loading}
+                disabled={currentPlan === plan.id || loading || isPaying}
                 onClick={() => {
                   const userEmail = localStorage.getItem("userEmail");
                   if (plan.id === "starter" || userEmail === "jeehardik2@gmail.com") {
@@ -210,7 +303,11 @@ const changePlan = async (plan) => {
                   }
                 }}
               >
-                {currentPlan === plan.id ? "Current Plan" : plan.buttonText}
+                {currentPlan === plan.id
+                  ? "Current Plan"
+                  : isPaying
+                  ? "Loading Checkout..."
+                  : plan.buttonText}
               </button>
             </div>
           ))}

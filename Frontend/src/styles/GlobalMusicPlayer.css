@@ -192,3 +192,14 @@
     display: none;
   }
 }
+
+.youtube-hidden-player {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  width: 200px;
+  height: 200px;
+  opacity: 0.001;
+  pointer-events: none;
+  z-index: -9999;
+}

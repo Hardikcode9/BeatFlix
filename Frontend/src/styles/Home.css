@@ -63,8 +63,9 @@ background-position:
 100% 40%,
 50% 100%;
 
-filter:blur(60px);
-
+filter:blur(36px);
+transform: translate3d(0, 0, 0);
+will-change: transform;
 
 animation:auroraMove 22s ease-in-out infinite;
 
@@ -354,9 +355,11 @@ z-index:-2;
         var(--theme-accent, var(--theme-accent, #5d5fef))
     );
 
-    filter:blur(90px);
+    filter:blur(40px);
 
     opacity:.18;
+
+    will-change: transform;
 
     animation:
 

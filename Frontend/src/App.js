@@ -12,7 +12,6 @@ import { MoodProvider } from "./context/MoodContext";
 
 import "./App.css";
 
-// Lazy-loaded routes for ultra-fast startup and code-splitting
 const Home = lazy(() => import("./pages/Home"));
 const Movies = lazy(() => import("./pages/Movies"));
 const Music = lazy(() => import("./pages/Music"));
@@ -31,25 +30,71 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false };
   }
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
+
   componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught an error", error, errorInfo);
+    console.error("Uncaught error:", error, errorInfo);
   }
+
   render() {
     if (this.state.hasError) {
-      return <div style={{ color: "red", padding: "50px", background: "black", zIndex: 99999, position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
-        <h1>Something went wrong.</h1>
-        <pre>{this.state.error && this.state.error.toString()}</pre>
-        <pre>{this.state.error && this.state.error.stack}</pre>
-      </div>;
+      return (
+        <div style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#060a14",
+          color: "#f7f9ff",
+          padding: "40px",
+          textAlign: "center",
+        }}>
+          <h1 style={{ fontSize: "2rem", marginBottom: "16px" }}>
+            Something went wrong
+          </h1>
+          <p style={{ color: "#9aa7c7", marginBottom: "24px", maxWidth: "400px" }}>
+            BeatFlix ran into an unexpected problem. Try refreshing the page.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: "12px 32px",
+              background: "linear-gradient(135deg, #5d5fef, #38bdf8)",
+              border: "none",
+              borderRadius: "8px",
+              color: "#fff",
+              fontSize: "1rem",
+              cursor: "pointer",
+            }}
+          >
+            Refresh Page
+          </button>
+        </div>
+      );
     }
     return this.props.children;
   }
 }
+
+const LoadingFallback = () => (
+  <div style={{
+    minHeight: "80vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#5d5fef",
+    fontSize: "1.1rem",
+    fontWeight: 500,
+  }}>
+    Loading…
+  </div>
+);
 
 function App() {
   const [viewer, setViewer] = useState(() => {
@@ -58,14 +103,12 @@ function App() {
 
   const handleEnter = (name) => {
     sessionStorage.setItem("beatflixViewer", name);
-    // Rewrite the URL to / so that when BrowserRouter mounts, it defaults to the home page.
     window.history.replaceState(null, "", "/");
     setViewer(name);
   };
 
   const handleLogout = () => {
     sessionStorage.removeItem("beatflixViewer");
-    // Clear the intro played state so it plays again upon next login
     sessionStorage.removeItem("beatflix_intro_played");
     localStorage.removeItem("token");
     localStorage.removeItem("userEmail");
@@ -82,13 +125,10 @@ function App() {
             <BrowserRouter>
               <ScrollToTop />
               <div className="app-shell">
-                <Navbar
-                  viewer={viewer}
-                  onSwitchProfile={handleLogout}
-                />
+                <Navbar viewer={viewer} onSwitchProfile={handleLogout} />
 
                 <main className="app-content">
-                  <Suspense fallback={<div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#e50914", fontSize: "1.2rem", fontWeight: "bold" }}>Loading BeatFlix...</div>}>
+                  <Suspense fallback={<LoadingFallback />}>
                     <Routes>
                       <Route path="/" element={<Home viewer={viewer} />} />
                       <Route path="/movies" element={<Movies />} />
@@ -103,9 +143,13 @@ function App() {
                       <Route path="/subscription" element={<Subscription />} />
                       <Route path="/free" element={<FreeMovies />} />
                       <Route path="/account" element={<AccountManagement />} />
-                      <Route 
-                        path="/admin" 
-                        element={localStorage.getItem("userEmail") === "jeehardik2@gmail.com" ? <AdminDashboard /> : <Home viewer={viewer} />} 
+                      <Route
+                        path="/admin"
+                        element={
+                          localStorage.getItem("userEmail") === "jeehardik2@gmail.com"
+                            ? <AdminDashboard />
+                            : <Home viewer={viewer} />
+                        }
                       />
                     </Routes>
                   </Suspense>

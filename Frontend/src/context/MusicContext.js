@@ -1,4 +1,4 @@
-/* eslint-disable */
+
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 
 const MusicContext = createContext();
@@ -55,9 +55,17 @@ export const MusicProvider = ({ children }) => {
   }, [isPlaying]);
 
   const playSong = (song) => {
+    if (!song) return;
     setCurrentSong(song);
-    // When playing a single song outside queue, ensure it plays via state change
     isManualTrackChangeRef.current = true;
+    if (ytPlayerRef.current && song.videoId && typeof ytPlayerRef.current.loadVideoById === "function") {
+      try {
+        ytPlayerRef.current.loadVideoById(song.videoId);
+        ytPlayerRef.current.playVideo();
+      } catch (err) {
+        console.error("Direct player load error:", err);
+      }
+    }
   };
 
   const playQueue = (songs, startIndex = 0, newVibeContext = null) => {
@@ -68,8 +76,18 @@ export const MusicProvider = ({ children }) => {
     
     setQueue(songs);
     setQueueIndex(startIndex);
-    setCurrentSong(songs[startIndex]);
+    const targetSong = songs[startIndex];
+    setCurrentSong(targetSong);
     setVibeContext(newVibeContext);
+
+    if (ytPlayerRef.current && targetSong?.videoId && typeof ytPlayerRef.current.loadVideoById === "function") {
+      try {
+        ytPlayerRef.current.loadVideoById(targetSong.videoId);
+        ytPlayerRef.current.playVideo();
+      } catch (err) {
+        console.error("Direct player queue load error:", err);
+      }
+    }
   };
 
   const playNext = () => {
@@ -87,10 +105,18 @@ export const MusicProvider = ({ children }) => {
       }
     }
     
+    const nextSong = q[nextIndex];
     queueIndexRef.current = nextIndex;
     isManualTrackChangeRef.current = true;
     setQueueIndex(nextIndex);
-    setCurrentSong(q[nextIndex]);
+    setCurrentSong(nextSong);
+
+    if (ytPlayerRef.current && nextSong?.videoId && typeof ytPlayerRef.current.loadVideoById === "function") {
+      try {
+        ytPlayerRef.current.loadVideoById(nextSong.videoId);
+        ytPlayerRef.current.playVideo();
+      } catch (err) {}
+    }
   };
 
   const playPrevious = () => {
@@ -108,15 +134,25 @@ export const MusicProvider = ({ children }) => {
       }
     }
     
+    const prevSong = q[prevIndex];
     queueIndexRef.current = prevIndex;
     isManualTrackChangeRef.current = true;
     setQueueIndex(prevIndex);
-    setCurrentSong(q[prevIndex]);
+    setCurrentSong(prevSong);
+
+    if (ytPlayerRef.current && prevSong?.videoId && typeof ytPlayerRef.current.loadVideoById === "function") {
+      try {
+        ytPlayerRef.current.loadVideoById(prevSong.videoId);
+        ytPlayerRef.current.playVideo();
+      } catch (err) {}
+    }
   };
 
   const closePlayer = () => {
-    if (ytPlayerRef.current) {
-      ytPlayerRef.current.stopVideo();
+    if (ytPlayerRef.current && typeof ytPlayerRef.current.stopVideo === "function") {
+      try {
+        ytPlayerRef.current.stopVideo();
+      } catch (e) {}
     }
     setCurrentSong(null);
     setIsPlaying(false);
@@ -125,10 +161,16 @@ export const MusicProvider = ({ children }) => {
 
   const togglePlay = () => {
     if (!ytPlayerRef.current) return;
-    if (isPlaying) {
-      ytPlayerRef.current.pauseVideo();
-    } else {
-      ytPlayerRef.current.playVideo();
+    try {
+      if (isPlaying) {
+        ytPlayerRef.current.pauseVideo();
+        setIsPlaying(false);
+      } else {
+        ytPlayerRef.current.playVideo();
+        setIsPlaying(true);
+      }
+    } catch (e) {
+      console.error("togglePlay error:", e);
     }
   };
 
@@ -151,7 +193,9 @@ export const MusicProvider = ({ children }) => {
 
   const handlePlayerReady = (event) => {
     ytPlayerRef.current = event.target;
-    event.target.playVideo();
+    if (currentSong && currentSong.videoId) {
+      event.target.playVideo();
+    }
   };
 
   const handlePlayerStateChange = (event) => {
@@ -231,59 +275,59 @@ export const MusicProvider = ({ children }) => {
     setVibeContext,
   };
 
+  const queueLengthRef = useRef(queue.length);
+  useEffect(() => { queueLengthRef.current = queue.length; }, [queue.length]);
+
   useEffect(() => {
-    // Eagerly fetch more vibe songs if we are on the last or second to last song
-    if (vibeContext && queue.length > 0 && queueIndex >= queue.length - 2 && !isFetchingMoreVibe) {
-      const fetchMoreVibes = async () => {
-        setIsFetchingMoreVibe(true);
-        try {
-          const token = localStorage.getItem("token");
-          const excludeSongs = queue.map(s => s.title).slice(-15);
-          
-          const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
-          const vibeRes = await fetch(`${API_BASE}/api/gemini/vibe-playlist`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              ...vibeContext,
-              excludeSongs
-            })
+    const currentQueueLength = queueLengthRef.current;
+    if (!vibeContext || currentQueueLength === 0 || queueIndex < currentQueueLength - 2 || isFetchingMoreVibe) return;
+
+    const fetchMoreVibes = async () => {
+      setIsFetchingMoreVibe(true);
+      try {
+        const token = localStorage.getItem("token");
+        const excludeSongs = queueRef.current.map(s => s.title).slice(-15);
+
+        const apiBase = process.env.REACT_APP_API_URL || "http://localhost:4000";
+        const vibeRes = await fetch(`${apiBase}/api/gemini/vibe-playlist`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ ...vibeContext, excludeSongs }),
+        });
+        const vibeData = await vibeRes.json();
+
+        if (vibeData.songs && vibeData.songs.length > 0) {
+          const songPromises = vibeData.songs.map(async (songQuery) => {
+            try {
+              const res = await fetch(`${apiBase}/api/music/search?q=${encodeURIComponent(songQuery)}`);
+              const searchData = await res.json();
+              if (searchData.success && searchData.songs && searchData.songs.length > 0) {
+                return searchData.songs[0];
+              }
+            } catch (_) { /* skip failed lookups */ }
+            return null;
           });
-          const vibeData = await vibeRes.json();
-          
-          if (vibeData.songs && vibeData.songs.length > 0) {
-            const songPromises = vibeData.songs.map(async (songQuery) => {
-              try {
-                const res = await fetch(`${API_BASE}/api/music/search?q=${encodeURIComponent(songQuery)}`);
-                const searchData = await res.json();
-                if (searchData.success && searchData.songs && searchData.songs.length > 0) {
-                  return searchData.songs[0];
-                }
-              } catch (e) {}
-              return null;
-            });
-            const fetchedSongs = (await Promise.all(songPromises)).filter(s => s !== null);
-            
-            if (fetchedSongs.length > 0) {
-              const newQueue = [...queueRef.current, ...fetchedSongs];
-              queueRef.current = newQueue;
-              setQueue(newQueue);
-              localStorage.setItem("beatflix_playlist", JSON.stringify(newQueue));
-            }
+          const fetchedSongs = (await Promise.all(songPromises)).filter(Boolean);
+
+          if (fetchedSongs.length > 0) {
+            const newQueue = [...queueRef.current, ...fetchedSongs];
+            queueRef.current = newQueue;
+            setQueue(newQueue);
+            localStorage.setItem("beatflix_playlist", JSON.stringify(newQueue));
           }
-        } catch(e) {
-          console.error("Eager vibe fetch failed", e);
-        } finally {
-          setIsFetchingMoreVibe(false);
         }
-      };
-      
-      fetchMoreVibes();
-    }
-  }, [queueIndex, vibeContext, queue.length, isFetchingMoreVibe, queue]);
+      } catch (e) {
+        console.error("Vibe fetch failed:", e);
+      } finally {
+        setIsFetchingMoreVibe(false);
+      }
+    };
+
+    fetchMoreVibes();
+  }, [queueIndex, vibeContext, isFetchingMoreVibe]);
 
   return (
     <MusicContext.Provider value={value}>

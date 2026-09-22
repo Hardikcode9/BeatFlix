@@ -271,12 +271,7 @@ const getTopGlobalMovies = async (req, res) => {
       results: response.data.results.slice(0, 10),
     });
   } catch (error) {
-  console.log("========== AXIOS ERROR ==========");
-  console.log("Status:", error.response?.status);
-  console.log("Data:", error.response?.data);
-  console.log("Code:", error.code);
-  console.log("Message:", error.message);
-  console.log("=================================");
+  console.error("Top Global movies error:", error.response?.data || error.message);
 
   res.status(500).json({
     success: false,

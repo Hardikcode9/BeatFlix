@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPlay, FaTrash, FaMusic, FaArrowLeft, FaRandom } from "react-icons/fa";
@@ -8,7 +7,7 @@ import "../styles/Playlist.css";
 const Playlist = () => {
   const navigate = useNavigate();
   const [playlist, setPlaylist] = useState([]);
-  const { playQueue, currentSong, isPlaying, playSong, togglePlay } = useMusic();
+  const { playQueue, currentSong, isPlaying } = useMusic();
 
   useEffect(() => {
     const loadPlaylist = () => {
@@ -51,7 +50,6 @@ const Playlist = () => {
   };
 
   const handlePlaySong = (index) => {
-    // Treat clicking a specific song as starting the queue from that index
     playQueue(playlist, index);
   };
 
@@ -63,9 +61,11 @@ const Playlist = () => {
         </button>
         <div className="playlist-title-section">
           <h1>My Playlist</h1>
-          <p>{playlist.length} {playlist.length === 1 ? "track" : "tracks"}</p>
+          <p>
+            {playlist.length} {playlist.length === 1 ? "track" : "tracks"}
+          </p>
         </div>
-        
+
         {playlist.length > 0 && (
           <div className="playlist-actions">
             <button className="play-all-btn" onClick={handlePlayAll}>
@@ -87,7 +87,10 @@ const Playlist = () => {
             <FaMusic className="empty-icon" />
             <h2>Your playlist is empty</h2>
             <p>Go to the music section and add some tracks!</p>
-            <button className="go-to-music-btn" onClick={() => navigate("/music")}>
+            <button
+              className="go-to-music-btn"
+              onClick={() => navigate("/music")}
+            >
               Explore Music
             </button>
           </div>
@@ -95,11 +98,11 @@ const Playlist = () => {
           <div className="playlist-list">
             {playlist.map((song, index) => {
               const isCurrent = currentSong?.videoId === song.videoId;
-              
+
               return (
-                <div 
-                  key={song.videoId + index} 
-                  className={`playlist-item ${isCurrent ? 'active' : ''}`}
+                <div
+                  key={`${song.videoId}-${index}`}
+                  className={`playlist-item ${isCurrent ? "active" : ""}`}
                   onClick={() => handlePlaySong(index)}
                 >
                   <div className="playlist-item-index">
@@ -113,22 +116,29 @@ const Playlist = () => {
                       <span>{index + 1}</span>
                     )}
                   </div>
-                  
-                  <img 
-                    src={song.thumbnail || `https://i.ytimg.com/vi/${song.videoId}/hqdefault.jpg`} 
-                    alt={song.title} 
-                    className="playlist-item-thumb" 
+
+                  <img
+                    src={
+                      song.thumbnail ||
+                      `https://i.ytimg.com/vi/${song.videoId}/hqdefault.jpg`
+                    }
+                    alt={song.title}
+                    className="playlist-item-thumb"
+                    loading="lazy"
                   />
-                  
+
                   <div className="playlist-item-info">
-                    <h3 className={isCurrent ? 'text-cyan' : ''}>{song.title}</h3>
+                    <h3 className={isCurrent ? "text-cyan" : ""}>
+                      {song.title}
+                    </h3>
                     <p>{song.channelTitle || "Unknown Artist"}</p>
                   </div>
-                  
-                  <button 
-                    className="remove-song-btn" 
+
+                  <button
+                    className="remove-song-btn"
                     onClick={(e) => removeSong(e, song.videoId)}
                     title="Remove from Playlist"
+                    aria-label="Remove from playlist"
                   >
                     <FaTrash />
                   </button>

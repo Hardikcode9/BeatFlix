@@ -1,16 +1,9 @@
-/* eslint-disable */
 import { useEffect, useRef, useState, useCallback } from "react";
-import "../styles/MovieGrid.css";
 import MovieCard from "./MovieCard";
+import { GENRE_MAP, API_BASE } from "../utils/constants";
+import "../styles/MovieGrid.css";
 
-const genreMap = {
-  28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime", 
-  99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History", 
-  27: "Horror", 10402: "Music", 9648: "Mystery", 10749: "Romance", 878: "Sci-Fi", 
-  10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western"
-};
-
-function MovieGrid({ selectedMood, search = "", selectedGenre = "All" }) {
+function MovieGrid({ search = "", selectedGenre = "All" }) {
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -27,11 +20,7 @@ function MovieGrid({ selectedMood, search = "", selectedGenre = "All" }) {
       }
 
       observer.current = new IntersectionObserver((entries) => {
-        if (
-          entries[0].isIntersecting &&
-          hasMore &&
-          !isFetching.current
-        ) {
+        if (entries[0].isIntersecting && hasMore && !isFetching.current) {
           setPage((prev) => prev + 1);
         }
       });
@@ -60,34 +49,36 @@ function MovieGrid({ selectedMood, search = "", selectedGenre = "All" }) {
         if (selectedGenre !== "All") params.append("genre", selectedGenre);
         if (search.trim() !== "") params.append("search", search.trim());
 
-        const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
         const res = await fetch(`${API_BASE}/api/movies?${params.toString()}`);
         const data = await res.json();
         const newMovies = Array.isArray(data.results) ? data.results : [];
 
-        const formattedMovies = newMovies.map(movie => ({
+        const formattedMovies = newMovies.map((movie) => ({
           ...movie,
-          genreNames: (movie.genre_ids || []).map(id => genreMap[id]).filter(Boolean),
+          genreNames: (movie.genre_ids || [])
+            .map((id) => GENRE_MAP[id])
+            .filter(Boolean),
           rating: movie.vote_average ? movie.vote_average.toFixed(1) : "0.0",
-          year: movie.release_date?.split("-")[0] || "N/A"
+          year: movie.release_date?.split("-")[0] || "N/A",
         }));
 
-        setMovies((prev) => (page === 1 ? formattedMovies : [...prev, ...formattedMovies]));
+        setMovies((prev) =>
+          page === 1 ? formattedMovies : [...prev, ...formattedMovies]
+        );
         setHasMore(data.page < data.totalPages);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch movies:", err);
       } finally {
         setLoading(false);
         isFetching.current = false;
       }
     };
     fetchMovies();
-  }, [page, search, selectedGenre]);
+  }, [page, search, selectedGenre, hasMore]);
 
   return (
     <section className="movie-grid">
       <div className="movie-container">
-        {/* Render Loaded Movies */}
         {movies.length > 0 ? (
           movies.map((movie, index) => {
             const isLoadTrigger = index === movies.length - 5;
@@ -121,7 +112,6 @@ function MovieGrid({ selectedMood, search = "", selectedGenre = "All" }) {
           )
         )}
 
-        {/* Seamless Infinite Scroll Skeletons */}
         {loading && (
           <>
             {Array.from({ length: 10 }).map((_, index) => (
@@ -137,7 +127,6 @@ function MovieGrid({ selectedMood, search = "", selectedGenre = "All" }) {
         )}
       </div>
 
-      {/* End of results message */}
       {!hasMore && movies.length > 0 && (
         <div className="loading-more">
           <p>You have reached the end of the grid.</p>

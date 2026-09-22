@@ -5,10 +5,6 @@ const Otp = require("../model/Otp");
 const sendOTP = require("../utils/sendEmail");
 
 
-// ========================================
-// REGISTER USER
-// ========================================
-
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
@@ -57,11 +53,11 @@ const registerUser = async (req, res) => {
       success: true,
       message: "Profile created successfully",
 
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-    },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
 
   } catch (error) {
@@ -132,11 +128,11 @@ const loginUser = async (req, res) => {
 
       token,
 
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-    },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
 
   } catch (error) {
@@ -169,11 +165,11 @@ const getProfile = async (req, res) => {
 const googleLogin = async (req, res) => {
   try {
     const {
-  name,
-  email,
-  avatar,
-  googleId,
-} = req.body;
+      name,
+      email,
+      avatar,
+      googleId,
+    } = req.body;
 
     if (!name || !email) {
       return res.status(400).json({
@@ -187,7 +183,7 @@ const googleLogin = async (req, res) => {
     if (!user) {
       const hashedPassword = await bcrypt.hash(
         "GOOGLE_LOGIN",
-        1
+        10
       );
 
       user = await User.create({
@@ -281,7 +277,7 @@ const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-const otpData = await Otp.findOne({ email });
+    const otpData = await Otp.findOne({ email });
 
     if (!otpData) {
       return res.status(400).json({

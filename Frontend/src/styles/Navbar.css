@@ -561,3 +561,12 @@
         display: none; 
     }
 }
+
+.mobile-logout-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.logout-icon-color { color: #ef4444; }
+.logout-label-color { color: #ef4444; }

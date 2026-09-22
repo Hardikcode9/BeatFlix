@@ -1062,3 +1062,55 @@
         margin-top: 40px;
     }
 }
+
+/* Voice input & Control buttons */
+.voice-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    height: 50px;
+    background: rgba(255, 62, 165, 0.2);
+    border: 1px solid #ff3ea5;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin: 0 15px;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.voice-btn:hover:not(:disabled) {
+    background: rgba(255, 62, 165, 0.35);
+    transform: scale(1.05);
+}
+
+.voice-btn.listening {
+    color: #ff416c;
+    border-color: #ff416c;
+    box-shadow: 0 0 15px rgba(255, 65, 108, 0.5);
+    animation: pulseGlow 1.5s infinite alternate;
+}
+
+.voice-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.mood-stop-btn {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    box-shadow: 0 15px 35px rgba(239, 68, 68, 0.35) !important;
+}
+
+.mood-stop-btn svg {
+    margin-right: 8px;
+}
+
+.message-bold-accent {
+    color: #38bdf8;
+}
+
+.mood-search-box input:disabled {
+    opacity: 0.5;
+}

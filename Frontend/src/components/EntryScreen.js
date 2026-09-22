@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
@@ -12,44 +11,40 @@ import {
 
 import "../styles/EntryScreen.css";
 import { auth, googleProvider } from "../firebase/firebase";
-import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { toast } from "react-toastify";
-import * as faceapi from "face-api.js";
-import { useMood, moodThemes } from "../context/MoodContext";
+import { useMood } from "../context/MoodContext";
+import { API_BASE } from "../utils/constants";
 
 import ScrollBackground from "./ScrollBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Particles = ({ isMobileDevice }) => (
+const Particles = ({ count }) => (
   <div className="particle-container">
-    {[...Array(isMobileDevice ? 12 : 60)].map((_, i) => (
-      <div key={i} className={`particle particle-${i % 3}`} style={{ left: `${Math.random() * 100}%`, animationDelay: `${-(Math.random() * 30)}s` }} />
+    {[...Array(count)].map((_, i) => (
+      <div
+        key={i}
+        className={`particle particle-${i % 3}`}
+        style={{ left: `${Math.random() * 100}%`, animationDelay: `${-(Math.random() * 30)}s` }}
+      />
     ))}
   </div>
 );
 
-// ==========================================
-// COMPONENT: Particle Effect
-// ==========================================
-const ParticleEffect = ({ isMobileDevice }) => (
+const ParticleEffect = ({ count }) => (
   <div className="local-particles">
-    {[...Array(isMobileDevice ? 4 : 15)].map((_, i) => (
+    {[...Array(count)].map((_, i) => (
       <div key={i} className="local-particle" style={{
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
-        animationDelay: `${-(Math.random() * 10)}s`
+        animationDelay: `${-(Math.random() * 10)}s`,
       }} />
     ))}
   </div>
 );
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
-
 function EntryScreen({ onEnter }) {
-  // ==========================================
-  // EXISTING AUTH STATE
-  // ==========================================
   const [formType, setFormType] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -62,7 +57,7 @@ function EntryScreen({ onEnter }) {
   const [pendingName, setPendingName] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
   const [moodInput, setMoodInput] = useState("");
-  
+
   // Scanner state
   const [isScanning, setIsScanning] = useState(false);
   const [scanPhase, setScanPhase] = useState("");
@@ -72,21 +67,16 @@ function EntryScreen({ onEnter }) {
   const emotionHistoryRef = useRef([]);
 
   useEffect(() => {
-    return () => {
-      stopScanner();
-    };
+    return () => stopScanner();
   }, []);
 
   useEffect(() => {
     const handleResize = () => setIsMobileDevice(window.innerWidth <= 1024);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const [loading, setLoading] = useState(false);
-
-  
-  
   const [message, setMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -97,14 +87,15 @@ function EntryScreen({ onEnter }) {
   const [forgotOtp, setForgotOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  
-  
+  const particleCount = isMobileDevice ? 12 : 30;
+  const localParticleCount = isMobileDevice ? 4 : 10;
+
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
       const result = await signInWithPopup(auth, googleProvider);
-      
-      const response = await fetch(`${API_URL}/api/users/google-login`, {
+
+      const response = await fetch(`${API_BASE}/api/users/google-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -112,7 +103,7 @@ function EntryScreen({ onEnter }) {
           email: result.user.email,
           avatar: result.user.photoURL,
           googleId: result.user.uid,
-        })
+        }),
       });
 
       const data = await response.json();
@@ -131,7 +122,8 @@ function EntryScreen({ onEnter }) {
       setLoading(false);
     }
   };
-const submitForm = async (event) => {
+
+  const submitForm = async (event) => {
     event.preventDefault();
     setMessage("");
     setLoading(true);
@@ -140,13 +132,14 @@ const submitForm = async (event) => {
       if (formType === "login") {
         if (!name || !password) {
           setMessage("Please enter both email and password.");
-          setLoading(false); return;
+          setLoading(false);
+          return;
         }
-        
-        const response = await fetch(`${API_URL}/api/users/login`, {
+
+        const response = await fetch(`${API_BASE}/api/users/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ login: name, password })
+          body: JSON.stringify({ login: name, password }),
         });
 
         const data = await response.json();
@@ -160,22 +153,23 @@ const submitForm = async (event) => {
       } else {
         if (!name || !email || !password || !confirmPassword) {
           setMessage("Please fill in all fields.");
-          setLoading(false); return;
+          setLoading(false);
+          return;
         }
         if (password !== confirmPassword) {
           setMessage("Passwords do not match.");
-          setLoading(false); return;
+          setLoading(false);
+          return;
         }
 
-        const response = await fetch(`${API_URL}/api/users/send-otp`, {
+        const response = await fetch(`${API_BASE}/api/users/send-otp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
+          body: JSON.stringify({ email }),
         });
 
         const data = await response.json();
         if (!response.ok) throw new Error(data.message);
-
         setShowOtpModal(true);
       }
     } catch (error) {
@@ -190,37 +184,36 @@ const submitForm = async (event) => {
       toast.error("Please enter a valid 6-digit OTP.");
       return;
     }
-    
+
     setLoading(true);
     try {
-      const verifyRes = await fetch(`${API_URL}/api/users/verify-otp`, {
+      const verifyRes = await fetch(`${API_BASE}/api/users/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp })
+        body: JSON.stringify({ email, otp }),
       });
       const verifyData = await verifyRes.json();
       if (!verifyRes.ok) throw new Error(verifyData.message);
 
-      const registerRes = await fetch(`${API_URL}/api/users/register`, {
+      const registerRes = await fetch(`${API_BASE}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, confirmPassword })
+        body: JSON.stringify({ name, email, password, confirmPassword }),
       });
       const registerData = await registerRes.json();
       if (!registerRes.ok) throw new Error(registerData.message);
 
       setShowOtpModal(false);
       setShowSuccess(true);
-      
+
       setTimeout(() => {
         setShowSuccess(false);
         setFormType("login");
-        setName(email); 
+        setName(email);
         setPassword("");
         setConfirmPassword("");
         setOtp("");
       }, 2000);
-      
     } catch (error) {
       toast.error(error.message || "Registration failed.");
     } finally {
@@ -235,14 +228,13 @@ const submitForm = async (event) => {
     }
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/users/forgot-password`, {
+      const response = await fetch(`${API_BASE}/api/users/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail })
+        body: JSON.stringify({ email: forgotEmail }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-
       toast.success("OTP sent! Check your inbox.");
       setForgotStep(2);
     } catch (error) {
@@ -259,10 +251,10 @@ const submitForm = async (event) => {
     }
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/users/reset-password`, {
+      const response = await fetch(`${API_BASE}/api/users/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail, otp: forgotOtp, password: newPassword })
+        body: JSON.stringify({ email: forgotEmail, otp: forgotOtp, password: newPassword }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
@@ -280,9 +272,6 @@ const submitForm = async (event) => {
     }
   };
 
-  // ==========================================
-  // MOOD SCANNER LOGIC
-  // ==========================================
   const submitMood = (moodName) => {
     setMood(moodName);
     setShowEmoji(true);
@@ -295,6 +284,7 @@ const submitForm = async (event) => {
     try {
       setIsScanning(true);
       setScanPhase("Warming up the lens...");
+      const faceapi = await import("face-api.js");
       const MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
       await Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
@@ -319,21 +309,19 @@ const submitForm = async (event) => {
     setIsScanning(false);
   };
 
-  const handleVideoPlay = () => {
+  const handleVideoPlay = async () => {
     setScanPhase("Analyzing micro-expressions...");
     emotionHistoryRef.current = [];
-
     if (scanIntervalRef.current) clearInterval(scanIntervalRef.current);
+
+    const faceapi = await import("face-api.js");
 
     scanIntervalRef.current = setInterval(async () => {
       if (!videoRef.current) return;
 
       try {
         const detection = await faceapi
-          .detectSingleFace(
-            videoRef.current,
-            new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.5 })
-          )
+          .detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.5 }))
           .withFaceExpressions();
 
         if (!detection) {
@@ -366,17 +354,13 @@ const submitForm = async (event) => {
           submitMood(stableEmotion);
         }
       } catch (err) {
-        console.error(err);
+        console.error("Face detection error:", err);
       }
     }, 300);
   };
 
-  // ==========================================
-  // LENIS SMOOTH SCROLL
-  // ==========================================
+  // Smooth scrolling (desktop only — mobile uses native momentum)
   useEffect(() => {
-    // Skip Lenis on mobile — native momentum scrolling is smoother
-    // and Lenis's rAF loop causes jank on low-end phones
     if (isMobileDevice) return;
 
     const lenis = new Lenis({
@@ -385,7 +369,7 @@ const submitForm = async (event) => {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
-    lenis.on('scroll', ScrollTrigger.update);
+    lenis.on("scroll", ScrollTrigger.update);
 
     const raf = (time) => {
       lenis.raf(time * 1000);
@@ -398,16 +382,12 @@ const submitForm = async (event) => {
       lenis.destroy();
       gsap.ticker.remove(raf);
     };
-  }, []);
+  }, [isMobileDevice]);
 
-  // ==========================================
-  // GSAP 3D SCROLL MASTER TIMELINE
-  // ==========================================
+  // GSAP 3D scroll timeline
   useEffect(() => {
-    // Lock scrolling if a form or modal is open
     document.body.style.overflow = formType || showOtpModal || showForgotModal || showSuccess ? "hidden" : "auto";
 
-    // Skip building the timeline if form is active to prevent conflicts, OR if it's mobile (for ultra smooth performance)
     if (formType || isMobileDevice) {
       return () => {
         document.body.style.overflow = "auto";
@@ -420,103 +400,75 @@ const submitForm = async (event) => {
           trigger: ".scroll-background-section",
           start: "top top",
           end: "bottom bottom",
-          scrub: 1.5, // Adds fluid momentum to the 3D cards so they don't jump suddenly
+          scrub: 1.5,
           snap: {
             snapTo: (value) => {
-              // Custom snapping logic based exactly on when the next card visually appears
-              if (value < 0.10) return 0;       // Snap back to Welcome if Guest hasn't appeared yet
-              if (value < 0.45) return 0.333;   // Snap to Guest if Login hasn't appeared yet
-              if (value < 0.80) return 0.666;   // Snap to Login if Create Profile hasn't appeared yet
-              return 1;                         // Snap to Create Profile
+              if (value < 0.10) return 0;
+              if (value < 0.45) return 0.333;
+              if (value < 0.80) return 0.666;
+              return 1;
             },
             duration: { min: 0.5, max: 1.0 },
             ease: "power3.inOut",
-            delay: 0.1 // Wait a tiny bit for Lenis momentum to stop before grabbing the scroll
-          }
-        }
+            delay: 0.1,
+          },
+        },
       });
 
-      // Normalize timeline duration to 100 to map percentages easily
       tl.to({}, { duration: 100 });
 
-      // STAGE 0 -> 10: Intro settles, Title moves up and back
-      tl.to(".who-title-container", { 
-        y: -250, 
-        z: -300, 
-        autoAlpha: 0, 
-        scale: 0.95,
-        duration: 10, 
-        ease: "power2.inOut" 
+      tl.to(".who-title-container", {
+        y: -250, z: -300, autoAlpha: 0, scale: 0.95, duration: 10, ease: "power2.inOut",
       }, 0);
 
-      // GUEST CARD: Enters 10->25, Stable at 33.3, Exits 42->54
-      tl.fromTo(".guest-card", 
+      tl.fromTo(".guest-card",
         { y: 250, z: -400, rotateX: -15, autoAlpha: 0 },
         { y: 0, z: 0, rotateX: 0, autoAlpha: 1, duration: 15, ease: "power2.out" }, 10
       );
-      tl.to(".guest-card", 
+      tl.to(".guest-card",
         { y: -250, z: -400, rotateX: 15, autoAlpha: 0, duration: 12, ease: "power2.in" }, 42
       );
 
-      // LOGIN CARD: Enters 45->60, Stable at 66.6, Exits 75->87
-      tl.fromTo(".login-card", 
+      tl.fromTo(".login-card",
         { y: 250, z: -400, rotateX: -15, autoAlpha: 0 },
         { y: 0, z: 0, rotateX: 0, autoAlpha: 1, duration: 15, ease: "power2.out" }, 45
       );
-      tl.to(".login-card", 
+      tl.to(".login-card",
         { y: -250, z: -400, rotateX: 15, autoAlpha: 0, duration: 12, ease: "power2.in" }, 75
       );
 
-      // SIGNUP CARD: Enters 85->100, Stable at 100
-      tl.fromTo(".signup-card", 
+      tl.fromTo(".signup-card",
         { y: 250, z: -400, rotateX: -15, autoAlpha: 0 },
         { y: 0, z: 0, rotateX: 0, autoAlpha: 1, duration: 15, ease: "power2.out" }, 85
       );
-      
-      // SCROLL INDICATOR PROGRESS
+
       tl.fromTo(".scroll-progress-fill",
         { scaleY: 0 },
         { scaleY: 1, duration: 100, ease: "none" }, 0
       );
-      
     });
 
     return () => {
-      ctx.revert(); // Proper cleanup for React Strict Mode
-      document.body.style.overflow = "auto"; // Always restore scrolling when unmounting
+      ctx.revert();
+      document.body.style.overflow = "auto";
     };
-  }, [formType, showOtpModal, showForgotModal, showSuccess]);
-
-  // ==========================================
-  // FORM TRANSITION VARIANTS (No X-Axis Movement)
-  // ==========================================
-  const pageVariants = {
-    initial: { opacity: 0, filter: "blur(15px)", z: -300 },
-    in: { opacity: 1, filter: "blur(0px)", z: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } },
-    out: { opacity: 0, filter: "blur(15px)", z: -300, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
-  };
+  }, [formType, showOtpModal, showForgotModal, showSuccess, isMobileDevice]);
 
   const formVariants = {
     initial: { x: "-50%", y: "-30%", opacity: 0, scale: 0.95, rotateX: -10, filter: "blur(15px)" },
     in: { x: "-50%", y: "-50%", opacity: 1, scale: 1, rotateX: 0, filter: "blur(0px)", transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 } },
-    out: { x: "-50%", y: "-40%", opacity: 0, scale: 0.95, filter: "blur(15px)", transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }
+    out: { x: "-50%", y: "-40%", opacity: 0, scale: 0.95, filter: "blur(15px)", transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
   };
 
   return (
     <main className="beatflix-entry-wrapper">
-      
-      {/* BACKGROUND CANVAS SYSTEM - Disabled on mobile for max performance */}
       {!isMobileDevice && <ScrollBackground totalFrames={200} />}
 
-      {/* INVISIBLE SCROLL TIMELINE TRACK (400vh) */}
       <section className="scroll-background-section" />
 
-      {/* 3D UI OVERLAY */}
       <div className="scroll-container">
-        
-        <Particles isMobileDevice={isMobileDevice} />
+        <Particles count={particleCount} />
 
-        {/* VISUAL SCROLL PROGRESS INDICATOR */}
         {!formType && (
           <div className="scroll-progress-container">
             <div className="scroll-progress-track">
@@ -532,16 +484,15 @@ const submitForm = async (event) => {
         )}
 
         <section className="entry-content">
-          
           {isMobileDevice ? (
             <div className="mobile-premium-view">
-              <div className="who-title-container" style={{ position: 'relative', top: '0', left: '0', transform: 'none', margin: '0 auto 40px', width: '100%', zIndex: 20 }}>
-                <ParticleEffect isMobileDevice={isMobileDevice} />
+              <div className="who-title-container mobile-who-title">
+                <ParticleEffect count={localParticleCount} />
                 <div className="entry-brand">
                   <div className="entry-brand-icon"><img src={logo} alt="BeatFlix" /></div>
                   <div className="entry-brand-name"><span className="brand-white">Beat</span><span className="brand-blue">Flix</span></div>
                 </div>
-                <h1 className="who-title" style={{ fontSize: 'clamp(36px, 9vw, 52px)', textAlign: 'center', width: '100%', margin: '15px 0 0' }}>Who's Watching?</h1>
+                <h1 className="who-title mobile-who-heading">Who's Watching?</h1>
               </div>
 
               {!formType && (
@@ -568,20 +519,19 @@ const submitForm = async (event) => {
               )}
             </div>
           ) : (
-            <motion.div 
+            <motion.div
               className="netflix-entry"
               initial={false}
-              animate={{ 
-                opacity: formType ? 0 : 1, 
+              animate={{
+                opacity: formType ? 0 : 1,
                 filter: formType ? "blur(15px)" : "blur(0px)",
                 z: formType ? -300 : 0,
-                pointerEvents: formType ? "none" : "auto"
+                pointerEvents: formType ? "none" : "auto",
               }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-              {/* STAGE 0: BRAND & HEADING */}
               <div className="who-title-container">
-                <ParticleEffect isMobileDevice={isMobileDevice} />
+                <ParticleEffect count={localParticleCount} />
                 <div className="entry-brand">
                   <div className="entry-brand-icon"><img src={logo} alt="BeatFlix" /></div>
                   <div className="entry-brand-name"><span className="brand-white">Beat</span><span className="brand-blue">Flix</span></div>
@@ -589,17 +539,12 @@ const submitForm = async (event) => {
                 <h1 className="who-title">Who's Watching?</h1>
               </div>
 
-              {/* STAGES 1-3: PREMIUM 3D PROFILE CARDS */}
               <div className="netflix-profiles">
-                
-                {/* GUEST CARD */}
                 <button className="cinematic-card guest-card" onClick={() => { setPendingName("Guest"); setFormType("mood"); }}>
-                  <ParticleEffect isMobileDevice={isMobileDevice} />
+                  <ParticleEffect count={localParticleCount} />
                   <div className="card-ambient-glow guest-glow" />
                   <div className="card-glass-surface">
-                    <div className="card-icon-capsule guest-capsule">
-                      <FaCompass />
-                    </div>
+                    <div className="card-icon-capsule guest-capsule"><FaCompass /></div>
                     <div className="card-text-content">
                       <span>Guest</span>
                       <small>Continue instantly</small>
@@ -607,14 +552,11 @@ const submitForm = async (event) => {
                   </div>
                 </button>
 
-                {/* LOGIN CARD */}
                 <button className="cinematic-card login-card" onClick={() => setFormType("login")}>
-                  <ParticleEffect isMobileDevice={isMobileDevice} />
+                  <ParticleEffect count={localParticleCount} />
                   <div className="card-ambient-glow login-glow" />
                   <div className="card-glass-surface">
-                    <div className="card-icon-capsule login-capsule">
-                      <FaUserShield />
-                    </div>
+                    <div className="card-icon-capsule login-capsule"><FaUserShield /></div>
                     <div className="card-text-content">
                       <span>Login</span>
                       <small>Welcome back</small>
@@ -622,28 +564,24 @@ const submitForm = async (event) => {
                   </div>
                 </button>
 
-                {/* SIGNUP CARD */}
                 <button className="cinematic-card signup-card" onClick={() => setFormType("signup")}>
-                  <ParticleEffect isMobileDevice={isMobileDevice} />
+                  <ParticleEffect count={localParticleCount} />
                   <div className="card-ambient-glow signup-glow" />
                   <div className="card-glass-surface">
-                    <div className="card-icon-capsule signup-capsule">
-                      <FaUserPlus />
-                    </div>
+                    <div className="card-icon-capsule signup-capsule"><FaUserPlus /></div>
                     <div className="card-text-content">
                       <span>Create Profile</span>
                       <small>Make BeatFlix yours</small>
                     </div>
                   </div>
                 </button>
-                
               </div>
             </motion.div>
           )}
 
           <AnimatePresence>
             {formType && (
-              <motion.form 
+              <motion.form
                 key="form"
                 variants={formVariants}
                 initial="initial"
@@ -659,43 +597,43 @@ const submitForm = async (event) => {
                 <div className="form-icon">
                   {formType === "mood" ? "🎭" : formType === "login" ? <FaUserShield /> : <FaUserPlus />}
                 </div>
-                
+
                 {formType === "mood" ? (
                   <>
                     <p className="entry-kicker">SET THE VIBE</p>
                     <h1>How are you feeling?</h1>
                     <p className="form-description">We will tailor the entire BeatFlix experience to your current mood.</p>
-                    
+
                     {!isScanning ? (
                       <>
                         <label>Your Mood
                           <div className="input-box">
-                            <input 
-                              value={moodInput} 
-                              onChange={(e) => setMoodInput(e.target.value)} 
-                              placeholder="e.g. happy, sad, energetic, chill..." 
-                              autoFocus 
+                            <input
+                              value={moodInput}
+                              onChange={(e) => setMoodInput(e.target.value)}
+                              placeholder="e.g. happy, sad, energetic, chill..."
+                              autoFocus
                             />
                           </div>
                         </label>
                         <button className="enter-button" type="button" onClick={() => submitMood(moodInput || "neutral")}>
                           Set Mood <FaArrowRight />
                         </button>
-                        
+
                         <div className="entry-divider"><span></span><p>OR</p><span></span></div>
-                        
-                        <button type="button" className="google-button" onClick={startScanner} style={{ background: 'rgba(255,255,255,0.1)' }}>
+
+                        <button type="button" className="google-button scan-face-btn" onClick={startScanner}>
                           📷 Scan Face Instead
                         </button>
                       </>
                     ) : (
-                      <div className="scanner-container" style={{ textAlign: 'center', marginTop: '20px' }}>
-                        <div className="video-wrapper" style={{ position: 'relative', borderRadius: '15px', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.2)', marginBottom: '10px' }}>
-                          <video ref={videoRef} autoPlay muted playsInline onPlay={handleVideoPlay} style={{ width: '100%', height: 'auto', transform: 'scaleX(-1)' }} />
-                          <div className="scan-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(to bottom, rgba(56,189,248,0.2) 0%, transparent 50%, rgba(56,189,248,0.2) 100%)', pointerEvents: 'none', animation: 'scanLine 2s linear infinite' }} />
+                      <div className="scanner-container">
+                        <div className="video-wrapper">
+                          <video ref={videoRef} autoPlay muted playsInline onPlay={handleVideoPlay} />
+                          <div className="scan-overlay" />
                         </div>
-                        <p className="scan-phase" style={{ color: '#38bdf8', fontWeight: 'bold' }}>{scanPhase}</p>
-                        <button type="button" className="back-choice" onClick={stopScanner} style={{ marginTop: '10px' }}>
+                        <p className="scan-phase">{scanPhase}</p>
+                        <button type="button" className="back-choice" onClick={stopScanner}>
                           Cancel Scan
                         </button>
                       </div>
@@ -706,8 +644,8 @@ const submitForm = async (event) => {
                     <p className="entry-kicker">BEATFLIX PROFILE</p>
                     <h1>{formType === "login" ? "Welcome back." : "Create your profile."}</h1>
                     <p className="form-description">
-                      {formType === "login" 
-                        ? "Enter your details and continue discovering movies made for your mood." 
+                      {formType === "login"
+                        ? "Enter your details and continue discovering movies made for your mood."
                         : "Create your BeatFlix profile and start building a more personal movie experience."}
                     </p>
 
@@ -731,7 +669,9 @@ const submitForm = async (event) => {
                       <div className="input-box">
                         <span className="input-icon"><FaLock /></span>
                         <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-                        <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</button>
+                        <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
+                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
                       </div>
                     </label>
 
@@ -740,7 +680,9 @@ const submitForm = async (event) => {
                         <div className="input-box">
                           <span className="input-icon"><FaLock /></span>
                           <input type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" />
-                          <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>{showConfirmPassword ? <FaEyeSlash /> : <FaEye />}</button>
+                          <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                          </button>
                         </div>
                       </label>
                     )}
@@ -750,13 +692,13 @@ const submitForm = async (event) => {
                     <button className="enter-button" type="submit">
                       {loading ? "Please wait..." : formType === "login" ? "Enter BeatFlix" : "Create Profile"} <FaArrowRight />
                     </button>
-                    
+
                     <div className="entry-divider"><span></span><p>OR</p><span></span></div>
-                    
+
                     <button type="button" className="google-button" onClick={handleGoogleLogin} disabled={loading}>
                       <FaGoogle /> {loading ? "Connecting..." : "Continue with Google"}
                     </button>
-                    
+
                     {formType === "login" && (
                       <button type="button" className="forgot-password" onClick={() => { setForgotEmail(""); setMessage(""); setShowForgotModal(true); }}>
                         Forgot Password?
@@ -770,12 +712,14 @@ const submitForm = async (event) => {
         </section>
       </div>
 
-      {/* MODALS */}
+      {/* Modals */}
       {showSuccess && (
         <div className="success-overlay">
           <div className="success-card">
             <div className="success-check">✓</div>
-            <h2>Profile Created!</h2><p>Your BeatFlix account is ready.</p><span>Redirecting to Login...</span>
+            <h2>Profile Created!</h2>
+            <p>Your BeatFlix account is ready.</p>
+            <span>Redirecting to Login...</span>
           </div>
         </div>
       )}
@@ -783,9 +727,13 @@ const submitForm = async (event) => {
       {showOtpModal && (
         <div className="otp-overlay">
           <div className="otp-card">
-            <h2>Email Verification</h2><p>We sent a 6-digit verification code to</p><strong>{email}</strong>
+            <h2>Email Verification</h2>
+            <p>We sent a 6-digit verification code to</p>
+            <strong>{email}</strong>
             <input className="otp-input" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="Enter OTP" maxLength={6} />
-            <button className="enter-button" type="button" onClick={verifyAndRegister}>{loading ? "Verifying..." : "Verify OTP"}</button>
+            <button className="enter-button" type="button" onClick={verifyAndRegister}>
+              {loading ? "Verifying..." : "Verify OTP"}
+            </button>
           </div>
         </div>
       )}
@@ -797,18 +745,24 @@ const submitForm = async (event) => {
             {forgotStep === 1 ? (
               <>
                 <p>Enter the email associated with your BeatFlix account.</p>
-                <input className="otp-input" type="email" placeholder="Enter your email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} style={{ letterSpacing: "normal", fontSize: "16px", textAlign: "left" }} />
-                <button className="enter-button" type="button" onClick={sendForgotOtp}>{loading ? "Sending..." : "Send OTP"}</button>
+                <input className="otp-input forgot-email-input" type="email" placeholder="Enter your email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} />
+                <button className="enter-button" type="button" onClick={sendForgotOtp}>
+                  {loading ? "Sending..." : "Send OTP"}
+                </button>
               </>
             ) : (
               <>
                 <p>Enter the 6-digit OTP sent to your email and your new password.</p>
                 <input className="otp-input" value={forgotOtp} onChange={(e) => setForgotOtp(e.target.value)} placeholder="Enter OTP" maxLength={6} />
-                <input className="otp-input" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New Password" style={{ letterSpacing: "normal", fontSize: "16px", textAlign: "left", marginTop: "10px" }} />
-                <button className="enter-button" type="button" onClick={resetPassword} style={{ marginTop: "15px" }}>{loading ? "Resetting..." : "Reset Password"}</button>
+                <input className="otp-input forgot-password-input" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New Password" />
+                <button className="enter-button forgot-reset-btn" type="button" onClick={resetPassword}>
+                  {loading ? "Resetting..." : "Reset Password"}
+                </button>
               </>
             )}
-            <button type="button" className="back-choice" onClick={() => { setShowForgotModal(false); setForgotStep(1); }}>Cancel</button>
+            <button type="button" className="back-choice" onClick={() => { setShowForgotModal(false); setForgotStep(1); }}>
+              Cancel
+            </button>
           </div>
         </div>
       )}
@@ -816,27 +770,14 @@ const submitForm = async (event) => {
       <AnimatePresence>
         {showEmoji && (
           <motion.div
+            className="mood-transition-overlay"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1, rotate: [0, 10, -10, 0] }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ duration: 0.5, type: "spring" }}
-            style={{
-              position: 'fixed',
-              top: 0, left: 0, right: 0, bottom: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              background: 'rgba(0,0,0,0.85)',
-              zIndex: 9999,
-              backdropFilter: 'blur(10px)',
-              padding: '20px',
-              textAlign: 'center',
-              overflow: 'hidden'
-            }}
           >
-            <div style={{ fontSize: 'clamp(60px, 15vw, 100px)' }}>{themeData?.emoji}</div>
-            <h2 style={{ marginTop: '20px', color: '#fff', fontSize: 'clamp(1rem, 4vw, 1.5rem)', padding: '0 16px', lineHeight: 1.4 }}>Setting up {themeData?.name} vibe...</h2>
+            <div className="mood-transition-emoji">{themeData?.emoji}</div>
+            <h2 className="mood-transition-text">Setting up {themeData?.name} vibe...</h2>
           </motion.div>
         )}
       </AnimatePresence>
@@ -845,8 +786,3 @@ const submitForm = async (event) => {
 }
 
 export default EntryScreen;
-
-// ==========================================
-// Hello! Look, it is saved directly in VS Code by me! :) 
-// - Your AI Assistant
-// ==========================================
