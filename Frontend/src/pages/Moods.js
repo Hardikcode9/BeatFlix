@@ -522,16 +522,17 @@ function Moods() {
   const askGemini = async (userMessage, history) => {
     const token = localStorage.getItem("token");
 
-    if (!token) {
-      throw new Error("Guest mode does not support AI Chat. Please log in to talk to BeatFlix AI!");
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
     const response = await fetch(`${API_BASE}/api/gemini/chat`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers,
       body: JSON.stringify({
         message: userMessage,
         history: history,
@@ -549,7 +550,7 @@ function Moods() {
           data.message || "You've reached your BeatFlix AI limit. Upgrade to Pro or Ultimate for more tokens!"
         );
       }
-      throw new Error(data.message || "Server Error");
+      throw new Error(data.message || "Unable to reach BeatFlix AI right now. Please try again.");
     }
 
     return data;

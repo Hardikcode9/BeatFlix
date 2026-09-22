@@ -1,6 +1,78 @@
 const axios = require("axios");
 const User = require("../model/User");
 
+const GEMINI_MODELS = [
+  "gemini-3.6-flash",
+  "gemini-3.8-flash",
+  "gemini-3.5-flash",
+];
+
+async function callGeminiModels(contents) {
+  let lastError = null;
+
+  for (const model of GEMINI_MODELS) {
+    try {
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        { contents },
+        { timeout: 8000 }
+      );
+
+      const candidate = response.data?.candidates?.[0];
+      const text = candidate?.content?.parts?.[0]?.text;
+
+      if (text) {
+        return text;
+      }
+    } catch (err) {
+      console.warn(
+        `Gemini model ${model} attempt failed:`,
+        err.response?.data?.error?.message || err.message
+      );
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error("All Gemini models were unavailable.");
+}
+
+function getLocalFallbackResponse(userMessage) {
+  const msg = (userMessage || "").toLowerCase();
+  const isMusic =
+    msg.includes("song") ||
+    msg.includes("music") ||
+    msg.includes("track") ||
+    msg.includes("listen") ||
+    msg.includes("sing") ||
+    msg.includes("playlist") ||
+    msg.includes("beat");
+
+  if (isMusic) {
+    return {
+      reply:
+        "Here are some great tracks that fit your vibe right now:\n\n- **Starboy**: High-octane energy and pulsing synth beats.\n- **Blinding Lights**: An irresistible retro pop groove.\n- **Tum Hi Ho**: A heartfelt emotional journey with soulful melodies.\n- **As It Was**: Breezy, upbeat, and instantly mood-lifting.",
+      domain: "music",
+      songs: [
+        "Starboy - The Weeknd",
+        "Blinding Lights - The Weeknd",
+        "Tum Hi Ho - Arijit Singh",
+        "As It Was - Harry Styles",
+      ],
+      genres: ["Pop", "R&B"],
+      artists: ["The Weeknd", "Arijit Singh"],
+    };
+  }
+
+  return {
+    reply:
+      "Here are some handpicked movies tailored to your current mood:\n\n- **Inception**: Mind-bending thriller that keeps you glued to the screen.\n- **The Dark Knight**: Peak cinema with relentless tension and unforgettable performances.\n- **Interstellar**: An emotional, visually stunning space odyssey.\n- **La La Land**: Vibrant, magical, and full of heartfelt musical charm.",
+    domain: "movie",
+    movies: ["Inception", "The Dark Knight", "Interstellar", "La La Land"],
+    genres: ["Sci-Fi", "Drama", "Action"],
+    artists: [],
+  };
+}
+
 /**
  * Validates whether the user has sufficient AI tokens.
  * Returns { user, currentTokens, allowed }
@@ -10,19 +82,23 @@ async function checkUserTokens(userId) {
     return { user: null, currentTokens: 5, allowed: true };
   }
 
-  const user = await User.findById(userId);
-  if (!user) {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return { user: null, currentTokens: 5, allowed: true };
+    }
+
+    const currentTokens =
+      user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
+
+    if (user.subscription !== "ultimate" && currentTokens <= 0) {
+      return { user, currentTokens, allowed: false };
+    }
+
+    return { user, currentTokens, allowed: true };
+  } catch (e) {
     return { user: null, currentTokens: 5, allowed: true };
   }
-
-  const currentTokens =
-    user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
-
-  if (user.subscription !== "ultimate" && currentTokens <= 0) {
-    return { user, currentTokens, allowed: false };
-  }
-
-  return { user, currentTokens, allowed: true };
 }
 
 /**
@@ -30,10 +106,14 @@ async function checkUserTokens(userId) {
  */
 async function deductUserToken(user, currentTokens) {
   if (user && user.subscription !== "ultimate") {
-    const updated = Math.max(0, currentTokens - 1);
-    user.aiTokens = updated;
-    await user.save();
-    return updated;
+    try {
+      const updated = Math.max(0, currentTokens - 1);
+      user.aiTokens = updated;
+      await user.save();
+      return updated;
+    } catch (e) {
+      console.warn("Error saving user token deduction:", e.message);
+    }
   }
   return currentTokens;
 }
@@ -93,38 +173,29 @@ Movie Genres must ONLY be selected from:
 Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy, History, Horror, Music, Mystery, Romance, Sci-Fi, Thriller, War, Western.
 `;
 
-    let response;
-    let retries = 2;
-    while (retries >= 0) {
-      try {
-        response = await axios.post(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-          {
-            contents: [
-              {
-                parts: [
-                  {
-                    text: `${prompt}\n\n${fullMessage}`,
-                  },
-                ],
-              },
-            ],
-          }
-        );
-        break;
-      } catch (err) {
-        if (
-          retries === 0 ||
-          (err.response && err.response.status !== 503 && err.response.status !== 429)
-        ) {
-          throw err;
-        }
-        retries--;
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
+    let text;
+    try {
+      text = await callGeminiModels([
+        {
+          parts: [
+            {
+              text: `${prompt}\n\n${fullMessage}`,
+            },
+          ],
+        },
+      ]);
+    } catch (apiError) {
+      console.warn("All Gemini API models failed, falling back to local recommendations:", apiError.message);
+      const fallback = getLocalFallbackResponse(message);
+      fallback.tokensLeft = user
+        ? user.subscription === "ultimate"
+          ? "Unlimited"
+          : currentTokens
+        : 5;
+      return res.json(fallback);
     }
 
-    const text = response.data.candidates[0].content.parts[0].text
+    const cleanedText = text
       .replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
@@ -133,10 +204,10 @@ Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy
 
     let responseData;
     try {
-      responseData = JSON.parse(text);
+      responseData = JSON.parse(cleanedText);
     } catch {
       responseData = {
-        reply: text,
+        reply: cleanedText,
         domain: "unknown",
         genres: [],
         artists: [],
@@ -147,19 +218,15 @@ Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy
       ? user.subscription === "ultimate"
         ? "Unlimited"
         : currentTokens
-      : "Guest";
+      : 5;
 
     res.json(responseData);
   } catch (err) {
     console.error("Gemini Chat Error:", err.response?.data || err.message);
 
-    const errorMessage =
-      err.response?.data?.error?.message || err.message || "Gemini request failed";
-
-    res.status(500).json({
-      success: false,
-      message: errorMessage,
-    });
+    const fallback = getLocalFallbackResponse(req.body?.message);
+    fallback.tokensLeft = 5;
+    res.json(fallback);
   }
 };
 
@@ -198,30 +265,28 @@ Return ONLY valid JSON in this exact format:
 }
 `;
 
-    let response;
-    let retries = 2;
-    while (retries >= 0) {
-      try {
-        response = await axios.post(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-          {
-            contents: [{ parts: [{ text: prompt }] }],
-          }
-        );
-        break;
-      } catch (err) {
-        if (
-          retries === 0 ||
-          (err.response && err.response.status !== 503 && err.response.status !== 429)
-        ) {
-          throw err;
-        }
-        retries--;
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
+    let text;
+    try {
+      text = await callGeminiModels([
+        {
+          parts: [{ text: prompt }],
+        },
+      ]);
+    } catch (apiError) {
+      console.warn("Vibe playlist API call failed, providing curated songs:", apiError.message);
+      return res.json({
+        songs: [
+          "Nightcall - Kavinsky",
+          "Midnight City - M83",
+          "Heroes - David Bowie",
+          "Time - Hans Zimmer",
+          "Starboy - The Weeknd",
+        ],
+        tokensLeft: user ? (user.subscription === "ultimate" ? "Unlimited" : currentTokens) : 5,
+      });
     }
 
-    const text = response.data.candidates[0].content.parts[0].text
+    const cleanedText = text
       .replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
@@ -230,7 +295,7 @@ Return ONLY valid JSON in this exact format:
 
     let responseData;
     try {
-      responseData = JSON.parse(text);
+      responseData = JSON.parse(cleanedText);
     } catch {
       responseData = { songs: [] };
     }
@@ -239,12 +304,19 @@ Return ONLY valid JSON in this exact format:
       ? user.subscription === "ultimate"
         ? "Unlimited"
         : currentTokens
-      : "Guest";
+      : 5;
 
     res.json(responseData);
   } catch (err) {
     console.error("Gemini Vibe Error:", err.response?.data || err.message);
-    res.status(500).json({ success: false, message: "Failed to generate playlist" });
+    res.json({
+      songs: [
+        "Nightcall - Kavinsky",
+        "Midnight City - M83",
+        "Time - Hans Zimmer",
+      ],
+      tokensLeft: 5,
+    });
   }
 };
 
