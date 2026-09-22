@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FaCheck, FaCrown, FaBolt, FaStar, FaArrowLeft } from "react-icons/fa";
 import "../styles/Subscription.css"; // Adjust path as needed
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 export default function Subscription() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const fetchSubscription = async () => {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/api/subscription/current`,
+      `${API_BASE}/api/subscription/current`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -44,7 +45,7 @@ const changePlan = async (plan) => {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-  `${process.env.REACT_APP_API_URL}/api/subscription/update`,
+  `${API_BASE}/api/subscription/update`,
   {
     method: "POST",
     headers: {
@@ -112,7 +113,7 @@ const changePlan = async (plan) => {
 
   const openRazorpay = async (plan, amount) => {
   const response = await fetch(
-  `${process.env.REACT_APP_API_URL}/api/payment/create-order`,
+  `${API_BASE}/api/payment/create-order`,
   {
     method: "POST",
     headers: {

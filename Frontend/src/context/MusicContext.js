@@ -240,7 +240,8 @@ export const MusicProvider = ({ children }) => {
           const token = localStorage.getItem("token");
           const excludeSongs = queue.map(s => s.title).slice(-15);
           
-          const vibeRes = await fetch(`${process.env.REACT_APP_API_URL}/api/gemini/vibe-playlist`, {
+          const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
+          const vibeRes = await fetch(`${API_BASE}/api/gemini/vibe-playlist`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -256,7 +257,7 @@ export const MusicProvider = ({ children }) => {
           if (vibeData.songs && vibeData.songs.length > 0) {
             const songPromises = vibeData.songs.map(async (songQuery) => {
               try {
-                const res = await fetch(`${process.env.REACT_APP_API_URL}/api/music/search?q=${encodeURIComponent(songQuery)}`);
+                const res = await fetch(`${API_BASE}/api/music/search?q=${encodeURIComponent(songQuery)}`);
                 const searchData = await res.json();
                 if (searchData.success && searchData.songs && searchData.songs.length > 0) {
                   return searchData.songs[0];

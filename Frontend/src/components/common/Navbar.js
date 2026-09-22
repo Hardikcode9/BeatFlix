@@ -2,6 +2,7 @@
 import { useState } from "react";
 import "../../styles/Navbar.css";
 import { NavLink, Link } from "react-router-dom";
+import logo from "../../assets/images/logo.png";
 import { 
   FaBars, 
   FaFilm, 
@@ -38,7 +39,7 @@ function Navbar({ viewer, onSwitchProfile }) {
         <div className="side-brand-row">
           <Link to="/" className="side-logo" aria-label="BeatFlix home">
             <div className="brand-mark-wrapper">
-              <img src="/beatflix_logo (1).png" alt="BeatFlix Logo" className="brand-icon" />
+              <img src={logo} alt="BeatFlix Logo" className="brand-icon" />
             </div>
             <strong>BeatFlix</strong>
           </Link>

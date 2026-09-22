@@ -60,7 +60,8 @@ function MovieGrid({ selectedMood, search = "", selectedGenre = "All" }) {
         if (selectedGenre !== "All") params.append("genre", selectedGenre);
         if (search.trim() !== "") params.append("search", search.trim());
 
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/movies?${params.toString()}`);
+        const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
+        const res = await fetch(`${API_BASE}/api/movies?${params.toString()}`);
         const data = await res.json();
         const newMovies = Array.isArray(data.results) ? data.results : [];
 

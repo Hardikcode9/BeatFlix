@@ -4,19 +4,20 @@ const User = require("../model/User");
 const chatWithGemini = async (req, res) => {
   try {
     const { message, history } = req.body;
-    const user = await User.findById(req.user.id);
+    let user = null;
+    let currentTokens = 5;
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    let currentTokens = user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
-
-    if (user.subscription !== "ultimate" && currentTokens <= 0) {
-      return res.status(403).json({
-        success: false,
-        message: "You've reached your BeatFlix AI limit. Please upgrade your plan.",
-      });
+    if (req.user?.id) {
+      user = await User.findById(req.user.id);
+      if (user) {
+        currentTokens = user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
+        if (user.subscription !== "ultimate" && currentTokens <= 0) {
+          return res.status(403).json({
+            success: false,
+            message: "You've reached your BeatFlix AI limit. Please upgrade your plan.",
+          });
+        }
+      }
     }
 
     const previousConversation = (history || [])
@@ -93,7 +94,7 @@ Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy
         .replace(/```/g, "")
         .trim();
 
-    if (user.subscription !== "ultimate") {
+    if (user && user.subscription !== "ultimate") {
       currentTokens -= 1;
       user.aiTokens = currentTokens;
       await user.save();
@@ -112,7 +113,7 @@ Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy
       };
     }
     
-    responseData.tokensLeft = user.subscription === "ultimate" ? "Unlimited" : currentTokens;
+    responseData.tokensLeft = user ? (user.subscription === "ultimate" ? "Unlimited" : currentTokens) : "Guest";
 
     res.json(responseData);
   } catch (err) {
@@ -131,19 +132,20 @@ Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy
 const generateVibePlaylist = async (req, res) => {
   try {
     const { movieTitle, moviePlot, movieGenres, excludeSongs } = req.body;
-    const user = await User.findById(req.user.id);
+    let user = null;
+    let currentTokens = 5;
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    let currentTokens = user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
-
-    if (user.subscription !== "ultimate" && currentTokens <= 0) {
-      return res.status(403).json({
-        success: false,
-        message: "You've reached your BeatFlix AI limit. Please upgrade your plan.",
-      });
+    if (req.user?.id) {
+      user = await User.findById(req.user.id);
+      if (user) {
+        currentTokens = user.aiTokens !== undefined && user.aiTokens !== null ? user.aiTokens : 5;
+        if (user.subscription !== "ultimate" && currentTokens <= 0) {
+          return res.status(403).json({
+            success: false,
+            message: "You've reached your BeatFlix AI limit. Please upgrade your plan.",
+          });
+        }
+      }
     }
 
     const prompt = `
@@ -187,7 +189,7 @@ Return ONLY valid JSON in this exact format:
       .replace(/```/g, "")
       .trim();
 
-    if (user.subscription !== "ultimate") {
+    if (user && user.subscription !== "ultimate") {
       currentTokens -= 1;
       user.aiTokens = currentTokens;
       await user.save();
@@ -201,7 +203,7 @@ Return ONLY valid JSON in this exact format:
       responseData = { songs: [] };
     }
     
-    responseData.tokensLeft = user.subscription === "ultimate" ? "Unlimited" : currentTokens;
+    responseData.tokensLeft = user ? (user.subscription === "ultimate" ? "Unlimited" : currentTokens) : "Guest";
 
     res.json(responseData);
   } catch (err) {

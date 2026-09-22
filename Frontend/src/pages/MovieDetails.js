@@ -17,6 +17,7 @@ import { useMusic } from "../context/MusicContext";
 
 const IMAGE_URL = "https://image.tmdb.org/t/p/original";
 const POSTER_URL = "https://image.tmdb.org/t/p/w500";
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 // 3D Tilt Logic for the Poster
 const handlePosterMove = (e) => {
@@ -67,7 +68,7 @@ function MovieDetails() {
     const fetchMovie = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/movies/${id}`);
+        const res = await fetch(`${API_BASE}/api/movies/${id}`);
         const data = await res.json();
         if (data.success) {
           setMovie(data.movie);
@@ -117,7 +118,7 @@ function MovieDetails() {
       const token = localStorage.getItem("token");
       const genres = movie.genres.map(g => g.name).join(", ");
       
-      const vibeRes = await fetch(`${process.env.REACT_APP_API_URL}/api/gemini/vibe-playlist`, {
+      const vibeRes = await fetch(`${API_BASE}/api/gemini/vibe-playlist`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -139,7 +140,7 @@ function MovieDetails() {
 
       const songPromises = vibeData.songs.map(async (songQuery) => {
         try {
-          const res = await fetch(`${process.env.REACT_APP_API_URL}/api/music/search?q=${encodeURIComponent(songQuery)}`);
+          const res = await fetch(`${API_BASE}/api/music/search?q=${encodeURIComponent(songQuery)}`);
           const searchData = await res.json();
           if (searchData.success && searchData.songs && searchData.songs.length > 0) {
             return searchData.songs[0];

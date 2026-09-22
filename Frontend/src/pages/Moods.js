@@ -35,7 +35,7 @@ function Moods() {
   const [recommendedMovies, setRecommendedMovies] = useState([]);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [input, setInput] = useState("");
-  const BASE_URL = `${process.env.REACT_APP_API_URL}/api/chat`;
+  const BASE_URL = `${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/chat`;
 
   const welcomeMessages = [
   {
@@ -381,12 +381,13 @@ useEffect(() => {
 
   const fetchMovies = async () => {
     try {
+      const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
       const endpoints = [
-        `${process.env.REACT_APP_API_URL}/api/movies/trending`,
-        `${process.env.REACT_APP_API_URL}/api/movies/top-rated`,
-        `${process.env.REACT_APP_API_URL}/api/movies/top-india`,
-        `${process.env.REACT_APP_API_URL}/api/movies/top-global`,
-        `${process.env.REACT_APP_API_URL}/api/movies/new-releases`
+        `${API_BASE}/api/movies/trending`,
+        `${API_BASE}/api/movies/top-rated`,
+        `${API_BASE}/api/movies/top-india`,
+        `${API_BASE}/api/movies/top-global`,
+        `${API_BASE}/api/movies/new-releases`
       ];
 
       const responses = await Promise.all(

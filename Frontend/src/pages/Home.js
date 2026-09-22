@@ -13,6 +13,7 @@
   import { ScrollTrigger } from "gsap/ScrollTrigger";
   import "../styles/Home.css";
   import dhurandharPoster from "../assets/images/movies/dhurandhar.jpg";
+  import logo from "../assets/images/logo.png";
 
   // Register GSAP Plugin
   gsap.registerPlugin(ScrollTrigger);
@@ -69,14 +70,15 @@
         description: movie.overview || "No description available."
       }));
 
+      const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
       const fetchAll = async () => {
         try {
           const [r1, r2, r3, r4, r5] = await Promise.all([
-            fetch(`${process.env.REACT_APP_API_URL}/api/movies/top-india`).then((res) => res.json()),
-            fetch(`${process.env.REACT_APP_API_URL}/api/movies/top-global`).then((res) => res.json()),
-            fetch(`${process.env.REACT_APP_API_URL}/api/movies/trending`).then((res) => res.json()),
-            fetch(`${process.env.REACT_APP_API_URL}/api/movies/top-rated`).then((res) => res.json()),
-            fetch(`${process.env.REACT_APP_API_URL}/api/movies/new-releases`).then((res) => res.json()),
+            fetch(`${API_BASE}/api/movies/top-india`).then((res) => res.json()),
+            fetch(`${API_BASE}/api/movies/top-global`).then((res) => res.json()),
+            fetch(`${API_BASE}/api/movies/trending`).then((res) => res.json()),
+            fetch(`${API_BASE}/api/movies/top-rated`).then((res) => res.json()),
+            fetch(`${API_BASE}/api/movies/new-releases`).then((res) => res.json()),
           ]);
           setTopIndia(formatData(r1));
           setTopGlobal(formatData(r2));
@@ -356,7 +358,7 @@
         {isBooting && (
           <div className="cinematic-intro">
             <div className="intro-content">
-              <img src="/beatflix_logo (1).png" alt="BeatFlix Logo" className="intro-logo" />
+              <img src={logo} alt="BeatFlix Logo" className="intro-logo" />
               <div className="intro-text">
                 <span className="intro-presents">Vision</span>
               </div>
