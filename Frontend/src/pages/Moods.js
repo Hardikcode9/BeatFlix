@@ -15,7 +15,13 @@ import {
   FaEye,
   FaMicrophone,
 } from "react-icons/fa";
-import * as faceapi from "face-api.js";
+let faceapiModule = null;
+const getFaceApi = async () => {
+  if (!faceapiModule) {
+    faceapiModule = await import("face-api.js");
+  }
+  return faceapiModule;
+};
 import ChatSidebar from "../components/ChatSidebar";
 import "../styles/Moods.css";
 import { useMood } from "../context/MoodContext";
@@ -449,6 +455,7 @@ useEffect(() => {
   const loadModels = async () => {
     const MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
     try {
+      const faceapi = await getFaceApi();
       await Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
         faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
@@ -798,6 +805,7 @@ await saveMessage(activeChatId, userMessage);
     isDetectingRef.current = true;
 
     try {
+      const faceapi = await getFaceApi();
       const detection = await faceapi
         .detectSingleFace(
           videoRef.current,

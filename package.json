@@ -27,10 +27,11 @@
     "xml2js": "^0.6.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "npm start --prefix Frontend",
+    "build": "npm run build --prefix Frontend",
+    "test": "npm test --prefix Frontend",
+    "backend": "npm run dev --prefix Backend",
+    "frontend": "npm start --prefix Frontend"
   },
   "eslintConfig": {
     "extends": [
@@ -52,5 +53,8 @@
   },
   "devDependencies": {
     "docx": "^9.7.1"
+  },
+  "browser": {
+    "fs": false
   }
 }

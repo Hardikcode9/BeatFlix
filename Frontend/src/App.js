@@ -1,33 +1,32 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 
 import Navbar from "./components/common/Navbar";
 import EntryScreen from "./components/EntryScreen";
-
-import Home from "./pages/Home";
-import Movies from "./pages/Movies";
-import Music from "./pages/Music";
-import MusicDetails from "./pages/MusicDetails";
-import Playlist from "./pages/Playlist";
-import Moods from "./pages/Moods";
-import About from "./pages/About";
-import MovieDetails from "./pages/MovieDetails";
 import Footer from "./components/common/Footer";
-import CollectionPage from "./pages/CollectionPage";
-import Subscription from "./pages/Subscription";
-import AccountManagement from "./pages/AccountManagement";
-
-import MyListPage from "./pages/MyListPage";
-import AdminDashboard from "./pages/AdminDashboard";
-import FreeMovies from "./pages/FreeMovies";
-
-import { MusicProvider } from "./context/MusicContext";
-import { MoodProvider } from "./context/MoodContext";
 import GlobalMusicPlayer from "./components/GlobalMusicPlayer";
 import ScrollToTop from "./components/ScrollToTop";
 
+import { MusicProvider } from "./context/MusicContext";
+import { MoodProvider } from "./context/MoodContext";
+
 import "./App.css";
-import React from 'react';
+
+// Lazy-loaded routes for ultra-fast startup and code-splitting
+const Home = lazy(() => import("./pages/Home"));
+const Movies = lazy(() => import("./pages/Movies"));
+const Music = lazy(() => import("./pages/Music"));
+const MusicDetails = lazy(() => import("./pages/MusicDetails"));
+const Playlist = lazy(() => import("./pages/Playlist"));
+const Moods = lazy(() => import("./pages/Moods"));
+const About = lazy(() => import("./pages/About"));
+const MovieDetails = lazy(() => import("./pages/MovieDetails"));
+const CollectionPage = lazy(() => import("./pages/CollectionPage"));
+const MyListPage = lazy(() => import("./pages/MyListPage"));
+const Subscription = lazy(() => import("./pages/Subscription"));
+const FreeMovies = lazy(() => import("./pages/FreeMovies"));
+const AccountManagement = lazy(() => import("./pages/AccountManagement"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -89,25 +88,27 @@ function App() {
                 />
 
                 <main className="app-content">
-                  <Routes>
-                    <Route path="/" element={<Home viewer={viewer} />} />
-                    <Route path="/movies" element={<Movies />} />
-                    <Route path="/music" element={<Music />} />
-                    <Route path="/music/:id" element={<MusicDetails />} />
-                    <Route path="/playlist" element={<Playlist />} />
-                    <Route path="/moods" element={<Moods />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/movie/:id" element={<MovieDetails />} />
-                    <Route path="/collection/:slug" element={<CollectionPage />} />
-                    <Route path="/mylist" element={<MyListPage />} />
-                    <Route path="/subscription" element={<Subscription />} />
-                    <Route path="/free" element={<FreeMovies />} />
-                    <Route path="/account" element={<AccountManagement />} />
-                    <Route 
-                      path="/admin" 
-                      element={localStorage.getItem("userEmail") === "jeehardik2@gmail.com" ? <AdminDashboard /> : <Home viewer={viewer} />} 
-                    />
-                  </Routes>
+                  <Suspense fallback={<div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#e50914", fontSize: "1.2rem", fontWeight: "bold" }}>Loading BeatFlix...</div>}>
+                    <Routes>
+                      <Route path="/" element={<Home viewer={viewer} />} />
+                      <Route path="/movies" element={<Movies />} />
+                      <Route path="/music" element={<Music />} />
+                      <Route path="/music/:id" element={<MusicDetails />} />
+                      <Route path="/playlist" element={<Playlist />} />
+                      <Route path="/moods" element={<Moods />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/movie/:id" element={<MovieDetails />} />
+                      <Route path="/collection/:slug" element={<CollectionPage />} />
+                      <Route path="/mylist" element={<MyListPage />} />
+                      <Route path="/subscription" element={<Subscription />} />
+                      <Route path="/free" element={<FreeMovies />} />
+                      <Route path="/account" element={<AccountManagement />} />
+                      <Route 
+                        path="/admin" 
+                        element={localStorage.getItem("userEmail") === "jeehardik2@gmail.com" ? <AdminDashboard /> : <Home viewer={viewer} />} 
+                      />
+                    </Routes>
+                  </Suspense>
                 </main>
 
                 <GlobalMusicPlayer />
