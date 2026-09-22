@@ -1,122 +1,166 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ScrollBackground = ({ totalFrames = 180 }) => {
+const ScrollBackground = ({ totalFrames = 200 }) => {
   const canvasRef = useRef(null);
   const [images, setImages] = useState([]);
-  const [loaded, setLoaded] = useState(false);
-  const isMobile = useRef(window.innerWidth < 768);
+  const imagesRef = useRef([]);
+  const [initialFrameReady, setInitialFrameReady] = useState(false);
 
-  // ==========================================
-  // LOAD FRAMES (FEWER ON MOBILE FOR PERFORMANCE)
-  // ==========================================
-  useEffect(() => {
-    let cancelled = false;
-    // On mobile, load every 3rd frame to reduce memory by ~66%
-    const step = isMobile.current ? 3 : 1;
-
-    const loadImages = async () => {
-      const promises = [];
-
-      for (let i = 1; i <= totalFrames; i += step) {
-        promises.push(
-          new Promise((resolve) => {
-            const img = new Image();
-            const src = `/frames/ezgif-frame-${String(i).padStart(3, "0")}.png`;
-
-            img.onload = () => resolve(img);
-            img.onerror = () => {
-              console.warn(`Failed to load: ${src}`);
-              resolve(null);
-            };
-            img.src = src;
-          })
-        );
-      }
-
-      const results = await Promise.all(promises);
-      if (cancelled) return;
-
-      const validImages = results.filter((img) => img && img.naturalWidth > 0);
-      setImages(validImages);
-      setLoaded(true);
-    };
-
-    loadImages();
-
-    return () => { cancelled = true; };
-  }, [totalFrames]);
-
-  // ==========================================
-  // CANVAS RENDERING + CONTINUOUS GSAP SCROLL
-  // ==========================================
-  useEffect(() => {
-    if (!loaded || images.length === 0) return;
-
+  const renderFrame = useCallback((frameIndex) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false }); // Optimize performance
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
 
-    const renderFrame = (index) => {
-      const image = images[index];
-      if (!image || image.naturalWidth === 0) return;
+    const availableImages = imagesRef.current;
+    if (!availableImages || availableImages.length === 0) return;
 
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
-      const imageRatio = image.naturalWidth / image.naturalHeight;
-      const screenRatio = screenWidth / screenHeight;
+    // Use requested frame or closest available
+    const clampedIndex = Math.min(Math.max(0, frameIndex), availableImages.length - 1);
+    let image = availableImages[clampedIndex];
 
-      let drawWidth, drawHeight;
+    if (!image || image.naturalWidth === 0) {
+      // Find nearest loaded frame
+      for (let offset = 1; offset < availableImages.length; offset++) {
+        if (clampedIndex - offset >= 0 && availableImages[clampedIndex - offset]?.naturalWidth > 0) {
+          image = availableImages[clampedIndex - offset];
+          break;
+        }
+        if (clampedIndex + offset < availableImages.length && availableImages[clampedIndex + offset]?.naturalWidth > 0) {
+          image = availableImages[clampedIndex + offset];
+          break;
+        }
+      }
+    }
 
-      if (imageRatio > screenRatio) {
-        drawHeight = screenHeight;
-        drawWidth = screenHeight * imageRatio;
-      } else {
-        drawWidth = screenWidth;
-        drawHeight = screenWidth / imageRatio;
+    if (!image || image.naturalWidth === 0) return;
+
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const imageRatio = image.naturalWidth / image.naturalHeight;
+    const screenRatio = screenWidth / screenHeight;
+
+    let drawWidth;
+    let drawHeight;
+
+    if (imageRatio > screenRatio) {
+      drawHeight = screenHeight;
+      drawWidth = screenHeight * imageRatio;
+    } else {
+      drawWidth = screenWidth;
+      drawHeight = screenWidth / imageRatio;
+    }
+
+    const x = (screenWidth - drawWidth) / 2;
+    const y = (screenHeight - drawHeight) / 2;
+
+    ctx.drawImage(image, x, y, drawWidth, drawHeight);
+  }, []);
+
+  const resizeCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    ScrollTrigger.refresh();
+  }, []);
+
+  // Progressive frame loading in prioritized chunks
+  useEffect(() => {
+    let cancelled = false;
+    const loadedImages = new Array(totalFrames).fill(null);
+
+    const loadSingleImage = (frameNum) =>
+      new Promise((resolve) => {
+        const img = new Image();
+        const src = `/frames/ezgif-frame-${String(frameNum).padStart(3, "0")}.webp`;
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+
+    const loadFramesProgressively = async () => {
+      // 1. Load first frame immediately for instant first-paint
+      const firstImg = await loadSingleImage(1);
+      if (cancelled) return;
+
+      if (firstImg) {
+        loadedImages[0] = firstImg;
+        imagesRef.current = [...loadedImages];
+        setImages([...loadedImages]);
+        setInitialFrameReady(true);
+        resizeCanvas();
+        renderFrame(0);
       }
 
-      const x = (screenWidth - drawWidth) / 2;
-      const y = (screenHeight - drawHeight) / 2;
+      // 2. Load remaining frames in batches of 6 to avoid network saturation
+      const remainingIndices = [];
+      for (let i = 2; i <= totalFrames; i++) {
+        remainingIndices.push(i);
+      }
 
-      ctx.drawImage(image, x, y, drawWidth, drawHeight);
+      const BATCH_SIZE = 6;
+      for (let b = 0; b < remainingIndices.length; b += BATCH_SIZE) {
+        if (cancelled) return;
+        const batch = remainingIndices.slice(b, b + BATCH_SIZE);
+        const batchResults = await Promise.all(batch.map((frameNum) => loadSingleImage(frameNum)));
+
+        batch.forEach((frameNum, idx) => {
+          loadedImages[frameNum - 1] = batchResults[idx];
+        });
+
+        imagesRef.current = [...loadedImages];
+      }
+
+      if (!cancelled) {
+        setImages([...loadedImages]);
+      }
     };
 
-    const resizeCanvas = () => {
-      // Cap DPR to 1 on mobile to reduce GPU work (~75% fewer pixels)
-      const dpr = isMobile.current ? 1 : (window.devicePixelRatio || 1);
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ScrollTrigger.refresh();
+    loadFramesProgressively();
+
+    return () => {
+      cancelled = true;
     };
+  }, [totalFrames, renderFrame, resizeCanvas]);
+
+  // GSAP scroll trigger animation
+  useEffect(() => {
+    if (!initialFrameReady) return;
 
     resizeCanvas();
     renderFrame(0);
+
     window.addEventListener("resize", resizeCanvas);
 
     const frameObj = { frame: 0 };
-    
-    let ctxGsap = gsap.context(() => {
+    const ctxGsap = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: ".scroll-background-section",
           start: "top top",
           end: "bottom bottom",
-          scrub: true, // Let Lenis handle the smoothing natively
-        }
+          scrub: true,
+        },
       });
 
       tl.to(frameObj, {
-        frame: images.length - 1,
+        frame: totalFrames - 1,
         snap: "frame",
         ease: "none",
-        onUpdate: () => renderFrame(frameObj.frame)
+        onUpdate: () => renderFrame(Math.round(frameObj.frame)),
       });
     });
 
@@ -124,9 +168,7 @@ const ScrollBackground = ({ totalFrames = 180 }) => {
       window.removeEventListener("resize", resizeCanvas);
       ctxGsap.revert();
     };
-  }, [loaded, images]);
-
-
+  }, [initialFrameReady, totalFrames, renderFrame, resizeCanvas]);
 
   return <canvas ref={canvasRef} className="scroll-background-canvas" />;
 };
