@@ -31,7 +31,8 @@
     "build": "npm run build --prefix Frontend",
     "test": "npm test --prefix Frontend",
     "backend": "npm run dev --prefix Backend",
-    "frontend": "npm start --prefix Frontend"
+    "frontend": "npm start --prefix Frontend",
+    "postinstall": "node -e \"const fs=require('fs'); ['node_modules/face-api.js/package.json', 'Frontend/node_modules/face-api.js/package.json'].forEach(p => { if(fs.existsSync(p)){ const j=JSON.parse(fs.readFileSync(p)); j.browser={fs:false}; fs.writeFileSync(p, JSON.stringify(j, null, 2)); } })\""
   },
   "eslintConfig": {
     "extends": [

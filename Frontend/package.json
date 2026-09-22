@@ -25,7 +25,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "node -e \"const fs=require('fs'); ['node_modules/face-api.js/package.json', '../node_modules/face-api.js/package.json'].forEach(p => { if(fs.existsSync(p)){ const j=JSON.parse(fs.readFileSync(p)); j.browser={fs:false}; fs.writeFileSync(p, JSON.stringify(j, null, 2)); } })\""
   },
   "eslintConfig": {
     "extends": [
