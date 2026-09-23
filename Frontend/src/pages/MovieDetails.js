@@ -196,36 +196,51 @@ function MovieDetails() {
 
   return (
     <div className="movie-details-page">
-      <div
-        className="details-backdrop"
-        style={{
-          backgroundImage: `url(${IMAGE_URL}${movie.backdrop_path})`,
-        }}
-      >
-        <div className="backdrop-gradient"></div>
-        <div className="backdrop-noise"></div>
-      </div>
+      {/* BACKGROUND WITH LIVE VIDEO OR BREATHING IMAGE */}
+      <div className="movie-backdrop">
+        {trailer && trailer.key ? (
+          <div className="live-bg-wrapper">
+            <iframe
+              className="live-bg-iframe"
+              src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${trailer.key}&modestbranding=1&enablejsapi=1`}
+              title="Live Background"
+              allow="autoplay; encrypted-media"
+              tabIndex="-1"
+            />
+          </div>
+        ) : (
+          <div
+            className="backdrop-img"
+            style={{
+              backgroundImage: movie.backdrop_path
+                ? `url(${IMAGE_URL}${movie.backdrop_path})`
+                : undefined,
+            }}
+          />
+        )}
 
-      <div className="details-container">
-        <button className="back-link" onClick={() => navigate(-1)}>
-          <FaArrowLeft /> Back
-        </button>
+        {/* Animated Gradient Overlay */}
+        <div className="backdrop-overlay animated-gradient-overlay" />
 
-        <div className="movie-header">
+        <div className="movie-hero">
+          {/* 3D INTERACTIVE POSTER */}
           <div className="poster-section animate-slide-right">
-            <div className="poster-glow-orb"></div>
+            <div className="poster-glow-orb" />
             <div
               className="poster-3d-wrapper"
               onMouseMove={handlePosterMove}
               onMouseLeave={handlePosterLeave}
             >
               <img
-                src={`${POSTER_URL}${movie.poster_path}`}
+                src={
+                  movie.poster_path
+                    ? `${POSTER_URL}${movie.poster_path}`
+                    : "https://placehold.co/500x750/1a1a1a/ffffff?text=No+Poster"
+                }
                 alt={movie.title}
                 loading="eager"
-                decoding="async"
               />
-              <div className="poster-reflection"></div>
+              <div className="poster-reflection" />
             </div>
           </div>
 
@@ -236,71 +251,122 @@ function MovieDetails() {
 
             <div className="movie-meta">
               <span className="premium-pill gold-pill">
-                <FaStar /> {movie.vote_average.toFixed(1)}
+                <FaStar /> {movie.vote_average ? movie.vote_average.toFixed(1) : "N/A"}
               </span>
               <span className="premium-pill">
-                <FaCalendarAlt className="accent-icon" /> {movie.release_date}
+                <FaCalendarAlt className="accent-icon" /> {movie.release_date || "N/A"}
               </span>
               <span className="premium-pill">
-                <FaClock className="accent-icon" /> {movie.runtime} min
+                <FaClock className="accent-icon" /> {movie.runtime ? `${movie.runtime} min` : "N/A"}
               </span>
             </div>
 
-            <div className="genre-list">
-              {movie.genres.map((genre) => (
-                <span key={genre.id} className="neon-chip">
-                  {genre.name}
-                </span>
-              ))}
-            </div>
+            {movie.genres && movie.genres.length > 0 && (
+              <div className="genre-list">
+                {movie.genres.map((genre) => (
+                  <span key={genre.id} className="neon-chip">
+                    {genre.name}
+                  </span>
+                ))}
+              </div>
+            )}
 
-            <p className="overview">{movie.overview}</p>
-
-            <div className="action-buttons">
-              {trailer && (
-                <button
-                  className="glow-btn play-trailer"
-                  onClick={() => setShowTrailer(true)}
-                >
-                  <FaPlay /> Watch Trailer
-                </button>
-              )}
-
+            {/* ACTION BUTTONS */}
+            <div className="button-group">
+              {/* Watch Trailer Button */}
               <button
-                className={`glow-btn vibe-music-btn ${
+                type="button"
+                className="btn-primary"
+                onClick={() => {
+                  if (trailer && trailer.key) {
+                    setShowTrailer(true);
+                  } else {
+                    window.open(
+                      `https://www.youtube.com/results?search_query=${encodeURIComponent(
+                        movie.title + " official trailer"
+                      )}`,
+                      "_blank"
+                    );
+                  }
+                }}
+              >
+                <span className="play-circle">▶</span>
+                Watch Trailer
+              </button>
+
+              {/* My List Button */}
+              <button
+                type="button"
+                className={`btn-secondary btn-mylist ${isInList ? "in-list" : ""}`}
+                onClick={toggleMyList}
+                aria-label={isInList ? "Remove from My List" : "Add to My List"}
+              >
+                {isInList ? (
+                  <FaBookmark className="bookmark-icon" />
+                ) : (
+                  <FaRegBookmark className="bookmark-icon" />
+                )}
+                <span>{isInList ? "In My List" : "Add to My List"}</span>
+              </button>
+
+              {/* Vibe Soundtrack Button */}
+              <button
+                type="button"
+                className={`btn-secondary vibe-soundtrack-btn ${
                   isGeneratingVibe ? "generating" : ""
                 }`}
                 onClick={handleGenerateVibePlaylist}
                 disabled={isGeneratingVibe}
                 title="Generate an AI-curated playlist reflecting this movie's exact mood & themes"
+                style={{
+                  background: "linear-gradient(45deg, #ec4899, #8b5cf6)",
+                  border: "none",
+                  color: "white",
+                }}
               >
-                <FaMagic className={isGeneratingVibe ? "spin-icon" : ""} />
+                <FaMagic
+                  className={isGeneratingVibe ? "spin-icon" : ""}
+                  style={{ marginRight: "6px" }}
+                />
                 {isGeneratingVibe ? "Crafting Soundtrack..." : "Vibe Soundtrack"}
               </button>
 
+              {/* Back Button */}
               <button
-                className={`glow-btn add-list ${isInList ? "saved" : ""}`}
-                onClick={toggleMyList}
+                type="button"
+                className="btn-secondary"
+                onClick={() => navigate(-1)}
               >
-                {isInList ? (
-                  <>
-                    <FaBookmark className="accent-icon" /> In My List
-                  </>
-                ) : (
-                  <>
-                    <FaRegBookmark /> Add to List
-                  </>
-                )}
+                <FaArrowLeft style={{ marginRight: "6px" }} /> Back
               </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {watchProviders && watchProviders.flatrate?.length > 0 && (
-          <section className="providers-section animate-slide-up">
-            <h3 className="section-title">Streaming On</h3>
-            <div className="providers-grid">
-              {watchProviders.flatrate.map((provider) => (
+      <div className="content-container">
+        {/* OVERVIEW */}
+        {movie.overview && (
+          <section
+            className="overview-section animate-slide-up"
+            style={{ animationDelay: "0.2s" }}
+          >
+            <h2 className="section-title">Overview</h2>
+            <p className="overview-text">{movie.overview}</p>
+          </section>
+        )}
+
+        {/* WHERE TO WATCH / STREAMING */}
+        {watchProviders && (
+          <section className="watch-section animate-slide-up">
+            <h2 className="section-title">Where to Watch</h2>
+            <div className="watch-grid">
+              {(
+                watchProviders.flatrate ||
+                watchProviders.rent ||
+                watchProviders.buy ||
+                []
+              ).map((provider) => (
                 <a
                   key={provider.provider_id}
                   href={watchProviders.link}
@@ -312,7 +378,6 @@ function MovieDetails() {
                     src={`https://image.tmdb.org/t/p/w185${provider.logo_path}`}
                     alt={provider.provider_name}
                     loading="lazy"
-                    decoding="async"
                   />
                   <span>{provider.provider_name}</span>
                 </a>
@@ -321,6 +386,7 @@ function MovieDetails() {
           </section>
         )}
 
+        {/* DYNAMIC CAST GRID */}
         {cast.length > 0 && (
           <section
             className="cast-section animate-slide-up"
@@ -338,9 +404,8 @@ function MovieDetails() {
                     }
                     alt={actor.name}
                     loading="lazy"
-                    decoding="async"
                   />
-                  <div className="cast-color-overlay"></div>
+                  <div className="cast-color-overlay" />
                   <div className="cast-info-layer">
                     <h4>{actor.name}</h4>
                     <p>{actor.character}</p>
@@ -351,6 +416,7 @@ function MovieDetails() {
           </section>
         )}
 
+        {/* BENTO SIMILAR MOVIES */}
         {similarMovies.length > 0 && (
           <section
             className="similar-section animate-slide-up"
@@ -365,16 +431,19 @@ function MovieDetails() {
                   onClick={() => navigate(`/movie/${item.id}`)}
                 >
                   <img
-                    src={`${POSTER_URL}${item.poster_path}`}
+                    src={
+                      item.poster_path
+                        ? `${POSTER_URL}${item.poster_path}`
+                        : "https://placehold.co/500x750/1a1a1a/ffffff?text=No+Poster"
+                    }
                     alt={item.title}
                     loading="lazy"
-                    decoding="async"
                   />
-                  <div className="similar-hover-sweep"></div>
+                  <div className="similar-hover-sweep" />
                   <div className="similar-content">
                     <h4>{item.title}</h4>
                     <span className="rating-badge">
-                      <FaStar /> {item.vote_average.toFixed(1)}
+                      <FaStar /> {item.vote_average ? item.vote_average.toFixed(1) : "N/A"}
                     </span>
                   </div>
                 </div>
@@ -384,7 +453,8 @@ function MovieDetails() {
         )}
       </div>
 
-      {showTrailer && trailer && (
+      {/* TRAILER MODAL */}
+      {showTrailer && (
         <div
           className="trailer-overlay glass-bg"
           onClick={() => setShowTrailer(false)}
@@ -393,18 +463,50 @@ function MovieDetails() {
             className="trailer-modal modal-pop"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className="modal-close"
-              onClick={() => setShowTrailer(false)}
-              aria-label="Close trailer"
-            >
-              <FaTimes />
-            </button>
-            <iframe
-              src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&rel=0`}
-              title="Trailer"
-              allowFullScreen
-            />
+            <div className="trailer-modal-bar">
+              {trailer?.key && (
+                <a
+                  href={`https://www.youtube.com/watch?v=${trailer.key}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="trailer-external-link"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Watch on YouTube ↗
+                </a>
+              )}
+              <button
+                className="modal-close"
+                onClick={() => setShowTrailer(false)}
+                aria-label="Close trailer"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            {trailer?.key ? (
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${trailer.key}?autoplay=1&rel=0&modestbranding=1`}
+                title={`${movie.title} Trailer`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            ) : (
+              <div className="trailer-fallback">
+                <h3>Trailer video not available</h3>
+                <a
+                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
+                    movie.title + " official trailer"
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primary"
+                  style={{ textDecoration: "none", display: "inline-flex" }}
+                >
+                  <span className="play-circle">▶</span>
+                  Search on YouTube
+                </a>
+              </div>
+            )}
           </div>
         </div>
       )}

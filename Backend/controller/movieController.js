@@ -340,7 +340,7 @@ const getMovieDetails = async (req, res) => {
 
     ]);
 
-    // Find the official YouTube trailer
+    // Find the official YouTube trailer or teaser/clip
     const trailer =
       videosRes.data.results.find(
         (video) =>
@@ -353,16 +353,28 @@ const getMovieDetails = async (req, res) => {
           video.site === "YouTube" &&
           video.type === "Trailer"
       ) ||
+      videosRes.data.results.find(
+        (video) =>
+          video.site === "YouTube" &&
+          (video.type === "Teaser" || video.type === "Clip" || video.type === "Featurette")
+      ) ||
+      videosRes.data.results.find((video) => video.site === "YouTube") ||
       null;
 
-      res.status(200).json({
-        success: true,
-        movie: movieRes.data,
-        cast: creditsRes.data.cast.slice(0, 10),
-        similar: similarRes.data.results,
-        trailer,
-        watchProviders: watchProvidersRes.data.results.IN || null,
-      });
+    const watchProviders =
+      watchProvidersRes.data.results.IN ||
+      watchProvidersRes.data.results.US ||
+      Object.values(watchProvidersRes.data.results || {})[0] ||
+      null;
+
+    res.status(200).json({
+      success: true,
+      movie: movieRes.data,
+      cast: creditsRes.data.cast.slice(0, 10),
+      similar: similarRes.data.results,
+      trailer,
+      watchProviders,
+    });
   } catch (error) {
     console.error(error.response?.data || error.message);
 
